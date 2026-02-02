@@ -1,0 +1,120 @@
+.navbar-brand {
+    background-color: #000050;
+    border-right: 1px solid #1e2f5d;
+}
+
+.main-wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 250px;
+    background-color: #000050;
+    border-right: 1px solid #1e2f5d;
+}
+
+.content-area {
+    flex-grow: 1;
+}
+
+.card-header bg-transparent border-success{
+    background-color: #ffffff;
+    color: #000;
+    border-color: #000
+}
+
+
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>homework</title>
+    <link href="https://cdn.jsdelivr.net" rel="stylesheet">
+    <link href="../src/my_styles.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar bg-body-tertiary">
+        <div class="container-fluid">
+            <div class="bg-primary-subtle text-primary-emphasis"></div>
+            <a class="navbar-brand" href="#">
+                <img src="https://getbootstrap.com" width="30" height="24">
+                Меню
+            </a>
+        </div>
+
+    </nav>
+
+    Обертка, которая держит сайдбар и контент рядом
+    <div class="main-wrapper">
+
+        БОКОВАЯ ПАНЕЛЬ
+        <div class="sidebar p-3 d-flex flex-column justify-content-between">
+            <div class="top-menu">
+                <div class="btn-group-vertical w-100" role="group">
+                    <a class="btn btn-primary" href="#">Главная</a>
+                    <a class="btn btn-primary" href="#">Категории</a>
+                    <a class="btn btn-primary" href="#">Заказы</a>
+                    <a class="btn btn-primary" href="#">Контакты</a>
+                </div>
+            </div>
+
+             НИЖНЯЯ ЧАСТЬ САЙДБАРА
+            <div class="user-block text-center">
+                <img src="https://via.placeholder.com" class="profile-img">
+                <select class="form-select" aria-label="User select">
+                    <option value="" selected disabled hidden>Пользователь</option>
+                    <option value="1">Профиль</option>
+                    <option value="2">Выход</option>
+                </select>
+            </div>
+        </div>
+
+        КОНТЕНТ
+        <div class="content-area p-3">
+            <figure class="text-center mt-3">
+                <h1>Главная</h1>
+                <h5><small class="text-body-secondary">Вы находитесь на сайте, предназначенном для продажи товаров</small></h5>
+            </figure>
+
+            <div class="d-flex justify-content-center flex-wrap gap-3">
+                Ваши карточки товаров здесь
+                <div class="card border-success" style="width: 18rem;">
+                    <table>
+                        <tr>
+                            <div class="card-header bg-transparent border-success">Товар 1</div>
+                        </tr>
+                        <div class="card-body text-success">
+                            <h5 class="card-title">$ 100</h5>
+                            <p class="card-text">Краткое описание.</p>
+                        </div>
+                        <tr>
+                            <a class="btn btn-primary" href="#">Купить</a>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="card border-success" style="width: 18rem;">
+                    <div class="card-header bg-transparent border-success">Товар 2</div>
+                    <div class="card-body text-success">
+                        <h5 class="card-title">$ 100</h5>
+                        <p class="card-text">Краткое описание.</p>
+                    </div>
+                    <a class="btn btn-primary" href="#">Купить</a>
+                </div>
+
+                <div class="card border-success" style="width: 18rem;">
+                    <div class="card-header bg-transparent border-success">Товар 3</div>
+                    <div class="card-body text-success">
+                        <h5 class="card-title">$ 100</h5>
+                        <p class="card-text">Краткое описание.</p>
+                    </div>
+                    <a class="btn btn-primary" href="#">Купить</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>

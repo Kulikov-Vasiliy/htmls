@@ -1,11 +1,164 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>homework</title>
+    <title>Homework</title>
+    <!-- Подключение Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net" rel="stylesheet">
+    <link href="../src/my_styles.css" rel="stylesheet">
 </head>
 <body>
 
+    <!-- Боковая панель (Sidebar) -->
+    <div class="sidebar">
+        <div>
+            <!-- Заголовок меню -->
+            <div class="navbar-brand text-white mb-auto d-flex align-items-center">
+                <div class="logo-img"><img src="" alt="logo"></div>
+                <strong>Меню</strong>
+            </div>
 
+            <!-- Вертикальные кнопки меню   nav flex-column gap-3-->
+            <nav class="my-column">
+                <a class="nav-link pe-auto" href="#">Главная</a>
+                <a class="nav-link pe-auto" href="#">Категории</a>
+                <a class="nav-link pe-auto" href="#">Заказы</a>
+                <a class="nav-link pe-auto" href="#">Контакты</a>
+            </nav>
+        </div>
+
+        <!-- Секция пользователя (внизу) -->
+        <div class="user-section">
+            <div class="d-flex align-items-center mb-2 p-1 rounded hover-bg-dark">
+                <!-- Фото пользователя -->
+                <div class="user-img"><img src="" alt="photo"></div>
+                <select class="form-select form-select-sm bg-dark text-white border-secondary pe-auto"
+                        aria-label="User menu">
+                    <option selected disabled hidden>Пользователь ></option>
+                    <option value="1" class="bg-color: #212529">Профиль</option>
+                    <option value="2">Выход</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Основной контент -->
+    <div class="main-content d-flex flex-column justify-content-center align-items-center" style="min-height: 100vh;">
+        <figure class="text-center mb-5">
+            <h1 class="display-4">Главная</h1>
+            <p class="text-muted">Вы находитесь на сайте, предназначенном для продажи товаров</p>
+        </figure>
+
+        <!-- Карточки товаров -->
+        <div class="cards-scroll-container">
+
+            <!-- Карточка 1 -->
+            <div class="card-item">
+                <div class="flex-shrink-0" style="width: 300px;">
+                    <!-- Добавлен класс border-secondary для видимых границ -->
+                    <div class="card border-secondary h-100">
+                        <div class="card-body my-card">
+                            <h4 class="card-title">Товар 1</h4>
+                            <h3 class="card-subtitle mb-2 text-primary text-center">$ 100</h3>
+                            <p class="card-text user-select-all pe-auto">10 users included, 2 GB of storage,
+                                Email support, Help center access</p>
+                            <!-- Кнопка с классом border-primary для четкой границы -->
+                            <a href="#" class="btn btn-outline-primary border-2 w-100 my-btn pe-auto">Купить</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Карточка 2 -->
+            <div class="card-item">
+                <div class="flex-shrink-0" style="width: 300px;">
+                    <!-- Добавлен класс border-secondary для видимых границ -->
+                    <div class="card border-secondary h-100">
+                        <div class="card-body my-card">
+                            <h4 class="card-title">Товар 2</h4>
+                            <h3 class="card-subtitle mb-2 text-primary">$ 100</h3>
+                            <p class="card-text user-select-all pe-auto">10 users included, 2 GB of storage,
+                                Help center access</p>
+                            <!-- Кнопка с классом border-primary для четкой границы -->
+                            <a href="#" class="btn btn-outline-primary border-2 w-100 my-btn my-btn pe-auto">Купить</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Карточка 3 -->
+            <div class="card-item">
+                <div class="flex-shrink-0" style="width: 300px;">
+                    <!-- Добавлен класс border-secondary для видимых границ -->
+                    <div class="card border-secondary h-100">
+                        <div class="card-body my-card">
+                            <h4 class="card-title">Товар 3</h4>
+                            <h3 class="card-subtitle mb-2 text-primary">$ 100</h3>
+                            <p class="card-text user-select-all pe-auto">10 users included, 2 GB of storage,
+                                Email support</p>
+                            <!-- Кнопка с классом border-primary для четкой границы -->
+                            <a href="#" class="btn btn-outline-primary border-2 w-100 my-btn pe-auto">Купить</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Карточка 4 -->
+            <div class="card-item">
+                <div class="flex-shrink-0" style="width: 300px;">
+                    <!-- Добавлен класс border-secondary для видимых границ -->
+                    <div class="card border-secondary h-100">
+                        <div class="card-body my-card">
+                            <h4 class="card-title">Товар 4</h4>
+                            <h3 class="card-subtitle mb-2 text-primary">$ 100</h3>
+                            <p class="card-text user-select-all pe-auto">10 users included, 2 GB of storage,
+                                Help center access</p>
+                            <!-- Кнопка с классом border-primary для четкой границы -->
+                            <a href="#" class="btn btn-outline-primary border-2 w-100 my-btn my-btn pe-auto">Купить</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Карточка 5 -->
+            <div class="card-item">
+                <div class="flex-shrink-0" style="width: 300px;">
+                    <!-- Добавлен класс border-secondary для видимых границ -->
+                    <div class="card border-secondary h-100">
+                        <div class="card-body my-card">
+                            <h4 class="card-title">Товар 5</h4>
+                            <h3 class="card-subtitle mb-2 text-primary">$ 100</h3>
+                            <p class="card-text user-select-all pe-auto">10 users included, 2 GB of storage,
+                                Email support</p>
+                            <!-- Кнопка с классом border-primary для четкой границы -->
+                            <a href="#" class="btn btn-outline-primary border-2 w-100 my-btn pe-auto">Купить</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+                <!-- Карточка 6 -->
+            <div class="card-item">
+                <div class="flex-shrink-0" style="width: 300px;">
+                    <!-- Добавлен класс border-secondary для видимых границ -->
+                    <div class="card border-secondary h-100">
+                        <div class="card-body my-card">
+                            <h4 class="card-title">Товар 6</h4>
+                            <h3 class="card-subtitle mb-2 text-primary text-center">$ 100</h3>
+                            <p class="card-text user-select-all pe-auto">10 users included, 2 GB of storage,
+                                Email support, Help center access</p>
+                            <!-- Кнопка с классом border-primary для четкой границы -->
+                            <a href="#" class="btn btn-outline-primary border-2 w-100 my-btn pe-auto">Купить</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Подключение Bootstrap JS (для работы выпадающих списков, если они будут использоваться) -->
+    <script src="https://cdn.jsdelivr.net"></script>
 </body>
 </html>
