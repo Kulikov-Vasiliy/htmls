@@ -5,11 +5,10 @@ body {
     margin: 1;
 }
 
-/* * { outline: 1px solid red !important; } */ /* показывает рамку для элемента*/
+/* * { outline: 1px solid red !important; } //показывает рамку для элемента */
 
-.overflow-x-auto {
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch; /* для плавности на iPhone */
+.main-content {
+    overflow-x: clip; /* Или visible, чтобы позволить внутренним блокам управлять скроллом */
 }
 
 .cards-scroll-container {
@@ -19,8 +18,10 @@ body {
     overflow-x: auto !important;  /* Включаем прокрутку */
     gap: 15px;                    /* Расстояние между карточками */
     justify-content: flex-start;  /* Карточки прижаты к началу */
-    width: 100%;
-    padding: 10px;
+    padding-bottom: 15px;
+    width: 100%;       /* Занимаем всё пространство */
+    max-width: 100vw;  /* Ограничиваем шириной видимого экрана */
+    scroll-snap-type: x mandatory;
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
 }
@@ -34,6 +35,11 @@ body {
 .cards-scroll-container::-webkit-scrollbar-thumb {
     background: #ccc;
     border-radius: 4px;
+}
+
+.card-item {
+    flex: 0 0 300px;
+    scroll-snap-align: start;
 }
 
 /* (Опционально) Фон дорожки */
@@ -96,65 +102,64 @@ body {
     padding: 0.5rem 1rem;
     text-align: left;
 }
-
-/* Для карточки (или используйте .card, если хотите рамку вокруг всей карточки) */
+/*
+// Для карточки (или используйте .card, если хотите рамку вокруг всей карточки)
 .my-card {
     display: flex !important;
     flex-direction: column !important;
     justify-content: space-between;
-    flex-shrink: 0 !important;   /* ЗАПРЕЩАЕТ карточке сжиматься */
-    border: 1px solid #000 !important; /* !important нужен, чтобы перебить стили Bootstrap */
-    border-radius: 6px; /* чтобы углы были красивыми */
+    flex-shrink: 0 !important;   // ЗАПРЕЩАЕТ карточке сжиматься
+    border: 1px solid #000 !important; // !important нужен, чтобы перебить стили Bootstrap
+    border-radius: 6px; /* чтобы углы были красивыми
     margin-top: 30px !important;
     width: 200px !important;
     height: 190px;
-}
+}*/
 
 .card-text {
     display: -webkit-box !important;
     -webkit-line-clamp: 2;           /* Количество строк, после которых появится "..." */
     -webkit-box-orient: vertical;
     flex-direction: column !important;
-    width: 180px;
+    width: 100% !important;
     padding: 5px !important;
+    margin-bottom: 30px;
     overflow: hidden !important; /* Скроет текст, если он шире экрана (на всякий случай) */
     text-overflow: ellipsis !important; /* Добавит три точки, если не влезет */
 }
 
 .card-subtitle {
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Центрирует блоки (кнопку, заголовки) */
-    text-align: center;  /* Центрирует текст внутри строк */
-    height: 15px;
+    color: #000000 !important;
+    height: 20px !important;
 }
 
 .card-title {
-    border-bottom: 1px solid #000 !important;
-    border-radius: 6px 6px 0 0;
+    background-color: #808080 !important; /* Серый цвет */
+    color: #ffffff;                       /* Белый текст для контраста */
+
+    display: block;                       /* Делаем блоком на всю ширину */
+    margin: -20px -20px 15px -20px;       /* Магия: уходим в отрицательные отступы, чтобы перекрыть padding родителя */
+
+    height: 38px;                         /* Чуть больше высоты для красоты */
+    line-height: 38px;                    /* Центрируем текст по вертикали */
     text-align: center;
-    margin-top: 0px;
-    height: 25px;
-    width: 194px;
-    line-height: 1.2;
-    padding-bottom: 3px; /* Отступ до линии снизу */
-    padding-left: 2.8px;
-    padding-right: 2.8px;
-    padding-top: 4.9px;    /* Отступ сверху для симметрии */
-    margin-bottom: 4.9px;       /* Отступ после линии до следующего текста */
-    background-color: #808080;
+
+    border-bottom: 1px solid #000 !important;
+    border-radius: 6px 6px 0 0;           /* Закругляем только верх */
 }
 
 /* Для кнопки */
 .my-btn {
     border: 1px solid #0000FF !important;
     border-radius: 6px;
-    color: #0000FF !important; /* текст в цвет границы */
-    text-color: #0000FF !important;
+    color: #0000FF !important; /* Правильное свойство цвета текста */
     text-align: center !important;
     display: block !important;
-    margin: 5px;
-    width: 189px !important;
+    margin: 5px auto; /* Используйте auto для центрирования блока на странице, если нужно */
+    padding: 0px 5px; /* Убрал верхний/нижний padding, чтобы line-height работал */
+    width: 100%;
+    height: 30px;
+    line-height: 30px; /* ВАЖНО: высота строки равна высоте кнопки */
 }
 
 /* Если хотите именно card-body (внутренняя часть), то так: */
@@ -163,18 +168,19 @@ body {
 }*/
 
 .profile-img {
-    width: 50px;
-    height: 50px;
+    width: 50px !important;
+    height: 50px !important;
     object-fit: cover;
-    border-radius: 50%; /* 50% сделает круг */
+    border-radius: 50% !important; /* 50% сделает круг */
     border: 3px solid #198754;
-    margin-bottom: 10px;
+    margin-bottom: 10px !important;
 }
 
 .logo-img {
-    width: 24px;
-    height: 24px;
-    margin: 8px;
+    width: auto;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    margin-top: 0px;
     /* Используем placeholder, замените на реальный путь к логотипу */
-    background-color: #0d6efd;
 }
