@@ -66,7 +66,7 @@ body {
 }
 
 .display-4 {
-    margin-left: 200px;
+    margin-left: 50px;
     flex-grow: 1; /* Основной контент занимает остальное пространство */
     padding: 0rem;
     background-color: #f8f9fa;

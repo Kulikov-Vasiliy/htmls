@@ -1,22 +1,24 @@
 # Импорт встроенной библиотеки для работы веб-сервера
 from http.server import BaseHTTPRequestHandler, HTTPServer
+from flask import Flask, render_template
 import time
 
+"""
 # Для начала определим настройки запуска
 hostName = "localhost"  # Адрес для доступа по сети
 serverPort = 8080  # Порт для доступа по сети
 
 
 class MyServer(BaseHTTPRequestHandler):
-    """ 
+    "" 
         Специальный класс, который отвечает за 
         обработку входящих запросов от клиентов
-    """
+    ""
 
     def do_GET(self):
-        """
+        ""
         Метод для обработки входящих GET-запросов
-        """
+        ""
 
         self.send_response(200)  # Отправка кода ответа
         self.send_header("Content-type", "text/html")  # Отправка типа данных, который будет передаваться
@@ -40,3 +42,16 @@ if __name__ == "__main__":
     # Корректная остановка веб-сервера, чтобы он освободил адрес и порт в сети, которые занимал
     webServer.server_close()
     print("Server stopped.")
+"""
+
+app = Flask(__name__)
+
+
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def catch_all(path):
+    return render_template('contacts.html')
+
+
+if __name__ == "__main__":
+    app.run()
