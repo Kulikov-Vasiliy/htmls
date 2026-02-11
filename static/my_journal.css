@@ -1,0 +1,138 @@
+.text-body-secondary {
+    white-space: nowrap;
+}
+
+.my-btn-group .card-link {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    display: inline-flex; /* Используем flex для кнопок внутри */
+    align-items: center;
+    justify-content: center;
+}
+
+/* Убираем рамку и скругления */
+.btn-left {
+    border-radius: 6px 0 0 6px !important;
+    border-right: none !important;
+}
+
+.btn-right {
+    border-radius: 0 6px 6px 0 !important;
+    border-left: none !important;
+}
+
+/* Ховер для красоты */
+.my-btn:hover {
+    background-color: #f0f0ff;
+}
+
+body {
+    display: flex; /* Используем flexbox для размещения сайдбара и контента */
+    min-height: 100vh;
+    margin: 1;
+}
+
+/* * { outline: 1px solid red !important; } //показывает рамку для элемента */
+
+.sidebar {
+    width: 250px; /* Фиксированная ширина боковой панели */
+    background-color: #212529; /* Темный фон, как на изображении */
+    color: #FFFFFF;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between; /* Прижимает меню вверх, а пользователя вниз */
+    padding: 1rem;
+    flex-shrink: 0; /* Не дает сайдбару сжиматься */
+}
+
+.my-column {
+    width: 100% !important; /* Вместо 250px */
+    box-sizing: border-box; /* Чтобы border не раздувал ширину */
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #00000 !important;
+    padding: 1px;
+
+}
+
+.main-content {
+    flex-grow: 1; /* Основной контент занимает остальное пространство */
+    padding: 2rem;
+    background-color: #f8f9fa;
+}
+
+.container {
+    margin-top: 5px;
+}
+
+.display-4 {
+    margin-left: 50px;
+    flex-grow: 1; /* Основной контент занимает остальное пространство */
+    padding: 0rem;
+    background-color: #f8f9fa;
+}
+
+.sidebar .nav-link {
+    color: #FFFFFF;
+    padding: 0.5rem 1rem;
+    text-align: left;
+}
+/*
+// Для карточки (или используйте .card, если хотите рамку вокруг всей карточки)
+.my-card {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between;
+    flex-shrink: 0 !important;   // ЗАПРЕЩАЕТ карточке сжиматься
+    border: 1px solid #000 !important; // !important нужен, чтобы перебить стили Bootstrap
+    border-radius: 6px; /* чтобы углы были красивыми
+    margin-top: 30px !important;
+    width: 200px !important;
+    height: 190px;
+}*/
+
+.card-text {
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2;           /* Количество строк, после которых появится "..." */
+    -webkit-box-orient: vertical;
+    flex-direction: column !important;
+    width: 100% !important;
+    padding: 5px !important;
+    margin-bottom: 30px;
+    overflow: hidden !important; /* Скроет текст, если он шире экрана (на всякий случай) */
+    text-overflow: ellipsis !important; /* Добавит три точки, если не влезет */
+}
+
+/* Для кнопки */
+.my-btn {
+    border: 1px solid #0000FF !important;
+    color: #0000FF !important; /* Правильное свойство цвета текста */
+    text-decoration: none;  /* Убрать подчеркивание */
+    padding: 0px 12px; /* Убрал верхний/нижний padding, чтобы line-height работал */
+    height: 30px;
+    font-size: 14px;
+    line-height: 28px; /* ВАЖНО: высота строки равна высоте кнопки */
+}
+
+/* Если хотите именно card-body (внутренняя часть), то так: */
+/*.card-body {
+    border: 1px solid #000500 !important;
+}*/
+
+.profile-img {
+    width: 50px !important;
+    height: 50px !important;
+    object-fit: cover;
+    border-radius: 50% !important; /* 50% сделает круг */
+    border: 3px solid #198754;
+    margin-bottom: 10px !important;
+}
+
+.logo-img {
+    width: auto;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    margin-top: 0px;
+    /* Используем placeholder, замените на реальный путь к логотипу */
+}
