@@ -28,7 +28,7 @@ class MyServer(BaseHTTPRequestHandler):
             self.send_header("Content-type", "text/css")
             self.end_headers()
             # Указываем путь к файлу внутри папки static
-            file_path = os.path.join("static", "my_con.css")
+            file_path = os.path.join("catalog/static", "my_con.css")
             with open(file_path, "rb") as file:
                 self.wfile.write(file.read())
 
@@ -38,7 +38,7 @@ class MyServer(BaseHTTPRequestHandler):
             self.send_header("Content-type", "text/html")
             self.end_headers()
             # Указываем путь к HTML внутри папки templates
-            file_path = os.path.join("templates", "contacts.html")
+            file_path = os.path.join("catalog/templates", "contacts.html")
             with open(file_path, "r", encoding="utf-8") as file:
                 html_content = file.read()
             self.wfile.write(bytes(html_content, "utf-8"))
