@@ -18,4 +18,25 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.group.devtools.dependencies]
 django = "^6.0.2"
+black = "^26.1.0"
+isort = "^8.0.0"
 
+
+[tool.poetry.group.tools.dependencies]
+python-dotenv = "^1.2.1"
+dotenv = "^0.9.9"
+psycopg2-binary = "^2.9.11"
+pillow = "^12.1.1"
+ipython = "^9.10.0"
+
+
+[isort]
+max-line_length = 119
+
+
+[tool.isort]
+profile = "black"
+
+[black]
+max-line-length = 119
+exclude = ".*\\.git.*"
