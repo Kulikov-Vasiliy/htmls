@@ -12,6 +12,7 @@ body {
 }
 
 .cards-scroll-container {
+    margin-left: 20px;
     display: flex !important;
     flex-direction: row !important;
     flex-wrap: nowrap !important; /* В ряд без переноса */
@@ -54,7 +55,8 @@ body {
     display: flex !important;
     flex-direction: column !important;
     justify-content: space-between; /* Прижимает меню вверх, а пользователя вниз */
-    padding: 1rem;
+    padding: 1px;
+    margin-right: 1px;
     flex-shrink: 0; /* Не дает сайдбару сжиматься */
 }
 
@@ -70,7 +72,7 @@ body {
 
 .main-content {
     flex-grow: 1; /* Основной контент занимает остальное пространство */
-    padding: 2rem;
+    padding: 2px;
     background-color: #f8f9fa;
 }
 
@@ -79,14 +81,12 @@ body {
 }
 
 .display-4 {
-    margin-left: 350px;
     flex-grow: 1; /* Основной контент занимает остальное пространство */
     padding: 0rem;
     background-color: #f8f9fa;
 }
 
 .text-muted {
-    margin-left: 250px;
     flex-grow: 1; /* Основной контент занимает остальное пространство */
     padding: 0rem;
     background-color: #f8f9fa;

@@ -1,10 +1,39 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
+from catalog.models import Product, Category
+from django.utils import timezone
 
 
 # Create your views here.
-def contacts_view(request):
-    return render(request, 'contacts.html')
-
+def base_view(request):
+    return render(request, 'base.html')
 
 def home_view(request):
-    return render(request, 'home.html')
+    page_name = "home"
+    products = Product.objects.all()
+    context = {"products": products, "page_name": page_name}
+    return render(request, 'home.html', context)
+
+
+def contacts_view(request):
+    page_name = "contacts"
+    context = {"page_name": page_name}
+    return render(request, 'contacts.html', context)
+
+
+def category_view(request, pk):
+    page_name = "category"
+    current_category = get_object_or_404(Category, pk=pk)
+    products = Product.objects.filter(category=current_category)
+    context = {
+        "category": current_category,
+        "products": products,
+        "page_name": page_name
+    }
+    return render(request, 'category.html', context)
+
+
+def catalogue_view(request):
+    page_name = "catalogue"
+    catalogue = Category.objects.all()
+    context = {"catalogue": catalogue, "page_name": page_name}
+    return render(request, 'catalogue.html', context)
