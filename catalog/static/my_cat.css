@@ -23,7 +23,7 @@ body {
 }
 
 .my-column {
-    width: 100% !important; /* Вместо 250px */
+    width: 100% !important;
     box-sizing: border-box; /* Чтобы border не раздувал ширину */
     display: flex;
     flex-direction: column;
@@ -70,7 +70,7 @@ body {
 
 .card-text {
     display: -webkit-box !important;
-    -webkit-line-clamp: 2;           /* Количество строк, после которых появится "..." */
+    /* -webkit-line-clamp: 2;           / Количество строк, после которых появится "..." */
     -webkit-box-orient: vertical;
     flex-direction: column !important;
     width: 100% !important;

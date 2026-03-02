@@ -16,7 +16,7 @@
                     <div class="card-body">
                         <h4 class="card-title">{{ product.name }}</h4>
                         <h3 class="card-subtitle mb-2 text-center">$ {{ product.price }}</h3>
-                        <p class="card-text user-select-all pe-auto">{{ product.description }}</p>
+                        <p class="card-text user-select-all pe-auto">{{ product.description | truncatechars: 100 }}</p>
                         <!-- Кнопка с классом border-primary для четкой границы -->
                         <a href="#" class="btn btn-outline-primary border-2 w-100 my-btn pe-auto">Купить</a>
                     </div>
