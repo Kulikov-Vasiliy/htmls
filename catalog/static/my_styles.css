@@ -118,7 +118,7 @@ body {
 
 .card-text {
     display: -webkit-box !important;
-    -webkit-line-clamp: 2;           /* Количество строк, после которых появится "..." */
+    /*-webkit-line-clamp: 2;           / Количество строк, после которых появится "..." */
     -webkit-box-orient: vertical;
     flex-direction: column !important;
     width: 100% !important;

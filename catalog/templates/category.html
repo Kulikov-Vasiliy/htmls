@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load humanize %}
 {% block content %}
     <figure class="text-center mb-5">
         <h1 class="display-4">{{ category.name }}</h1>
@@ -14,9 +15,11 @@
                     <div class="card-body">
                         <h4 class="card-title">{{ product.name }}</h4>
                         <h3 class="card-subtitle mb-2 text-center">$ {{ product.price }}</h3>
-                        <p class="card-text user-select-all pe-auto">{{ product.description|default:"Описание отсутствует." }}</p>
+                        <p class="card-text user-select-all pe-auto">{{ product.description|default:"Описание отсутствует."|truncatechars:100 }}</p>
                         <!-- Кнопка с классом border-primary для четкой границы -->
+                        <a href="{% url 'catalog:product' product.id %}" class="btn btn-outline-primary border-2 w-100 my-btn pe-auto">Просмотреть</a>
                         <a href="#" class="btn btn-outline-primary border-2 w-100 my-btn pe-auto">Купить</a>
+                        <a href="#" class="btn btn-outline-primary border-2 w-100 my-btn pe-auto">В корзину</a>
                     </div>
                 </div>
             </div>

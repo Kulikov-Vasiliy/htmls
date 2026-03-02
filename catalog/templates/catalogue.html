@@ -15,7 +15,7 @@
                         <p class="card-text">{{ category.description|default:"Описание отсутствует." }}</p>
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="my-btn-group d-flex">
-                                <a href="{% url 'catalog:category' category.id %}" class="card-link my-btn btn-left">View</a><a href="#" class="card-link my-btn btn-right">Edit</a>
+                                <a href="{% url 'catalog:category' category.id %}" class="card-link my-btn btn-left">Просмотр</a><a href="#" class="card-link my-btn btn-right">Изменить</a>
                             </div>
                             <small class="text-body-secondary">{{ category.updated_at|timesince }} назад</small>
                         </div>

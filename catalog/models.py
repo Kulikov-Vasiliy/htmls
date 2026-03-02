@@ -43,6 +43,10 @@ class Product(models.Model):
 
     name = models.CharField(max_length=150, verbose_name="Наименование продукта")
     description = models.TextField(blank=True, null=True, verbose_name="Описание")
+    video = models.FileField(upload_to="catalog/vid",
+        blank=True,
+        null=True,
+        verbose_name="Видео-презентация продукта",)
     image = models.ImageField(
         upload_to="catalog/image",
         blank=True,

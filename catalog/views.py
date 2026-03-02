@@ -36,6 +36,18 @@ def category_view(request, pk):
     return render(request, 'category.html', context)
 
 
+def product_view(request, pk):
+    """Контроллер позволяет наполнять базовую страницу: продукт"""
+    page_name = "product"
+    current_product = get_object_or_404(Product, pk=pk)
+    context = {
+        "product": current_product,
+        "category": current_product.category,
+        "page_name": page_name
+    }
+    return render(request, 'product.html', context)
+
+
 def catalogue_view(request):
     """Контроллер позволяет наполнять базовую страницу: каталогом"""
     page_name = "catalogue"
