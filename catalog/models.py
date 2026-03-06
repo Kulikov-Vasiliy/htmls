@@ -18,14 +18,14 @@ class Category(models.Model):
     )
 
     class Meta:
-        """Класс параметров"""
+        """Класс мета-параметров для класса категорий"""
 
         verbose_name = "Категория"
         verbose_name_plural = "Категории"
         ordering = ["name"]
 
     def __str__(self):
-        """Вывод в человекочитаемом виде"""
+        """Вывод имени категории в человекочитаемом виде"""
         return self.name
 
 
@@ -43,6 +43,10 @@ class Product(models.Model):
 
     name = models.CharField(max_length=150, verbose_name="Наименование продукта")
     description = models.TextField(blank=True, null=True, verbose_name="Описание")
+    video = models.FileField(upload_to="catalog/vid",
+        blank=True,
+        null=True,
+        verbose_name="Видео-презентация продукта",)
     image = models.ImageField(
         upload_to="catalog/image",
         blank=True,
@@ -72,14 +76,14 @@ class Product(models.Model):
     )
 
     class Meta:
-        """Класс параметров"""
+        """Класс мета-параметров класса продукта"""
 
         verbose_name = "Продукт"
         verbose_name_plural = "Продукты"
         ordering = ["category", "name"]
 
     def __str__(self):
-        """Вывод в человекочитаемом виде"""
+        """Вывод имени / имени и категории в человекочитаемом виде"""
         if self.category:
             return f"{self.name} ({self.category})"
         return self.name

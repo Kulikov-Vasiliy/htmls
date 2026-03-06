@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load tags %}
+{% block content %}
+    <figure class="mb-5">
+        <div class="d-flex justify-content-between align-items-center">
+            <!-- Кнопка слева -->
+            <a href="{% url 'catalog:category' category.id %}" class="btn btn-secondary">Назад</a>
+
+            <!-- Заголовок будет точно по центру -->
+            <h1 class="display-4 mb-0">{{ product.name }}</h1>
+
+            <!-- Пустой блок-заглушка с шириной кнопки для баланса -->
+            <div style="width: 75px;"></div>
+        </div>
+        <p class="text-center mt-2">
+            <small class="text-body-secondary">Изменен {{ product.updated_at|timesince }} назад</small>
+        </p>
+    </figure>
+
+    <!-- О товаре -->
+    <div>
+        <div class="d-flex justify-content">
+            <div class="card">
+                <!-- Место под видео и фото -->
+                <div class="card-body sroll-container">
+
+                    {% if product.video %}
+                        <video src="{{ product.video|media_filter }}" class="object-fit-contain" autoplay></video>
+                    {% else %}
+                        <p>видео</p>
+                    {% endif %}
+
+                    {% if product.video %}
+                        <video src="{{ product.video|media_filter }}" class="object-fit-contain" autoplay></video>
+                    {% else %}
+                        <p>видео</p>
+                    {% endif %}
+
+                    <img src="{{ product.photo | media_filter }}" class="card-img-top" alt="imgs of product">
+                    <img src="{{ product.photo | media_filter }}" class="card-img-top" alt="imgs of product">
+                    <img src="{{ product.photo | media_filter }}" class="card-img-top" alt="imgs of product">
+                    <img src="{{ product.photo | media_filter }}" class="card-img-top" alt="imgs of product">
+                    <img src="{{ product.photo | media_filter }}" class="card-img-top" alt="imgs of product">
+                </div>
+            </div>
+
+            <!-- Описание -->
+            <p class="texteria">{{ product.description|default:"Описание отсутствует." }}</p>
+
+            <!-- Место под кнопки -->
+            <div class="my-btn-group d-flex">
+                <a href="#" class="card-link my-btn btn-left">Купить</a><a href="#" class="card-link my-btn btn-right">В корзину</a>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}
