@@ -1,16 +1,17 @@
-{% extends 'base.html' %}
+{% extends 'catalog/base.html' %}
 {% load humanize %}
 {% block content %}
-
     <figure class="text-center mb-5">
-            <h1 class="display-4">Главная</h1>
-            <p class="text-muted">Вы находитесь на сайте, предназначенном для продажи товаров</p>
+        <h1 class="display-4">{{ category.name }}</h1>
     </figure>
 
     <!-- Карточки товаров -->
-    <div class="cards-scroll-container">
-        {% for product in products %}
+    <p style="align: center;">Количество товаров в категории: {{ object_list.count|default:0 }}</p>
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-4" style="min-width: 100vw;">
+        <!-- Отладочная проверка
+        {{ object_list }} -->
 
+        {% for product in object_list %}
             <!-- Карточка -->
             <div class="card-item">
                 <!-- Добавлен класс border-secondary для видимых границ -->
@@ -21,12 +22,18 @@
                         <p class="card-text user-select-all pe-auto">{{ product.description|default:"Описание отсутствует."|truncatechars:100 }}</p>
                         <!-- Кнопка с классом border-primary для четкой границы -->
                         <a href="{% url 'catalog:product' product.id %}" class="btn btn-outline-primary border-2 w-100 my-btn pe-auto">Просмотреть</a>
-                        <a href="#" class="btn btn-outline-primary border-2 w-100 my-btn pe-auto">В корзину</a>
                         <a href="#" class="btn btn-outline-primary border-2 w-100 my-btn pe-auto">Купить</a>
+                        <a href="#" class="btn btn-outline-primary border-2 w-100 my-btn pe-auto">В корзину</a>
                     </div>
                 </div>
             </div>
-        {% endfor %}
 
+        {% empty %}
+        <!-- Если это вывелось - значит QuerySet пустой (товаров в БД нет) -->
+        <div class="d-flex justify-content-center alert alert-warning">
+            В категории "{{ category.name }}" товаров пока нет.
+        </div>
+
+        {% endfor %}
     </div>
 {% endblock %}

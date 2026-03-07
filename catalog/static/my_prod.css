@@ -4,7 +4,7 @@ body {
     margin: 1;
 }
 
-/* * { outline: 1px solid red !important; } //показывает рамку для элемента */
+* { outline: 1px solid red !important; } /*показывает рамку для элемента */
 
 .main-content {
     overflow-x: clip; /* Или visible, чтобы позволить внутренним блокам управлять скроллом */

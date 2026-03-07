@@ -1,8 +1,9 @@
+{% load tags %}
 <div>
     <!-- Заголовок меню -->
     <div class="navbar-brand text-white mb-auto d-flex align-items-center gap-2">
         <div class="logo-img">
-            <img src="..." alt="logo">
+            <img src="{{ object.photo | media_filter }}" alt="logo">
         </div>
         <strong class="ms-3">Меню</strong>
     </div>
@@ -20,11 +21,11 @@
 <div class="user-section">
     <div class="d-flex align-items-center mb-2 p-1 rounded hover-bg-dark">
         <!-- Фото пользователя -->
-        <div class="user-img"><img src="" alt="photo"></div>
+        <div class="user-img"><img src="{{ object.photo | media_filter }}" alt="photo"></div>
         <select class="form-select form-select-sm bg-dark text-white border-secondary pe-auto"
                 aria-label="User menu">
             <option selected disabled hidden>Пользователь</option>
-            <option value="1" style="background-color: #212529">Профиль</option>
+            <option value="1">Профиль</option>
             <option value="2">Выход</option>
         </select>
     </div>
