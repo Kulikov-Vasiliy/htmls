@@ -1,0 +1,34 @@
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Подтвердите действие</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                Вы уверены, что хотите удалить "{{ object.name }}"?
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary"
+                        data-bs-dismiss="modal">Отмена
+                </button>
+
+                <!-- Форма, которая отправит запрос на ваш контроллер -->
+                {% if page_name == 'product' %}
+                    <form action="{% url 'catalog:product_delete' object.pk %}" method="post">
+                        {% csrf_token %}
+                            <button type="submit" class="btn btn-danger">Да, подтверждаю</button>
+                    </form>
+                {% else %} {# для др страниц #}
+                    <form action="{% url 'catalog:product_delete' object.pk %}" method="post">
+                        {% csrf_token %}
+                            <button type="submit" class="btn btn-danger">Да, подтверждаю</button>
+                    </form>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+</div>

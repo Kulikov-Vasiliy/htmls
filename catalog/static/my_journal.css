@@ -26,25 +26,6 @@
     background-color: #f0f0ff;
 }
 
-body {
-    display: flex; /* Используем flexbox для размещения сайдбара и контента */
-    min-height: 100vh;
-    margin: 1;
-}
-
-/* * { outline: 1px solid red !important; } //показывает рамку для элемента */
-
-.sidebar {
-    width: 250px; /* Фиксированная ширина боковой панели */
-    background-color: #212529; /* Темный фон, как на изображении */
-    color: #FFFFFF;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: space-between; /* Прижимает меню вверх, а пользователя вниз */
-    padding: 1rem;
-    flex-shrink: 0; /* Не дает сайдбару сжиматься */
-}
-
 .my-column {
     width: 100% !important; /* Вместо 250px */
     box-sizing: border-box; /* Чтобы border не раздувал ширину */
@@ -55,28 +36,11 @@ body {
 
 }
 
-.main-content {
-    flex-grow: 1; /* Основной контент занимает остальное пространство */
-    padding: 2rem;
-    background-color: #f8f9fa;
-}
-
 .container {
     margin-top: 5px;
 }
 
-.display-4 {
-    margin-left: 50px;
-    flex-grow: 1; /* Основной контент занимает остальное пространство */
-    padding: 0rem;
-    background-color: #f8f9fa;
-}
 
-.sidebar .nav-link {
-    color: #FFFFFF;
-    padding: 0.5rem 1rem;
-    text-align: left;
-}
 /*
 // Для карточки (или используйте .card, если хотите рамку вокруг всей карточки)
 .my-card {
@@ -90,18 +54,6 @@ body {
     width: 200px !important;
     height: 190px;
 }*/
-
-.card-text {
-    display: -webkit-box !important;
-    -webkit-line-clamp: 2;           /* Количество строк, после которых появится "..." */
-    -webkit-box-orient: vertical;
-    flex-direction: column !important;
-    width: 100% !important;
-    padding: 5px !important;
-    margin-bottom: 30px;
-    overflow: hidden !important; /* Скроет текст, если он шире экрана (на всякий случай) */
-    text-overflow: ellipsis !important; /* Добавит три точки, если не влезет */
-}
 
 /* Для кнопки */
 .my-btn {
@@ -118,21 +70,3 @@ body {
 /*.card-body {
     border: 1px solid #000500 !important;
 }*/
-
-.profile-img {
-    width: 50px !important;
-    height: 50px !important;
-    object-fit: cover;
-    border-radius: 50% !important; /* 50% сделает круг */
-    border: 3px solid #198754;
-    margin-bottom: 10px !important;
-}
-
-.logo-img {
-    width: auto;
-    height: 20px;
-    display: flex;
-    align-items: center;
-    margin-top: 0px;
-    /* Используем placeholder, замените на реальный путь к логотипу */
-}

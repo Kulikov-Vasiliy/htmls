@@ -1,5 +1,6 @@
 from django.db import models
 
+
 # Create your models here.
 class Category(models.Model):
     """
@@ -15,6 +16,15 @@ class Category(models.Model):
     )
     updated_at = models.DateTimeField(
         blank=True, null=True, auto_now=True, verbose_name="Дата последнего изменения"
+    )
+
+    def get_upload_path(instance, filename):
+        """Определяет путь сохранения медиафайла"""
+        category_id = instance.id if instance.id else 'new'
+        return f'catalogue/category_{instance.category_id}/{filename}'
+
+    image = models.ImageField(upload_to=get_upload_path,
+        null=True, blank=True, verbose_name="Изображение категории",
     )
 
     class Meta:
@@ -43,16 +53,6 @@ class Product(models.Model):
 
     name = models.CharField(max_length=150, verbose_name="Наименование продукта")
     description = models.TextField(blank=True, null=True, verbose_name="Описание")
-    video = models.FileField(upload_to="catalog/vid",
-        blank=True,
-        null=True,
-        verbose_name="Видео-презентация продукта",)
-    image = models.ImageField(
-        upload_to="catalog/image",
-        blank=True,
-        null=True,
-        verbose_name="Изображение продукта",
-    )
     category = models.ForeignKey(
         Category,
         on_delete=models.SET_NULL,
@@ -87,3 +87,25 @@ class Product(models.Model):
         if self.category:
             return f"{self.name} ({self.category})"
         return self.name
+
+
+class ProductMedia(models.Model):
+    """Класс для работы с медиафайлами продукта"""
+    # Связь "Многие к Одному": много медиа к одному продукту
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='media_list')
+
+    # Поле для определения типа контента
+    CONTENT_TYPES = [('image', 'Изображение'), ('video', 'Видео')]
+    file_type = models.CharField(max_length=10, choices=CONTENT_TYPES)
+
+    def get_upload_path(instance, filename):
+        """Определяет путь сохранения медиафайла"""
+        return f'products/product_{instance.product.id}/{instance.file_type}/{filename}'
+
+    image = models.ImageField(upload_to=get_upload_path, null=True, blank=True, verbose_name="Изображение продукта", )
+    video = models.FileField(upload_to=get_upload_path, null=True, blank=True,
+                             verbose_name="Видео-презентация продукта", )
+
+    def __str__(self):
+        """Вывод в виде: тип файла для продукта такого-то"""
+        return f"{self.file_type} для {self.product.name}"

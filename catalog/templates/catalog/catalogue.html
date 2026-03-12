@@ -3,19 +3,20 @@
 {% block content %}
     <figure class="text-center mb-5">
         <h1 class="display-4">Каталог</h1>
+         <a href="{% url 'catalog:product_create'  %}" class="card-link btn ">Добавить товар</a>
     </figure>
 
     <!-- Список категорий -->
     <div class="row row-cols-1 row-cols-md-2 g-4" style="width: 100%; max-width: 900px;">
         {% for category in catalogue %}
             <div class="col d-flex justify-content-center">
-                <div class="card">
-                    <img src="{{ category.photo | media_filter }}" class="card-img-top" alt="example">
+                <div class="card my-card-item">
+                    <img src="{{ category.image | media_filter }}" class="card-img-top" alt="example">
                     <div class="card-body">
-                        <p class="card-text">{{ category.description|default:"Описание отсутствует." }}</p>
+                        <p class="card-text my-card-text">{{ category.description|default:"Описание отсутствует."|truncatechars:100 }}</p>
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="my-btn-group d-flex">
-                                <a href="{% url 'catalog:category' category.id %}" class="card-link my-btn btn-left">Просмотр</a><a href="#" class="card-link my-btn btn-right">Изменить</a>
+                                <a href="{% url 'catalog:category' category.pk %}" class="card-link my-btn btn-left">Просмотр</a><a href="#" class="card-link my-btn btn-right">Изменить</a>
                             </div>
                             <small class="text-body-secondary">{{ category.updated_at|timesince }} назад</small>
                         </div>

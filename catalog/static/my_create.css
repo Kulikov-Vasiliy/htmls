@@ -2,21 +2,6 @@
     flex: 0 0 300px;
     scroll-snap-align: start;
 }
-
-.my-column {
-    width: 100% !important;
-    box-sizing: border-box; /* Чтобы border не раздувал ширину */
-    display: flex;
-    flex-direction: column;
-    border: 1px solid #00000 !important;
-    padding: 1px;
-
-}
-
-.container {
-    margin-top: 5px;
-}
-
 /*
 // Для карточки (или используйте .card, если хотите рамку вокруг всей карточки)
 .my-card {
@@ -30,26 +15,6 @@
     width: 200px !important;
     height: 190px;
 }*/
-
-.card-subtitle {
-    color: #000000 !important;
-    height: 20px !important;
-}
-
-.card-title {
-    background-color: #808080 !important; /* Серый цвет */
-    color: #ffffff;                       /* Белый текст для контраста */
-
-    display: block;                       /* Делаем блоком на всю ширину */
-    margin: -20px -20px 15px -20px;       /* Магия: уходим в отрицательные отступы, чтобы перекрыть padding родителя */
-
-    height: 38px;                         /* Чуть больше высоты для красоты */
-    line-height: 38px;                    /* Центрируем текст по вертикали */
-    text-align: center;
-
-    border-bottom: 1px solid #000 !important;
-    border-radius: 6px 6px 0 0;           /* Закругляем только верх */
-}
 
 /* Для кнопки */
 .my-btn {

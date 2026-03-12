@@ -1,56 +1,90 @@
 {% extends 'catalog/base.html' %}
 {% load tags %}
 {% block content %}
-    <figure class="mb-5">
-        <div class="d-flex justify-content-between align-items-center">
+    <figure class="d-flex justify-content-center mb-5">
+        <div>
             <!-- Кнопка слева -->
             {% if object.category %}
                 <a href="{% url 'catalog:category' object.category.id %}" class="btn btn-secondary">Назад</a>
             {% else %}
                 <a href="{% url 'catalog:catalogue' %}" class="btn btn-secondary">Назад</a>
             {% endif %}
+        </div>
 
-            <!-- Заголовок будет точно по центру -->
-            <h1 class="display-4 mb-0">{{ object.name }}</h1>
+        <div>
+           <!-- Заголовок будет точно по центру -->
+            <h1 class="display-4">{{ object.name }}</h1>
 
             <!-- Пустой блок-заглушка с шириной кнопки для баланса -->
             <div style="width: 75px;"></div>
+            <p class="text-center mt-2">
+                <small class="text-body-secondary">Изменен {{ object.updated_at|timesince }} назад</small>
+            </p>
+
+            <!-- Кнопки действий -->
+            <div>
+                <a href="{% url 'catalog:product_update' pk=object.id %}" class="btn btn-outline-secondary">Изменить информацию о товаре</a>
+
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmModal">
+                    Удалить
+                </button>
+            </div>
+
         </div>
-        <p class="text-center mt-2">
-            <small class="text-body-secondary">Изменен {{ object.updated_at|timesince }} назад</small>
-        </p>
+
     </figure>
 
     <!-- О товаре -->
-    <div class="d-flex justify-content">
-        <div class="card">
-            <!-- Место под видео и фото -->
-            <div class="card-body sroll-container">
-                {% for media in object.media_list %}
-                    {% if media.type == 'video' %}
-                        <video src="{{ object.video|media_filter }}" class="object-fit-contain" autoplay></video>
-                    {% elif media.type == 'video' is None or Null %}
-                        <p>Не удалось загрузить видео</p>
-                    {% elif media.type == 'photo' %}
-                        <img src="{{ object.image | media_filter }}" class="card-img-top" alt="img of product">
-                    {% endif %}
+    <div class="row">
+        <div class="col-sm-0 mb-3">
+            <div class="card scroll-container">
+
+                <!-- Место под видео и фото -->
+                {% for media in object.media_list.all %}
+                    <div class="card my-card-body">
+
+                        {% if media.file_type == 'video' %}
+                            {% if media.video and media.video.name %}
+                                <video src="{{ media.video | media_filter }}" class="card my-card-dody my-card-body video mb-3 h-100 shadow-sm object-fit-contain" autoplay></video>
+                            {% else %}
+                                <p class="card-text text-center p-3">Не удалось загрузить видео</p>
+                            {% endif %}
+
+                        {% elif media.file_type == 'image' %}
+                            {% if media.image and media.image.name %}
+                                <img src="{{ media.image | media_filter }}" class="card my-card-body my-card-body img mb-3 h-100 shadow-sm card-img-top">
+                            {% else %}
+                                <p class="card-text text-center p-3">Не удалось загрузить картинку</p>
+                            {% endif %}
+
+                        {% endif %}
+                    </div>
+
+                {% empty %}
+                    <!-- медиафайлов не существует -->
+                    <div class="card my-card-body d-flex align-items-center justify-content-center">
+                        <p class="card-text text-muted">Нет видео<br>или картинок</p>
+                    </div>
+
                 {% endfor %}
             </div>
         </div>
 
-        <div>
-            <!-- Описание и цена -->
-            <p class="texteria">{{ object.description|default:"Описание отсутствует." }}</p>
-            <p class="texteria">$ {{ object.price }}</p>
-        </div>
-
-        <div>
-            <!-- Место под кнопки -->
-            <div class="my-btn-group d-flex">
-                <a href="#" class="card-link my-btn btn-left">Купить</a><a href="#" class="card-link my-btn btn-right">В корзину</a>
-            </div>
-        </div>
-
     </div>
+
+    <div>
+        <!-- Описание и цена -->
+        <p class="texteria">{{ object.description|default:"Описание отсутствует." }}</p>
+        <p class="text d-flex justify-content-center">Стоимость: $ {{ object.price }}</p>
+
+        <!-- Место под кнопки -->
+        <div class="my-btn-group d-flex">
+            <a href="#" class="card-link btn my-btn-sec btn-left">Купить</a><a href="#" class="card-link btn my-btn-sec btn-right">В корзину</a>
+        </div>
+    </div>
+
+    {% with page_name='product' %}
+        {% include 'catalog/includes/delete_window.html' %}
+    {% endwith %}
 
 {% endblock %}

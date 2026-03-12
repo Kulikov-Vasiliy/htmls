@@ -5,6 +5,8 @@ register = template.Library()
 @register.filter()
 def media_filter(path):
     """Регистратор подставляет путь к изображениям/видео"""
-    if path:
-        return f"/media/{path}"
-    return "#"
+    if not path:
+        return "#"
+    elif str(path).startswith('/media/'):
+        return path
+    return f"/media/{path}"
