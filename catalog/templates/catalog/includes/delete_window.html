@@ -1,34 +1,43 @@
-<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Подтвердите действие</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
-            <div class="modal-body">
-                Вы уверены, что хотите удалить "{{ object.name }}"?
+            <div class="modal-body text-center">
+                Вы уверены, что хотите удалить "<strong>{{ object.name }}</strong>"?
             </div>
 
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary"
-                        data-bs-dismiss="modal">Отмена
+            <div class="modal-footer d-flex justify-content-center gap-2">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    Нет, пусть остается
                 </button>
 
-                <!-- Форма, которая отправит запрос на ваш контроллер -->
                 {% if page_name == 'product' %}
-                    <form action="{% url 'catalog:product_delete' object.pk %}" method="post">
-                        {% csrf_token %}
-                            <button type="submit" class="btn btn-danger">Да, подтверждаю</button>
-                    </form>
-                {% else %} {# для др страниц #}
-                    <form action="{% url 'catalog:product_delete' object.pk %}" method="post">
-                        {% csrf_token %}
-                            <button type="submit" class="btn btn-danger">Да, подтверждаю</button>
-                    </form>
+                    <button type="submit" form="deleteForm" class="btn btn-danger">
+                        Да, подтверждаю
+                    </button>
+                {% else %}
+                    <!-- Заглушка с уведомлением (JS-алерт) -->
+                     <button type="button" class="btn btn-danger" onclick="alert('Функция удаления для этого раздела еще не реализована!')">
+                        Да, подтверждаю
+                    </button>
                 {% endif %}
             </div>
 
-        </div>
+            <!-- Форма, которая отправит запрос на контроллер -->
+            {% if page_name == 'product' %}
+                <form id="deleteForm" action="{% url 'catalog:product_delete' object.pk %}" method="post" style="display: none;">
+                    {% csrf_token %}
+                </form>
+                <!-- Заглушка: форма никуда не ведет -->
+                <form id="#" action="#" method="get" style="display: none;">
+                    <!-- <form id="deleteForm" action="{% url 'catalog:product_delete' object.pk %}" method="post" style="display: none;"> -->
+                    {% csrf_token %}
+                </form>
+            {% endif %}
+       </div>
     </div>
 </div>

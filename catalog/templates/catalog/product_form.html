@@ -14,9 +14,11 @@
                             {% for m_form in media_formset %}
                                 <div class="media-form-row mb-3 border-bottom pb-2">
                                     {{ m_form.as_p }}
+                                    <!-- Кнопка добавления -->
+                                    <button type="button" id="add-media-btn" class="btn btn-secondary btn-sm mb-3">+ Добавить еще файл</button>
                                 </div>
                             {% endfor %}
-                        </div>
+                         </div>
 
                         <div class="d-flex justify-content-between">
                             {% if object %}
@@ -30,7 +32,41 @@
 
                     </div>
                 </form>
+                <!-- Скрытый шаблон пустой формы (empty_form) -->
+                <div id="empty-form-template" style="display: none;">
+                    <div class="media-form-row mb-3 border-bottom pb-2">
+                        {{ media_formset.empty_form.as_p }}
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
+<script>
+    document.getElementById('add-media-btn').addEventListener('click', function(e) {
+        e.preventDefault(); // Предотвращаем случайную отправку формы
+
+        // 1. Находим контейнер, куда будем вставлять новые формы
+        // В вашем случае формы лежат прямо внутри card-body перед кнопкой
+        const container = document.querySelector('.card-body');
+        const button = document.getElementById('add-media-btn');
+
+        // 2. Находим скрытое поле TOTAL_FORMS (Django создаёт его автоматически)
+        // ВАЖНО: Проверьте ID этого поля в коде страницы (обычно 'id_media_list-TOTAL_FORMS')
+        const totalForms = document.querySelector('[id$="-TOTAL_FORMS"]');
+        const formNum = parseInt(totalForms.value);
+
+        // 3. Берем шаблон пустой формы из нашего скрытого div
+        const template = document.getElementById('empty-form-template').innerHTML;
+
+        // 4. Заменяем технический префикс __prefix__ на реальный номер формы
+        const newFormHtml = template.replace(/__prefix__/g, formNum);
+
+        // 5. Вставляем новую форму ПЕРЕД кнопкой "Добавить еще"
+        button.insertAdjacentHTML('beforebegin', newFormHtml);
+
+        // 6. Увеличиваем счетчик форм для Django, чтобы он сохранил новые данные
+        totalForms.value = formNum + 1;
+    });
+</script>
 {% endblock %}

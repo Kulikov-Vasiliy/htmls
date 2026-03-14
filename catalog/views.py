@@ -1,18 +1,23 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, FormView, TemplateView
+from django.contrib import messages
+
 from catalog.models import Product, Category
-from catalog.forms import  ProductMediaFormSet
+from catalog.forms import ProductMediaFormSet, ContactsForm
 # ^ProductForm
 from django.utils import timezone
 from django.db import transaction
 import os
-
-
 from config import settings
 
 
 # Create your views here.
+class BaseTemplateView(TemplateView):
+    """Контроллер позволяет считывать базовую страницу"""
+    template_name = 'catalog/base.html'
+
+
 class ProductListView(ListView):
     """Контроллер позволяет наполнять базовую страницу: продуктами"""
     model = Product
@@ -154,6 +159,17 @@ class ProductUpdateView(UpdateView):
         success_url = reverse_lazy("catalog:product_detail", kwargs={'pk': self.object.pk})
         return success_url
 
+    def form_valid_before(self, form):
+        """Дебаг-метод для проверки подключения контроллера"""
+        context = self.get_context_data()
+        media_formset = context['media_formset']
+        with transaction.atomic():
+            self.object = form.save()
+            if media_formset.is_valid():
+                media_formset.instance = self.object
+                media_formset.save()
+        return super().form_valid(form)
+
     def form_valid(self, form):
         """Дебаг-метод для проверки успешного создания продукта"""
         # Сначала сохраняем объект
@@ -187,17 +203,40 @@ class ProductDeleteView(DeleteView):
         return success_url
 
 
+class ContactsFormView(FormView):
+    """Контроллер позволяет наполнять базовую страницу: контактами"""
+    template_name = 'catalog/contacts.html'
+    form_class = ContactsForm
+    success_url = reverse_lazy("catalog:contacts")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_name'] = 'contacts'
+        return context
+
+
+    def form_valid(self, form):
+        """Метод позволяет обработать данные формы при успешной отправке"""
+        messages.success(self.request, "success")  # Метка для JS
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        """Метод позволяет обработать данные формы при провале отправки"""
+        if form.errors:
+            messages.error(self.request, "error", extra_tags='known_error')
+        else:
+            # Если форма верная, но что-то пошло не так (неизвестная ошибка)
+            messages.error(self.request, "error", extra_tags='unknown_error')
+
+        return super().form_invalid(form)
+
+
 def home_view(request):
     """Контроллер позволяет наполнять базовую страницу: общими товарами"""
     page_name = "home"
     products = Product.objects.all()
     context = {"object_list": products, "page_name": page_name}
     return render(request, 'catalog/home.html', context)
-
-
-def base_view(request):
-    """Контроллер позволяет считывать базовую страницу"""
-    return render(request, 'catalog/base.html')
 
 
 def catalogue_view(request):
@@ -208,8 +247,8 @@ def catalogue_view(request):
     return render(request, 'catalog/catalogue.html', context)
 
 
-def contacts_view(request):
-    """Контроллер позволяет наполнять базовую страницу: контактами"""
-    page_name = "contacts"
-    context = {"page_name": page_name}
-    return render(request, 'catalog/contacts.html', context)
+# def contacts_view(request):
+#     """Контроллер позволяет наполнять базовую страницу: контактами"""
+#     page_name = "contacts"
+#     context = {"page_name": page_name}
+#     return render(request, 'catalog/contacts.html', context)

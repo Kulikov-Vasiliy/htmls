@@ -1,20 +1,44 @@
 .text-muted {
     flex-grow: 1; /* Основной контент занимает остальное пространство */
-    padding: 0rem;
+    padding: 10px;
     background-color: #f8f9fa;
-    opacity: 0.5; /* Сделает прозрачным весь элемент */
-    white-space: nowrap; /* Запрещает перенос строки */
-    font-size: 1.1rem;    /* Подберите размер (например, 1rem или 14px) */
-    overflow: hidden;    /* Скроет текст, если он шире экрана (на всякий случай) */
-    text-overflow: ellipsis; /* Добавит три точки, если не влезет */
+    opacity: 0.6; /* Сделает прозрачным весь элемент */
+    margin: 0;
+    margin-top: 40px;
+    white-space: normal !important; /* Перенос строки */
+    font-size: 1.1rem;
+    width: 100%;
+    /* max-width: 300px; */
+    text-align: center;            /* Центрируем текст по горизонтали */
+    /* display: flex;                 / Включаем flex для центровки по вертикали */
+    display: block;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+    background-color: transparent !important; /* Чтобы не перекрывал фон карточки */
+}
+/* .text-muted {
+nowrap
+overflow: hidden;    / Скроет текст, если он шире экрана (на всякий случай) /
+text-overflow: ellipsis
+} */
+.my-card {
+    max-width: 200px;    /* Не дает карточке вылезти за пределы колонки сетки */
+    height: 200px;      /* Или любая удобная вам ФИКСИРОВАННАЯ высота */
+    /* min-height: 200px; */
+    display: flex;
+    /* flex-direction: column; */
+    overflow: hidden;   /* Обрезает всё, что пытается вылезти */
 }
 
-.my-card {
-    max-width: 100px;    /* Не дает карточке вылезти за пределы колонки сетки */
-    height: 100px;      /* Или любая удобная вам ФИКСИРОВАННАЯ высота */
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;   /* Обрезает всё, что пытается вылезти */
+/* Принудительный перенос для параграфа внутри пустой карточки */
+.my-card p.card-text.text-muted {
+    white-space: normal !important;    /* Разрешить перенос */
+    word-wrap: break-word !important;  /* Разрывать длинные слова, если надо */
+    display: block !important;         /* Убрать flex-конфликты */
+    width: 100% !important;            /* Занять всю ширину */
+    text-align: center !important;     /* Центрировать */
+    overflow: visible !important;      /* Не скрывать буквы */
 }
 
 .card-img-top,
@@ -26,7 +50,9 @@
 }
 
 .my-card-item {
-    flex: 0 0 300px;
+    flex: 1 0 auto !important;         /* Даем блоку растягиваться под контент */
+    /*  flex: 0 0 300px; */
+    min-height: 200px;
     scroll-snap-align: start;
 }
 
@@ -34,6 +60,14 @@
     box-sizing: border-box;
     max-width: 100%;
     overflow: hidden;
+}
+
+.my-card-body.d-flex {
+    flex-direction: column;         /* Направление сверху вниз */
+    justify-content: center;        /* Центровка по вертикали */
+    align-items: center;            /* Центровка по горизонтали */
+    height: 100%;                   /* Занимать всю высоту родителя */
+    min-height: 200px;              /* Чтобы не схлопывалась */
 }
 
 .cards-scroll-container {
@@ -80,7 +114,7 @@
     line-height: 28px; /* ВАЖНО: высота строки равна высоте кнопки */
 }
 
-.btn-secondary {
-    margin-right: 350px !important;
-    margin-left: -350px !important;
+.my-btn-secondary {
+    margin-right: 300px !important;
+    margin-left: -300px !important;
 }

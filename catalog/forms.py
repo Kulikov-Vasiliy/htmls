@@ -9,3 +9,8 @@ ProductMediaFormSet = inlineformset_factory(
     extra=1, # сколько пустых полей для загрузки показать сразу
     can_delete=True
 )
+
+class ContactsForm(forms.Form):
+    name = forms.CharField(max_length=100)
+    email = forms.EmailField()
+    message = forms.CharField(widget=forms.Textarea)

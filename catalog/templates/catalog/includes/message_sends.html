@@ -1,0 +1,79 @@
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                {% if messages %}
+                    {% for message in messages %}
+                        {% if "error" in message.tags %}
+                            <h5 class="modal-title">Ошибка отправки сообщения</h5>
+                        {% else %}
+                            <h5 class="modal-title">Успешная отправка сообщения</h5>
+                          {% endif %}
+                    {% endfor %}
+                {% endif %}
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body text-center">
+                {% for message in messages %}
+                     {% if "error" in message.tags %}
+
+                        {# Вывод конкретных ошибок из полей формы #}
+                        {% if form.errors %}
+                            <ul class="text-start text-danger small">
+                                {% for field in form %}
+                                    {% for error in field.errors %}
+                                        <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+                                    {% endfor %}
+                                {% endfor %}
+
+                                {# Ошибки, не связанные с конкретным полем (например, уникальность) #}
+                                {% for error in form.non_field_errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p>Произошла системная ошибка. Попробуйте еще раз или перезагрузите страницу.</p>
+                        {% endif %}
+
+                    {% elif "success" in message.tags %}
+                        <p class="text-success">Успешно отправлено!</p>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            <div class="modal-footer d-flex justify-content-center gap-2">
+                {% for message in messages %}
+
+                    {# Сценарий 1: УСПЕХ #}
+                    {% if 'success' in message.tags %}
+                        <button type="button" class="btn btn-success" data-bs-dismiss="modal">Отлично!</button>
+
+                    {# Сценарий 2: ИЗВЕСТНАЯ ОШИБКА #}
+                    {% elif 'known_error' in message.tags %}
+                        {% if page_name == 'contacts' %}
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Отмена отправки</button>
+                            <button type="submit" form="contactForm" class="btn btn-secondary">Повторить отправку</button>
+                        {% endif %}
+
+                    {# Сценарий 3: НЕИЗВЕСТНАЯ ОШИБКА #}
+                    {% elif 'unknown_error' in message.tags or 'error' in message.tags %}
+                        {% if page_name == 'contacts' %}
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Отмена отправки</button>
+                            <button type="submit" form="contactForm" class="btn btn-secondary">Повторить отправку</button>
+                            <button type="button" class="btn btn-info" onclick="location.reload();">Обновить страницу</button>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+
+            </div>
+
+            {% if page_name == 'contacts' %}
+                <form id="contactForm" action="{% url 'catalog:contacts' %}" method="post" style="display: none;">
+                    {% csrf_token %}
+                </form>
+            {% endif %}
+
+       </div>
+    </div>
+</div>
