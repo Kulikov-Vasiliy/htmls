@@ -9,8 +9,8 @@ serverPort = 8080  # Порт для доступа по сети
 
 class MyServer(BaseHTTPRequestHandler):
     """
-        Специальный класс, который отвечает за
-        обработку входящих запросов от клиентов
+    Специальный класс, который отвечает за
+    обработку входящих запросов от клиентов
     """
 
     def do_GET(self):
@@ -45,6 +45,7 @@ class MyServer(BaseHTTPRequestHandler):
 
         else:
             self.send_error(404, "Page Not Found")
+
 
 if __name__ == "__main__":
     # Инициализация веб-сервера, который будет по заданным параметрах в сети

@@ -3,6 +3,17 @@
 {% block content %}
     <figure class="text-center mb-5">
         <h1 class="display-4">{{ category.name }}</h1>
+        <!-- Пустой блок-заглушка с шириной кнопки для баланса -->
+        <div style="width: 75px;"></div>
+            <p class="text-center mt-2">
+                <small class="text-body-secondary">Изменен {{ category.updated_at|timesince }} назад</small>
+            </p>
+
+        <div>
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmModal">
+                Удалить
+            </button>
+        </div>
     </figure>
 
     <!-- Карточки товаров -->
@@ -36,4 +47,9 @@
 
         {% endfor %}
     </div>
+
+    {% with page_name='category' %}
+        {% include 'catalog/includes/delete_window.html' %}
+    {% endwith %}
+
 {% endblock %}

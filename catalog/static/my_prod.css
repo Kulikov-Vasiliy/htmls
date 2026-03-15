@@ -102,19 +102,41 @@ text-overflow: ellipsis
     background: #f1f1f1;
 }
 
-.my-btn-sec {
+.my-btn-secondary {
+    margin-right: 300px !important;
+    margin-left: -300px !important;
+}
+
+.my-btn-group .card-link {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    display: inline-flex; /* Используем flex для кнопок внутри */
+    align-items: center;
+    justify-content: center;
+    flex: 1; /* ГЛАВНОЕ: делит ширину 50/50 */
+}
+
+.btn-left {
+    border-radius: 6px 0 0 6px !important;
+    border-right: none !important;
+}
+
+.btn-right {
+    border-radius: 0 6px 6px 0 !important;
+}
+
+/* Ховер для красоты */
+.my-btn:hover {
+    background-color: #f0f0ff;
+}
+
+/* Для кнопки */
+.my-btn {
     border: 1px solid #0000FF !important;
-    width: 100% !important;
     color: #0000FF !important; /* Правильное свойство цвета текста */
     text-decoration: none;  /* Убрать подчеркивание */
-    text-align: center;
     padding: 0px 12px; /* Убрал верхний/нижний padding, чтобы line-height работал */
     height: 30px;
     font-size: 14px;
     line-height: 28px; /* ВАЖНО: высота строки равна высоте кнопки */
-}
-
-.my-btn-secondary {
-    margin-right: 300px !important;
-    margin-left: -300px !important;
 }

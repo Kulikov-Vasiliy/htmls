@@ -16,9 +16,15 @@
                 </button>
 
                 {% if page_name == 'product' %}
-                    <button type="submit" form="deleteForm" class="btn btn-danger">
+                    <button type="submit" form="deleteProductForm" class="btn btn-danger">
                         Да, подтверждаю
                     </button>
+
+                {% elif page_name == 'category' %}
+                    <button type="submit" form="deleteCategoryForm" class="btn btn-danger">
+                        Да, подтверждаю
+                    </button>
+
                 {% else %}
                     <!-- Заглушка с уведомлением (JS-алерт) -->
                      <button type="button" class="btn btn-danger" onclick="alert('Функция удаления для этого раздела еще не реализована!')">
@@ -29,12 +35,17 @@
 
             <!-- Форма, которая отправит запрос на контроллер -->
             {% if page_name == 'product' %}
-                <form id="deleteForm" action="{% url 'catalog:product_delete' object.pk %}" method="post" style="display: none;">
+                <form id="deleteProductForm" action="{% url 'catalog:product_delete' object.pk %}" method="post" style="display: none;">
                     {% csrf_token %}
                 </form>
+
+            {% elif page_name == 'category' %}
+                <form id="deleteCategoryForm" action="{% url 'catalog:category_delete' category.pk %}" method="post" style="display: none;">
+                    {% csrf_token %}
+                </form>
+
                 <!-- Заглушка: форма никуда не ведет -->
                 <form id="#" action="#" method="get" style="display: none;">
-                    <!-- <form id="deleteForm" action="{% url 'catalog:product_delete' object.pk %}" method="post" style="display: none;"> -->
                     {% csrf_token %}
                 </form>
             {% endif %}

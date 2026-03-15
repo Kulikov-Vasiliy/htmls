@@ -5,7 +5,7 @@
         <div>
             <!-- Кнопка слева -->
             {% if object.category %}
-                <a href="{% url 'catalog:category' object.category.id %}" class="btn btn-secondary my-btn-secondary">Назад</a>
+                <a href="{% url 'catalog:category' object.category.pk %}" class="btn btn-secondary my-btn-secondary">Назад</a>
             {% else %}
                 <a href="{% url 'catalog:catalogue' %}" class="btn btn-secondary my-btn-secondary">Назад</a>
             {% endif %}
@@ -88,8 +88,8 @@
         <p class="text d-flex justify-content-center">Стоимость: $ {{ object.price }}</p>
 
         <!-- Место под кнопки -->
-        <div class="my-btn-group d-flex">
-            <a href="#" class="card-link btn my-btn-sec btn-left">Купить</a><a href="#" class="card-link btn my-btn-sec btn-right">В корзину</a>
+        <div class="my-btn-group d-flex w-100">
+            <a href="#" class="card-link btn my-btn btn-left">Купить</a><a href="#" class="card-link btn my-btn btn-right">В корзину</a>
         </div>
     </div>
 
