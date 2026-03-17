@@ -22,8 +22,7 @@ from config import settings
 # Create your views here.
 class BaseTemplateView(TemplateView):
     """Контроллер позволяет считывать базовую страницу"""
-
-    template_name = "catalog/base.html"
+    template_name = "base.html"
 
 
 class ProductListView(ListView):
