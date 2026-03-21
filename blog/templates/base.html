@@ -34,7 +34,7 @@
     <link rel="icon" href="/docs/5.3/assets/img/favicons/favicon-16x16.png" sizes="16x16" type="image/png">
     <link rel="manifest" href="/docs/5.3/assets/img/favicons/manifest.json">
     <link rel="mask-icon" href="/docs/5.3/assets/img/favicons/safari-pinned-tab.svg" color="#712cf9">
-    <link rel="icon" href="/docs/5.3/assets/img/favicons/favicon.ico">
+    <!-- <link rel="icon" href="/docs/5.3/assets/img/favicons/favicon.ico"> -->
     <meta name="theme-color" content="#712cf9">
 
     <!--
@@ -46,7 +46,7 @@
     Если вы её оставите, ваш сайт никогда не поднимется в поиске Google или Яндекса,
     так как будет считаться плагиатом.
     -->
-    <link href="blog.css" rel="stylesheet">
+    <link href="{% static 'blog.css' %}" rel="stylesheet">
     <link href="{% static 'custom.css' %}" rel="stylesheet">
 </head>
 <body>
@@ -74,18 +74,16 @@
                 Точка входа: Это первое, что видит пользователь. Его задача — сразу зацепить внимание «громким» заголовком и кратким описанием (лид-абзацем), чтобы человек не ушел с сайта.
                 Визуальная иерархия: Он выделяется размером и фоном, чтобы отделить главный контент от остальной сетки статей.
                  -->
-                <h1 class="display-4 fst-italic">Title of a longer featured blog post</h1>
-                <p class="lead my-3">Multiple lines of text that form the lede, informing new readers quickly and
-                    efficiently about what’s most interesting in this post’s contents.</p>
+                <h1 class="display-4 fst-italic">{{ main.title }}</h1>
+                <p class="lead my-3">{{ main.about_content|striptags|truncatechars:100 }}</p>
                 <p class="lead mb-0"><a href="#" class="text-body-emphasis fw-bold">Продолжить чтение...</a></p>
             </div>
         </div>
 
         <div class="row mb-2">
-            {% for post in fav_posts %}
-
-                </div>
-            {% endfor %}
+            {% if page_name = 'home' %}
+                {% include 'favorites_list.html' %}
+            {% endif %}
         </div>
 
         <div class="row g-5">
@@ -113,13 +111,20 @@
             <div class="col-md-4">
                 <div class="position-sticky" style="top: 2rem;">
                     <!-- Превью блога -->
-                    <div class="p-4 mb-3 bg-body-tertiary rounded"><h4 class="fst-italic">О нас</h4>
-                        <p class="mb-0">
-                            Блог был создан в рамках ознакомления с версткой веб-страниц
-                            и работой с django для домашней работы.
-                        </p>
-                    </div>
-
+                    {% if page_name == 'profile' %}
+                        <div class="p-4 mb-3 bg-body-tertiary rounded"><h4 class="fst-italic">О пользователе {{ user.nickname }}</h4>
+                            <p class="mb-0">
+                                {{ user.about }}
+                            </p>
+                        </div>
+                    {% else %}
+                        <div class="p-4 mb-3 bg-body-tertiary rounded"><h4 class="fst-italic">О нас</h4>
+                            <p class="mb-0">
+                                Блог был создан в рамках ознакомления с версткой веб-страниц
+                                и работой с django для домашней работы.
+                            </p>
+                        </div>
+                    {% endif %}
                     <div>
                         <!-- Последние посты -->
                         <h4 class="fst-italic">Последние посты</h4>
@@ -129,8 +134,12 @@
                                     <a class="d-flex flex-column flex-lg-row gap-3 align-items-start align-items-lg-center py-3 link-body-emphasis text-decoration-none border-top"
                                        href="#">
                                         <div class="col-lg-8">
-                                            <h6 class="mb-0">{{ post.name }}</h6>
-                                            <small class="text-body-secondary">{{ posted_at }} by {{ user.name }}</small>
+                                            <h6 class="mb-0">{{ post.title }}</h6>
+                                            {% if post.posted_at %}
+                                                <small class="text-body-secondary">{{ post.posted_at|date:"j E Y" }}</small>
+                                            {% elif post.updated_at %}
+                                                <small class="text-body-secondary">{{ post.updated_at|date:"j E Y" }}</small>
+                                            {% endif %}
                                         </div>
                                     </a>
                                 </li>

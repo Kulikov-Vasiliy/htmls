@@ -1,7 +1,5 @@
-import django.contrib.auth.models.AbstractUser
 from django.utils import timezone
 from django.db import models
-from pyexpat.errors import messages
 
 
 # Create your models here.
@@ -25,7 +23,7 @@ class User(models.Model):
     login = models.CharField(max_length=10, unique=True, verbose_name="Логин")
     joined_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
     DELETION = [("DELETE", "удалить"), ("CANCEL", "не удалять")]
-    is_delete = models.CharField(max_length= 10, default="CANCEL", choices=DELETION)
+    is_delete = models.CharField(max_length=10, default="CANCEL", choices=DELETION)
     is_deleted = models.BooleanField(default=False, verbose_name="Удален")
     deleted_at = models.DateTimeField(verbose_name="Дата и время удаления")
 
@@ -68,6 +66,39 @@ class User(models.Model):
         ordering = ["nickname", "joined_at", "login", "first_name", "last_name"]
 
 
+class Categories(models.Model):
+    """Модель категорий (обозначены как теги)"""
+    CONTENT_TYPES = [
+        ("World", "Мировые"),
+        ("Russia", "Россия"),
+        ("Technology", "Технологии"),
+        ("Design", "Дизайн"),
+        ("Culture", "Культура"),
+        ("Business", "Бизнес"),
+        ("Politics", "Политика"),
+        ("Opinion", "Мнение"),
+        ("Science", "Наука"),
+        ("Health", "Здоровье"),
+        ("Style", "Стиль"),
+        ("Travel", "Путешествия"),
+    ]
+    tag = models.CharField(max_length=20, choices=CONTENT_TYPES)
+    name = models.CharField(max_length=50, unique=True, verbose_name="Название")
+    slug = models.SlugField(max_length=60, unique=True, verbose_name="URL-адрес")
+    description = models.TextField(blank=True, verbose_name="Описание")
+    icon = models.CharField(max_length=10, blank=True, verbose_name="Эмодзи-иконка")
+    order = models.PositiveIntegerField(default=0, verbose_name="Порядок сортировки")
+
+    class Meta:
+        verbose_name = "Категория"
+        verbose_name_plural = "Категории"
+        ordering = ['order', 'name']
+
+    def __str__(self):
+        """Вывод категории в человекочитаемом виде"""
+        return f"{self.icon} {self.name}"
+
+
 class Post(models.Model):
     """
     заголовок,
@@ -85,8 +116,9 @@ class Post(models.Model):
         verbose_name="Категория",
         related_name="посты",
     )
-    title = models.CharField(max_length=200, verbose_name="Название поста")
+    title = models.CharField(max_length=200, verbose_name="Заголовок поста")
     content = models.TextField(blank=True, null=True, verbose_name="Cодержание")
+    about_content = models.TextField(max_length=300, blank=True, null=True, verbose_name="Кратко о содержании")
     viewed = models.PositiveIntegerField(default=0, verbose_name="Счетчик просмотров")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
     PUBLICATION_NOW_LATER = [("YES", "Опубликовать"), ("NO", "Позже")]
@@ -105,14 +137,15 @@ class Post(models.Model):
     published_at = models.DateField(auto_now_add=True, verbose_name="Дата публикации")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="Дата последнего изменения")
     is_published = models.BooleanField(default=False, verbose_name="Опубликовано")
-    popularity = models.IntegerField(default=0,  verbose_name="Популярность")
-    category = models.ForeignKey(Categories, on_delete=models.SET_NULL, null=True)
-
+    popularity = models.IntegerField(default=0, verbose_name="Популярность")
+    tag = models.ForeignKey(Categories, on_delete=models.SET_NULL, null=True)
+    DELETION = [("YES", "Удалить"), ("NO", "Отменить")]
+    is_delete = models.CharField(max_length=8, choices=DELETION, default="NO", verbose_name="Удалить")
     is_deleted = models.BooleanField(default=False, verbose_name="Удален")
     likes = models.PositiveIntegerField(default=0, verbose_name="Счетчик лайков")
     dislikes = models.PositiveIntegerField(default=0, verbose_name="Счетчик дизлайков")
     favorites = models.ManyToManyField(
-        User.nickname,
+        User,
         related_name='favorite_posts',
         blank=True,
         verbose_name="В избранном у пользователей"
@@ -130,11 +163,12 @@ class Post(models.Model):
             "title",
             "author",
             "-created_at",
+            "tag"
         ]
 
     def __str__(self):
         """"Вывод заголовка, автора и категории в человекочитаемом виде"""
-        return f"title: {self.title} (thematics: {self.tags}, publisher:{self.author})"
+        return f"Заголовок: {self.title} (тема: {self.tag}, автор:{self.author})"
 
 
 class PostMedia(models.Model):
@@ -145,7 +179,7 @@ class PostMedia(models.Model):
     )
 
     # Поле для определения типа контента
-    CONTENT_TYPES = [("image", "Изображение"),("preview", "Превью"), ("video", "Видео")]
+    CONTENT_TYPES = [("image", "Изображение"), ("preview", "Превью"), ("video", "Видео")]
     file_type = models.CharField(max_length=10, choices=CONTENT_TYPES)
 
     def get_upload_path(instance, filename):
@@ -178,8 +212,8 @@ class PostMedia(models.Model):
 
 
 def get_comment_media_path(instance, filename):
-        """Определяем путь к медиа комментария"""
-        return f"blog/comments/post_{instance.post.id}/user_{instance.author.id}/{filename}"
+    """Определяем путь к медиа комментария"""
+    return f"blog/comments/post_{instance.post.id}/user_{instance.author.id}/{filename}"
 
 
 class Comment(models.Model):
@@ -197,15 +231,16 @@ class Comment(models.Model):
         blank=True,
         verbose_name="Изображение к комментарию"
     )
-    video = models.FileField( upload_to=get_comment_media_path,
-        null=True,
-        blank=True,
-        verbose_name="Видео к комментарию"
-    )
+    video = models.FileField(upload_to=get_comment_media_path,
+                             null=True,
+                             blank=True,
+                             verbose_name="Видео к комментарию"
+                             )
 
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата написания")
     is_active = models.BooleanField(default=True, verbose_name="Активен")  # Для модерации
-    is_formatted = models.BooleanField(default=False) # чтобы модератор видел,
+    is_formatted = models.BooleanField(default=False)  # чтобы модератор видел,
+
     # использовал ли пользователь наши кнопки (Bold, Link, Table)
 
     class Meta:
@@ -247,10 +282,10 @@ class Subscription(models.Model):
     subscriber = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name = 'subscriptions_list',
-        verbose_name = "Подписчик"
+        related_name='subscriptions_list',
+        verbose_name="Подписчик"
     )
-    SUBSCRIBE = [("subscribe", "Подписаться"),("unsubscribe", "Отписаться")]
+    SUBSCRIBE = [("subscribe", "Подписаться"), ("unsubscribe", "Отписаться")]
     is_subscribe = models.CharField(max_length=12, default="unsubscribe", choices=SUBSCRIBE)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Подписался")
     unsubscribed_at = models.DateTimeField(auto_now_add=True, verbose_name="Отписался")
@@ -264,39 +299,6 @@ class Subscription(models.Model):
     def __str__(self):
         """"Вывод в человекочитаемом виде"""
         return f"{self.subscriber.nickname} подписан на {self.author.nickname}"
-
-
-class Categories(models.Model):
-    """Модель категорий (обозначены как теги)"""
-    CONTENT_TYPES = [
-        ("World", "Мировые"),
-        ("Russia", "Россия"),
-        ("Technology", "Технологии"),
-        ("Design", "Дизайн"),
-        ("Culture", "Культура"),
-        ("Business", "Бизнес"),
-        ("Politics", "Политика"),
-        ("Opinion", "Мнение"),
-        ("Science", "Наука"),
-        ("Health", "Здоровье"),
-        ("Style", "Стиль"),
-        ("Travel", "Путешествия"),
-    ]
-    tags = models.CharField(max_length=20, choices=CONTENT_TYPES)
-    name = models.CharField(max_length=50, unique=True, verbose_name="Название")
-    slug = models.SlugField(max_length=60, unique=True, verbose_name="URL-адрес")
-    description = models.TextField(blank=True, verbose_name="Описание")
-    icon = models.CharField(max_length=10, blank=True, verbose_name="Эмодзи-иконка")
-    order = models.PositiveIntegerField(default=0, verbose_name="Порядок сортировки")
-
-    class Meta:
-        verbose_name = "Категория"
-        verbose_name_plural = "Категории"
-        ordering = ['order', 'name']
-
-    def __str__(self):
-        """Вывод категории в человекочитаемом виде"""
-        return f"{self.icon} {self.name}"
 
 
 def get_upload_path_moder(instance, filename):
@@ -315,11 +317,18 @@ class Moderator(models.Model):
     login = models.CharField(max_length=10, unique=True, verbose_name="Логин")
     joined_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
     DELETION = [("DELETE", "удалить"), ("CANCEL", "не удалять")]
-    is_delete = models.CharField(max_length= 10, default="CANCEL", choices=DELETION)
+    is_delete = models.CharField(max_length=10, default="CANCEL", choices=DELETION)
     is_deleted = models.BooleanField(default=False, verbose_name="Удален")
-    deleted_at = models.DateTimeField(verbose_name="Дата и время удаления")
-    post = models.ForeignKey(Post, on_delete=models.SET_NULL, null=True, verbose_name="Пост")
-    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, verbose_name="Автор поста")
+    deleted_at = models.DateTimeField(blank=True, null=True, verbose_name="Дата и время удаления")
+    post = models.ForeignKey(Post, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Пост")
+    author = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name="Автор поста",
+        related_name="moderated_posts_authored"
+    )
     message = models.TextField(blank=True, null=True, verbose_name="Текст сообщения от модератора")
     profile_img = models.ImageField(
         upload_to=get_upload_path_moder,
@@ -327,7 +336,10 @@ class Moderator(models.Model):
         blank=True,
         verbose_name="Фото модератора",
     )
-    decision_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    decision_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="moderator_decisions")
+    is_active = models.BooleanField(default=True, verbose_name="Одобрить")
+    is_staff  = models.BooleanField(default=False,
+        verbose_name="Статус модератора")
 
     def delete(self, *args, **kwargs):
         """Мягкое удаление"""

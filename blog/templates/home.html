@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block content %}
+
+    {% for post in posts %}
+        <article class="blog-post">
+            <h2 class="display-5 link-body-emphasis mb-1">{{ post.title }}</h2>
+            {% if post.updated_at %}
+                <p class="blog-post-meta">{{ post.updated_at|date:"j E Y" }}
+                    <span>
+                        <a href="{% url 'users:profile' fav.author.pk %}">{{ post.author.nickname }}</a>
+                    </span>
+                </p>
+            {% else %}
+                <p class="blog-post-meta">{{ post.posted_at|date:"j E Y" }}
+                    <span>
+                        <a href="{% url 'users:profile' fav.author.pk %}">{{ post.author.nickname }}</a>
+                    </span>
+                </p>
+            {% endif %}
+
+           <p class="card-text mb-auto">{{ post.about_content|striptags|truncatechars:300 | safe }}</p>
+            <hr>
+            <p>{{ post.content|truncatechars:1000 | safe }}</p>
+        </article>
+    {% endfor %}
+
+    {% with page_name='home' %}
+        {% include 'favorites_list.html' %}
+    {% endwith %}
+{% endblock %}

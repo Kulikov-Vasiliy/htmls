@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block_content %}
+    {% if user.is_authenticated and user.is_stuff and user.is_active %}
+        <h1> Список модераторов:</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th scope="col">Имя</th>
+                    <th scope="col">Фамилия</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Логин</th>
+                    <th scope="col">Ник</th>
+                    <th scope="col">Присоединился</th>
+                    <th scope="col">Удален?</th>
+                    <th scope="col">Когда удален</th>
+                    <th scope="col">Удалить?</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for data in users %}
+                    <tr>
+                        <td>{{ data.first_name }}</td>
+                        <td>{{ data.last_name }}</td>
+                        <td>{{ data.email }}</td>
+                        <td>{{ data.login }}</td>
+                        <td>{{ data.nickname }}</td>
+                        <td>{{ data.joined_at }}</td>
+                        <td>{{ data.is_deleted }}</td>
+                         {% if data.is_deleted %}
+                            <td class="text-danger">Удален ({{ data.deleted_at|date:"d.m.Y" }})</td>
+                        {% else %}
+                            <td>{{ data.deleted_at|date:"d.m.Y" }}</td>
+                        {% endif %}
+                        <td>
+                           {# Ссылка на удаление конкретного пользователя #}
+                            <a href="{% url 'blog:user_delete' user.pk %}" class="btn btn-sm btn-outline-danger">
+                                Удалить
+                            </a>
+                        </td>
+                    </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center">Пользователи не найдены</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    {% else %}
+        <div class="alert alert-danger">Доступ запрещен.</div>
+    {% endif %}
+{% endblock %}

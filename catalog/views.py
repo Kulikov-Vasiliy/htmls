@@ -261,12 +261,12 @@ class ContactsFormView(FormView):
         return super().form_invalid(form)
 
 
-class HomeListView(ListView):
+class MainListView(ListView):
     """Контроллер позволяет наполнять базовую страницу: продуктами"""
 
     model = Product
-    page_name = "home"
-    template_name = "catalog/home.html"
+    page_name = "catalog:main"
+    template_name = "catalog/main.html"
 
     def get_queryset(self, **kwargs):
         """Получение заполнения макета с фильтрацией"""
@@ -287,14 +287,14 @@ class HomeListView(ListView):
     def dispatch(self, request, *args, **kwargs):
         """Дебаг-метод для проверки подключения контроллера"""
         # Этот принт сработает ПЕРВЫМ при любом обращении к этому URL
-        print(">>> СИГНАЛ ПОЛУЧЕН: Запрос вошел в HomeListView")
+        print(">>> СИГНАЛ ПОЛУЧЕН: Запрос вошел в MainListView")
         print(f"Папка существует? {os.path.exists(settings.MEDIA_ROOT)}")
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         """Метод отвечает за подготовку данных, которые полетят в HTML-шаблон"""
         context = super().get_context_data(**kwargs)
-        context["page_name"] = "home"
+        context["page_name"] = "main"
         return context
 
 

@@ -1,4 +1,4 @@
-{% load tags %}
+{% load blog_tags  %}
 <header class="border-bottom lh-1 py-3">
     <div class="row flex-nowrap justify-content-between align-items-center">
         <div class="col-4 pt-1">
@@ -13,8 +13,8 @@
             <a class="link-secondary" href="#" aria-label="Search">
                 {% include 'includes/svgs/sign_up_in.html' %}
             </a>
-            <a class="btn btn-sm btn-outline-secondary" href="#">Sign in</a>
-            <a class="btn btn-sm btn-outline-secondary" href="#">Sign up</a>
+            <a class="btn btn-sm btn-outline-secondary" href="{% url 'blog:user_detail' %}">Войти</a>
+            <a class="btn btn-sm btn-outline-secondary" href="{% url 'blog:user_form' %}">Зарегистрироваться</a>
         </div>
     </div>
 </header>

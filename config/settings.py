@@ -133,4 +133,6 @@ MEDIA_URL = "/media/"
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 # MEDIA_ROOT = BASE_DIR / "media"
-a
+
+test_path = os.path.join(BASE_DIR, "htmls", "blog", "static")
+print(f"--- ПРОВЕРКА ПУТИ: {test_path} | СУЩЕСТВУЕТ: {os.path.exists(test_path)} ---")
