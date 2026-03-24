@@ -23,6 +23,8 @@
             <hr>
             <p>{{ post.content|truncatechars:1000 | safe }}</p>
         </article>
+    {% empty %}
+        <p>Статей нет</p>
     {% endfor %}
 
     {% with page_name='home' %}

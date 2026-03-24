@@ -62,6 +62,9 @@
                         </div>
                     </div>
                 </div>
+
+            {% empty %}
+                <p>Нет избранных статей</p>
             {% endfor %}
         {% endwith %}
 
@@ -110,6 +113,8 @@
                 </div>
             </div>
 
+        {% empty %}
+            <p>Нет избранных статей</p>
         {% endfor %}
     {% endif %}
 

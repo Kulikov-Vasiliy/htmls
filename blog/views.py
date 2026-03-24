@@ -116,7 +116,7 @@ class HomeListView(ListView):
     def get_queryset(self, **kwargs):
         """Получение заполнения макета с фильтрацией"""
         # Заготовка на будущее пока что
-        queryset = Post.objects.all()
+        queryset = Post.objects.filter(is_published=True)
         filter_type = self.request.GET.get("filter")
 
         if filter_type == "top":
@@ -794,7 +794,7 @@ class FavoritesListView(ListView):
     def get_queryset(self, **kwargs):
         """Получение заполнения макета с фильтрацией"""
         # Заготовка на будущее пока что
-        queryset = Post.objects.all()
+        queryset = Post.objects.filter(is_published=True)
         filter_type = self.request.GET.get("filter")
 
         if filter_type == "top":
@@ -826,7 +826,7 @@ class SetPostMainView(UserPassesTestMixin, UpdateView):
         return reverse("blog:post_detail", kwargs={"pk": self.object.post.pk})
 
     def test_func(self):
-        # Проверяем: залогинен ли и есть ли статус модератора (или персонала)
+        # Проверяем: есть ли статус модератора (или персонала)
         return self.request.user.is_staff
 
 
