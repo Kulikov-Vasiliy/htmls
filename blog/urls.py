@@ -8,7 +8,7 @@ app_name = "blog"
 
 urlpatterns = [
     path("", views.HomeListView.as_view(), name="home"),
-    path("category/<int:pk>/", views.CategoriesListView.as_view(), name="categories"),
+    path("category/<int:pk>/", views.CategoriesDetailView.as_view(), name="category"),
 
     path("main/", views.CatalogRedirectView.as_view(), name="main"),
 
@@ -22,11 +22,11 @@ urlpatterns = [
     path("post/<int:post_pk>/comments/<int:comm_pk>/update", views.CommentUpdateView.as_view(), name="comment_update"),
 
     path("sign_up/", views.UserCreateView.as_view(), name="registration"),
-    path("sign_in/", views.UserCreateView.as_view(), name="entry"),
+    path("sign_in/", views.SignInFormView.as_view(), name="entry"),
 
     path("user/<int:pk>/", views.UserDetailView.as_view(), name="profile"),
     path("user/<int:pk>/update", views.UserDetailView.as_view(), name="profile_update"),
-    path("user_create", views.UserCreateView.as_view(), name="profile_create"),
+    # path("user_create", views.UserCreateView.as_view(), name="profile_create"),
     path("user/<int:pk>/delete", views.UserDeleteView.as_view(), name="profile_delete"),
 
     path("moderator/<int:pk>/", views.ModeratorDetailView.as_view(), name="moderator"),

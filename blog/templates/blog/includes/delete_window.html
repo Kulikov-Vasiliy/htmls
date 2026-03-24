@@ -33,16 +33,14 @@
             </div>
 
             <!-- Форма, которая отправит запрос на контроллер -->
-            {% if user.is_authenticated %}
-                {% if page_name == 'moderator_list' %}
-                    <form id="deleteModeratorForm" action="{% url 'blog:moderator_delete' object.pk %}" method="post" style="display: none;">
-                        {% csrf_token %}
-                    </form>
-                {% else %}
-                    <form id="deleteUserForm" action="{% url 'blog:user_delete' object.pk %}" method="post" style="display: none;">
-                        {% csrf_token %}
-                    </form>
-              {% endif %}
+            {% if page_name == 'moderator_list' %}
+                <form id="deleteModeratorForm" action="{% url 'blog:moderator_delete' object.pk %}" method="post" style="display: none;">
+                    {% csrf_token %}
+                </form>
+            {% else %}
+                <form id="deleteUserForm" action="{% url 'blog:user_delete' object.pk %}" method="post" style="display: none;">
+                    {% csrf_token %}
+                </form>
             {% endif %}
        </div>
     </div>

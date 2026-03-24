@@ -1,9 +1,10 @@
-{% extends 'base.html' %}
+{% extends 'blog/base.html' %}
 {% block content %}
-    <h1 class="d-flex justify-content-center">
-        Список постов по теме {{ tag.name|default:view.kwargs.tag }}:</h1>
     {% for post in object_list %}
         {% if post.tag == tag.pk %}
+            <h1 class="d-flex justify-content-center">
+                Список постов по теме {{ post.name|default:view.kwargs.tag }}:
+            </h1>
             <p>{{ post.title }}</p>
             {% if post.updated_at and post.updated_at|is_last_moths %}
                 <div class="mb-1 text-body-secondary">Обновлен: {{ post.updated_at|date:"d.m.Y" }}
@@ -26,7 +27,7 @@
             {% endif %}
         {% endif %}
 
-        {% if user.is_authenticated and user.is_staff and user.is_active %}
+        {% if user.is_staff and user.is_active %}
             <p>{{ post.viewed }}</p>
             <p>{{ post.popularity }}</p>
             <p>{{ post.is_formated }}</p>

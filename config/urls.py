@@ -23,8 +23,7 @@ from django.views.generic import RedirectView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("main/", include("catalog.urls", namespace="catalog")),
-    path('', RedirectView.as_view(pattern_name='blog:home'), name='root_redirect'),
+    path("catalog_main/", include("catalog.urls", namespace="catalog")),
     path("", include("blog.urls", namespace="blog")),
 ]
 # + static(settings.MEDIA_URL, document_root=settings.MEDIA_URL)

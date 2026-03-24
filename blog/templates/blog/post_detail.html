@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'blog/base.html' %}
 {% load blog_tags  %}
 {% block content %}
     <article class="blog-post">
@@ -21,9 +21,11 @@
         <hr>
         <p>{{ post.content|safe }}</p>
     </article>
-
-
-
+    {% if user.is_staff %}
+         <div class="btn-group btn-group-sm" role="group" aria-label="Small button group">
+            <a href="{% url 'blog:set_main' %}" class="btn btn-outline-primary"> На обложку</a>
+        </div>
+    {% endif %}
 
     <div class="btn-group btn-group-sm" role="group" aria-label="Small button group">
         <button type="button" class="btn btn-outline-primary"></button>
@@ -42,4 +44,5 @@
             </div>
         {% endif %}
     {% endfor %}
+
 {% endblock %}

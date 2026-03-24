@@ -1,0 +1,9 @@
+<nav class="nav nav-underline justify-content-between">
+    {% for cat in categories_list %}
+        <a class="nav-item nav-link link-body-emphasis" href="{% url 'blog:category' cat.pk %}">
+            {{ cat.name }}
+        </a>
+    {% empty %}
+        <span class="text-muted">Категории не добавлены</span>
+    {% endfor %}
+</nav>

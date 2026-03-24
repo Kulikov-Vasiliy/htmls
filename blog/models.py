@@ -1,6 +1,6 @@
 from django.utils import timezone
 from django.db import models
-
+from django.urls import reverse
 
 # Create your models here.
 def get_upload_path(instance, filename):
@@ -169,6 +169,10 @@ class Post(models.Model):
     def __str__(self):
         """"Вывод заголовка, автора и категории в человекочитаемом виде"""
         return f"Заголовок: {self.title} (тема: {self.tag}, автор:{self.author})"
+
+    def get_absolute_url(self):
+
+        return reverse('blog:post_detail', kwargs={'pk': self.pk})
 
 
 class PostMedia(models.Model):

@@ -40,6 +40,8 @@ from django.utils import timezone
 from django.db import transaction
 from django.http import HttpResponseRedirect, JsonResponse
 from django.contrib.auth.mixins import UserPassesTestMixin
+from django.contrib import messages
+from django.contrib.auth import login as auth_login
 import os
 
 
@@ -54,7 +56,43 @@ from config import settings
 # Create your views here.
 class BaseTemplateView(TemplateView):
     """Контроллер позволяет считывать базовую страницу"""
-    template_name = "base.html"
+    template_name = "blog/base.html"
+
+
+class SignInFormView(FormView):
+    """Авторизация
+    * пока без паролей"""
+    template_name = "blog/includes/sign_in.html"
+    page_name = "entry"
+
+    def form_valid(self, form):
+        """Валидация пользователя"""
+        # Получаем очищенные данные из формы
+        u_login = form.cleaned_data.get('login')
+        # password = form.cleaned_data.get('password')  # Если добавите поле пароля
+
+        # Находим пользователя (пока без пароля можно использовать .get())
+        user_obj = User.objects.filter(username=u_login).first()
+
+        if user_obj:
+            auth_login(self.request, user_obj)
+
+            # Вызываем функцию входа, передав объект пользователя
+            if user_obj.is_staff:
+                messages.success(self.request, "Вход выполнен (Модератор)")
+            else:
+                messages.success(self.request, "Вход выполнен (Пользователь)")
+
+            return super().form_valid(form)
+        else:
+            form.add_error('login', 'Пользователь не найден')
+            return self.form_invalid(form)
+
+    def get_success_url(self):
+        """Куда перейти при успешном входе"""
+        if self.request.user.is_staff:
+            return reverse_lazy("blog:moderator", kwargs={'pk': self.request.user.pk})
+        return reverse_lazy("blog:home")
 
 
 class CatalogRedirectView(RedirectView):
@@ -73,6 +111,7 @@ class HomeListView(ListView):
     model = Post
     page_name = "home"
     context_object_name = 'posts'
+    template_name = 'blog/home.html'
 
     def get_queryset(self, **kwargs):
         """Получение заполнения макета с фильтрацией"""
@@ -105,7 +144,7 @@ class HomeListView(ListView):
     def get_context_data(self, **kwargs):
         """Метод отвечает за подготовку данных, которые полетят в HTML-шаблон"""
         context = super().get_context_data(**kwargs)
-        context["page_name"] = "home"
+        context['page_name'] = 'home'
         return context
 
 
@@ -113,7 +152,8 @@ class UserCreateView(CreateView):
     """Контроллер создания пользователя"""
     model = User
     form_class = UserCreationForm
-    template_name = "users/user_form.html"
+    template_name = "blog/users/user_form.html"
+    page_name = "sign_up"
 
     def get_success_url(self):
         return reverse_lazy("blog:user_detail", kwargs={"pk": self.object.pk})
@@ -130,7 +170,7 @@ class UserUpdateView(UpdateView):
     """Контроллер создания пользователя"""
     model = User
     form_class = UserUpdateForm
-    template_name = "users/user_form.html"
+    template_name = "blog/users/user_form.html"
 
     def get_success_url(self):
         return reverse_lazy("blog:user_detail", kwargs={"pk": self.object.pk})
@@ -151,7 +191,7 @@ class UserDetailView(DetailView):
     """Информация пользователя"""
     model = User
     page_name = 'profile'
-    template_name = "users/user_detail.html"
+    template_name = "blog/users/user_detail.html"
 
     # def dispatch(self, request, *args, **kwargs):
     #     """Дебаг-метод для проверки подключения контроллера"""
@@ -170,12 +210,12 @@ class UserDetailView(DetailView):
     def get_object(self, queryset=None):
         obj = super().get_object(queryset)
         # Автоматическая запись активности БЕЗ ФОРМЫ
-        if self.request.user.is_authenticated:
-            UserActivity.objects.create(
-                user=self.request.user,
-                post=None,  # Если это профиль, а не пост
-                content_object=obj  # Или другая логика связи
-            )
+
+        UserActivity.objects.create(
+            user=self.request.user,
+            post=None,  # Если это профиль, а не пост
+            content_object=obj  # Или другая логика связи
+        )
         return obj
 
 
@@ -184,7 +224,7 @@ class UserListView(ListView):
     model = User
     form_class = UserControlForm
     page_name = 'user_list'
-    template_name = "moderators/user_form.html"
+    template_name = "blog/moderators/user_form.html"
 
     def get_queryset(self):
         # 1. Берем базовый набор (например, всех не удаленных по умолчанию)
@@ -211,7 +251,7 @@ class UserDeleteView(DeleteView):
     """Удаление пользователя"""
     model = User
     form_class = UserDeletionForm
-    template_name = "users/user_detail.html"
+    template_name = "blog/users/user_detail.html"
 
     def get_success_url(self):
         reverse_lazy("blog:home")
@@ -221,7 +261,7 @@ class ModeratorCreateView(CreateView):
     """Контроллер создания пользователя"""
     model = Moderator
     form_class = ModeratorCreationForm
-    template_name = "moderators/moderator_form.html"
+    template_name = "blog/moderators/moderator_form.html"
 
     def get_success_url(self):
         return reverse_lazy("blog:moderator_detail", kwargs={"pk": self.object.pk})
@@ -238,7 +278,7 @@ class ModeratorUpdateView(UpdateView):
     """Контроллер создания пользователя"""
     model = Moderator
     form_class = ModeratorUpdateForm
-    template_name = "moderators/moderator_form.html"
+    template_name = "blog/moderators/moderator_form.html"
 
     def get_success_url(self):
         return reverse_lazy("blog:user_detail", kwargs={"pk": self.object.pk})
@@ -259,7 +299,7 @@ class ModeratorDetailView(DetailView):
     """Информация пользователя"""
     model = Moderator
     form_class = ModeratorBaseForm
-    template_name = "moderator/moderator_detail.html"
+    template_name = "blog/moderators/moderator_detail.html"
     page_name = 'moderator'
 
     # def dispatch(self, request, *args, **kwargs):
@@ -276,7 +316,7 @@ class ModeratorsListView(ListView):
     """Список модераторов"""
     model = Moderator
     form_class = ModeratorBaseForm
-    template_name = "moderators/moderator_list.html"
+    template_name = "blog/moderators/moderator_list.html"
     page_name = 'moderator_list'
 
     def get_queryset(self):
@@ -317,7 +357,7 @@ class ModeratorDeleteView(DeleteView):
     """Удаление пользователя"""
     model = Moderator
     form_class = ModeratorDeletionForm
-    template_name = "moderators/moderator_list.html"
+    template_name = "blog/moderators/moderator_list.html"
 
     def get_success_url(self):
         reverse_lazy("blog:moderator_list")
@@ -699,45 +739,44 @@ class CommentDeleteView(DeleteView):
         return reverse_lazy("blog:post_delete", kwargs={"pk": self.object.post.pk})
 
 
-class CategoriesListView(ListView):
+class CategoriesDetailView(DetailView):
     """Тематика постов"""
-    model = Post
-    form_class = CategoriesForm
+    model = Categories
+    template_name = 'blog/categories.html'
+    context_object_name = 'categories'
 
     # def dispatch(self, request, *args, **kwargs):
     #     """Дебаг-метод для проверки подключения контроллера"""
     #     # Этот принт сработает ПЕРВЫМ при любом обращении к этому URL
-    #     print(">>> СИГНАЛ ПОЛУЧЕН: Запрос вошел в CategoriesListView")
+    #     print(">>> СИГНАЛ ПОЛУЧЕН: Запрос вошел в CategoriesDetailView")
     #     print(f">>> Данные пути (kwargs): {kwargs}")
     #     return super().dispatch(request, *args, **kwargs)
-
-    def get_queryset(self, **kwargs):
-        """Получение заполнения макета с фильтрацией"""
-        tag_id = self.kwargs.get('pk')
-        # Заготовка на будущее пока что
-        queryset = Post.objects.filter(tag_id=tag_id,)
-        filter_type = self.request.GET.get("filter")
-
-        if filter_type == "top":
-            queryset = queryset.order_by(
-                "-popularity"
-            )  # Предполагается, что есть поле popularity
-        elif filter_type == "newer":
-            queryset = queryset.order_by(
-                "-created_at"
-            )
-        elif filter_type == "older":
-            queryset = queryset.order_by(
-                "created_at"
-            )
-
-        return queryset
 
     def get_context_data(self, **kwargs):
         """Метод отвечает за подготовку данных, которые полетят в HTML-шаблон"""
         context = super().get_context_data(**kwargs)
+        posts = Post.objects.filter(category=self.object)
+
+
+        # Сюда можно добавить вашу логику фильтрации (newer/older)
+        filter_type = self.request.GET.get("filter")
+        if filter_type == "newer":
+            posts = posts.order_by("-created_at")
+        elif filter_type == "older":
+            posts = posts.order_by("created_at")
+
+        context["posts"] = posts
         context["page_name"] = "categories"
+        context["categories_list"] = Categories.objects.all()
         return context
+
+#
+# class CategoryUpdateView(UpdateView):
+#     """Обновление категорий"""
+#     model = Categories
+#     form_class = CategoriesForm
+#     template_name = 'blog/category_form.html'
+#     success_url = '/thanks/'
 
 
 class FavoritesListView(ListView):
@@ -788,7 +827,7 @@ class SetPostMainView(UserPassesTestMixin, UpdateView):
 
     def test_func(self):
         # Проверяем: залогинен ли и есть ли статус модератора (или персонала)
-        return self.request.user.is_authenticated and self.request.user.is_staff
+        return self.request.user.is_staff
 
 
 

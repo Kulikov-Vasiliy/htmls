@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'blog/base.html' %}
 {% load humanize %}
 {% block content %}
 
@@ -26,6 +26,6 @@
     {% endfor %}
 
     {% with page_name='home' %}
-        {% include 'favorites_list.html' %}
+        {% include 'blog/favorites_list.html' %}
     {% endwith %}
 {% endblock %}
