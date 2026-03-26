@@ -21,23 +21,23 @@ urlpatterns = [
     ),
     path("product/<int:pk>/", views.ProductDetailView.as_view(), name="product_detail"),
     path(
-        "product/<int:pk>/update",
+        "product/<int:pk>/update/",
         views.ProductUpdateView.as_view(),
         name="product_update",
     ),
     path(
-        "product/<int:pk>/delete",
+        "product/<int:pk>/delete/",
         views.ProductDeleteView.as_view(),
         name="product_delete",
     ),
     path("category/<int:pk>/", views.ProductListView.as_view(), name="category"),
     path(
-        "category/<int:pk>/update",
+        "category/<int:pk>/update/",
         views.CategoryUpdateView.as_view(),
         name="category_update",
     ),
     path(
-        "category/<int:pk>/delete",
+        "category/<int:pk>/delete/",
         views.CategoryDeleteView.as_view(),
         name="category_delete",
     ),
