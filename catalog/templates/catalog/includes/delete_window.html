@@ -1,0 +1,54 @@
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Подтвердите действие</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body text-center">
+                Вы уверены, что хотите удалить "<strong>{{ object.name }}</strong>"?
+            </div>
+
+            <div class="modal-footer d-flex justify-content-center gap-2">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    Нет, пусть остается
+                </button>
+
+                {% if page_name == 'product' %}
+                    <button type="submit" form="deleteProductForm" class="btn btn-danger">
+                        Да, подтверждаю
+                    </button>
+
+                {% elif page_name == 'category' %}
+                    <button type="submit" form="deleteCategoryForm" class="btn btn-danger">
+                        Да, подтверждаю
+                    </button>
+
+                {% else %}
+                    <!-- Заглушка с уведомлением (JS-алерт) -->
+                     <button type="button" class="btn btn-danger" onclick="alert('Функция удаления для этого раздела еще не реализована!')">
+                        Да, подтверждаю
+                    </button>
+                {% endif %}
+            </div>
+
+            <!-- Форма, которая отправит запрос на контроллер -->
+            {% if page_name == 'product' %}
+                <form id="deleteProductForm" action="{% url 'catalog:product_delete' object.pk %}" method="post" style="display: none;">
+                    {% csrf_token %}
+                </form>
+
+            {% elif page_name == 'category' %}
+                <form id="deleteCategoryForm" action="{% url 'catalog:category_delete' category.pk %}" method="post" style="display: none;">
+                    {% csrf_token %}
+                </form>
+
+                <!-- Заглушка: форма никуда не ведет -->
+                <form id="#" action="#" method="get" style="display: none;">
+                    {% csrf_token %}
+                </form>
+            {% endif %}
+       </div>
+    </div>
+</div>

@@ -8,6 +8,11 @@
 *.txt
 *.webp
 sqlite
+bootstrap-5.3.8/
+bootstrap-5.3.8-dist/
+bootstrap-5.3.8-examples/
+bootstrap-5.3.8.tar.gz/
+bootstrap-icons-1.11.0/
 
 # User-specific stuff
 .idea/**/workspace.xml
@@ -266,3 +271,4 @@ poetry.toml
 pyrightconfig.json
 
 # End of https://www.toptal.com/developers/gitignore/api/python,pycharm+all
+/static/bootstrap-5.3.8/

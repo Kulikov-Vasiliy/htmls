@@ -1,13 +1,73 @@
-body {
-    display: flex; /* Используем flexbox для размещения сайдбара и контента */
-    min-height: 100vh;
-    margin: 1;
+.text-muted {
+    flex-grow: 1; /* Основной контент занимает остальное пространство */
+    padding: 10px;
+    background-color: #f8f9fa;
+    opacity: 0.6; /* Сделает прозрачным весь элемент */
+    margin: 0;
+    margin-top: 40px;
+    white-space: normal !important; /* Перенос строки */
+    font-size: 1.1rem;
+    width: 100%;
+    /* max-width: 300px; */
+    text-align: center;            /* Центрируем текст по горизонтали */
+    /* display: flex;                 / Включаем flex для центровки по вертикали */
+    display: block;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+    background-color: transparent !important; /* Чтобы не перекрывал фон карточки */
+}
+/* .text-muted {
+nowrap
+overflow: hidden;    / Скроет текст, если он шире экрана (на всякий случай) /
+text-overflow: ellipsis
+} */
+.my-card {
+    max-width: 200px;    /* Не дает карточке вылезти за пределы колонки сетки */
+    height: 200px;      /* Или любая удобная вам ФИКСИРОВАННАЯ высота */
+    /* min-height: 200px; */
+    display: flex;
+    /* flex-direction: column; */
+    overflow: hidden;   /* Обрезает всё, что пытается вылезти */
 }
 
-/* * { outline: 1px solid red !important; } //показывает рамку для элемента */
+/* Принудительный перенос для параграфа внутри пустой карточки */
+.my-card p.card-text.text-muted {
+    white-space: normal !important;    /* Разрешить перенос */
+    word-wrap: break-word !important;  /* Разрывать длинные слова, если надо */
+    display: block !important;         /* Убрать flex-конфликты */
+    width: 100% !important;            /* Занять всю ширину */
+    text-align: center !important;     /* Центрировать */
+    overflow: visible !important;      /* Не скрывать буквы */
+}
 
-.main-content {
-    overflow-x: clip; /* Или visible, чтобы позволить внутренним блокам управлять скроллом */
+.card-img-top,
+.object-fit-contain {
+    width: 100%;        /* Растягиваем по ширине карточки */
+    height: 100%;      /* Фиксируем высоту именно для медиа-зоны */
+    /* object-fit: cover;  /* Вариант А: Заполнит всё пространство (может чуть обрезать края) */
+    object-fit: contain;  /* Вариант Б: Впишет картинку целиком (могут быть пустые поля) */
+}
+
+.my-card-item {
+    flex: 1 0 auto !important;         /* Даем блоку растягиваться под контент */
+    /*  flex: 0 0 300px; */
+    min-height: 200px;
+    scroll-snap-align: start;
+}
+
+.my-card-body {
+    box-sizing: border-box;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.my-card-body.d-flex {
+    flex-direction: column;         /* Направление сверху вниз */
+    justify-content: center;        /* Центровка по вертикали */
+    align-items: center;            /* Центровка по горизонтали */
+    height: 100%;                   /* Занимать всю высоту родителя */
+    min-height: 200px;              /* Чтобы не схлопывалась */
 }
 
 .cards-scroll-container {
@@ -42,31 +102,41 @@ body {
     background: #f1f1f1;
 }
 
-.sidebar {
-    width: 250px; /* Фиксированная ширина боковой панели */
-    background-color: #212529; /* Темный фон, как на изображении */
-    color: #FFFFFF;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: space-between; /* Прижимает меню вверх, а пользователя вниз */
-    padding: 1px;
-    margin-right: 1px;
-    flex-shrink: 0; /* Не дает сайдбару сжиматься */
+.my-btn-secondary {
+    margin-right: 300px !important;
+    margin-left: -300px !important;
 }
 
+.my-btn-group .card-link {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    display: inline-flex; /* Используем flex для кнопок внутри */
+    align-items: center;
+    justify-content: center;
+    flex: 1; /* ГЛАВНОЕ: делит ширину 50/50 */
+}
+
+.btn-left {
+    border-radius: 6px 0 0 6px !important;
+    border-right: none !important;
+}
+
+.btn-right {
+    border-radius: 0 6px 6px 0 !important;
+}
+
+/* Ховер для красоты */
+.my-btn:hover {
+    background-color: #f0f0ff;
+}
+
+/* Для кнопки */
 .my-btn {
     border: 1px solid #0000FF !important;
-    width: 100% !important;
     color: #0000FF !important; /* Правильное свойство цвета текста */
     text-decoration: none;  /* Убрать подчеркивание */
-    text-align: center;
     padding: 0px 12px; /* Убрал верхний/нижний padding, чтобы line-height работал */
     height: 30px;
     font-size: 14px;
     line-height: 28px; /* ВАЖНО: высота строки равна высоте кнопки */
-}
-
-.btn-secondary {
-    margin-right: 140px !important;
-    margin-left: -150px !important;
 }

@@ -1,0 +1,36 @@
+.my-card-item {
+    flex: 0 0 300px;
+    scroll-snap-align: start;
+}
+/*
+// Для карточки (или используйте .card, если хотите рамку вокруг всей карточки)
+.my-card {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between;
+    flex-shrink: 0 !important;   // ЗАПРЕЩАЕТ карточке сжиматься
+    border: 1px solid #000 !important; // !important нужен, чтобы перебить стили Bootstrap
+    border-radius: 6px; /* чтобы углы были красивыми
+    margin-top: 30px !important;
+    width: 200px !important;
+    height: 190px;
+}*/
+
+/* Для кнопки */
+.my-btn {
+    border: 1px solid #0000FF !important;
+    border-radius: 6px;
+    color: #0000FF !important; /* Правильное свойство цвета текста */
+    text-align: center !important;
+    display: block !important;
+    margin: 5px auto; /* Используйте auto для центрирования блока на странице, если нужно */
+    padding: 0px 5px; /* Убрал верхний/нижний padding, чтобы line-height работал */
+    width: 100%;
+    height: 30px;
+    line-height: 30px; /* ВАЖНО: высота строки равна высоте кнопки */
+}
+
+/* Если хотите именно card-body (внутренняя часть), то так: */
+/*.card-body {
+    border: 1px solid #000500 !important;
+}*/

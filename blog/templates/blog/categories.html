@@ -1,0 +1,44 @@
+{% extends 'blog/base.html' %}
+{% block content %}
+    {% for post in object_list %}
+        {% if post.tag == tag.pk %}
+            <h1 class="d-flex justify-content-center">
+                Список постов по теме {{ post.name|default:view.kwargs.tag }}:
+            </h1>
+            <p>{{ post.title }}</p>
+            {% if post.updated_at and post.updated_at|is_last_moths %}
+                <div class="mb-1 text-body-secondary">Обновлен: {{ post.updated_at|date:"d.m.Y" }}
+                    <span>
+                        <a href="{% url 'users:profile' post.author.pk %}">{{ post.author.nickname }}</a>
+                    </span>
+                </div>
+            {% elif post.posted_at and post.posted_at|is_last_moths %}
+                <div class="mb-1 text-body-secondary">Опубликован: {{ post.posted_at|date:"d.m.Y" }}
+                    <span>
+                        <a href="{% url 'users:profile' post.author.pk %}">{{ post.author.nickname }}</a>
+                    </span>
+                </div>
+            {% endif %}
+            <p>{{ post.about_content }}</p>
+            <p>{{ post.content|safe }}</p>
+            <p>👍 {{ post.likes }} | 👎 {{ post.dislikes }}</p>
+            {% if post.is_deleted %}
+                <p>Удален: {{ post.deleted_at }}</p>
+            {% endif %}
+        {% endif %}
+
+        {% if user.is_staff and user.is_active %}
+            <p>{{ post.viewed }}</p>
+            <p>{{ post.popularity }}</p>
+            <p>{{ post.is_formated }}</p>
+            {# Ссылка на удаление конкретного пользователя #}
+            <a href="{% url 'blog:post_delete' post.pk %}" class="btn btn-sm btn-outline-danger">
+                Удалить
+            </a>
+        {% endif %}
+
+    {% empty %}
+    <p class="text-center">Посты не найдены</p>
+    {% endfor %}
+
+{% endblock %}

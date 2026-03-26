@@ -1,0 +1,121 @@
+{% load blog_tags  %}
+{% block content %}
+    {%  if page_name == 'home' %}
+        {% with limit="2" %}
+            {% for fav in fav_posts|slice:limit %}
+                <!-- «Избранные статьи» -->
+                <div class="col-md-6">
+                    <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+                        <div class="col p-4 d-flex flex-column position-static">
+                            <strong class="d-inline-block mb-2 text-primary-emphasis">{{ fav.tag }}</strong>
+                            <h3 class="mb-0">{{ fav.title }}</h3>
+
+                            {% if fav.updated_at and fav.updated_at|is_current_month %}
+                                <div class="mb-1 text-body-secondary">Обновлен: {{ fav.updated_at|date:"j E" }}
+                                    <span>
+                                        <a href="{% url 'users:profile' fav.author.pk %}">{{ fav.author.nickname }}</a>
+                                    </span>
+                                </div>
+
+                            {% elif fav.updated_at and fav.updated_at|is_last_months %}
+                                <div class="mb-1 text-body-secondary">Обновлен: {{ fav.updated_at|date:"F Y" }}
+                                    <span>
+                                        <a href="{% url 'users:profile' fav.author.pk %}">{{ fav.author.nickname }}</a>
+                                    </span>
+                                </div>
+
+                            {% elif fav.posted_at and fav.posted_at|is_current_month %}
+                                <div class="mb-1 text-body-secondary">Выложен: {{ fav.posted_at|date:"j E" }}
+                                    <span>
+                                        <a href="{% url 'users:profile' fav.author.pk %}">{{ fav.author.nickname }}</a>
+                                    </span>
+                                </div>
+
+                            {% elif fav.posted_at and fav.posted_at|is_last_months %}
+                                <div class="mb-1 text-body-secondary">Выложен: {{ fav.posted_at|date:"F Y" }}
+                                    <span>
+                                        <a href="{% url 'users:profile' fav.author.pk %}">{{ fav.author.nickname }}</a>
+                                    </span>
+                                </div>
+                            {% endif %}
+
+                            <p class="card-text mb-auto">{{ fav.content|truncatechars:150 }}</p>
+                            <a href="{% url 'blog:post_detail' fav.pk %}" class="icon-link gap-1 icon-link-hover stretched-link">
+                                Продолжить чтение
+                                <svg class="bi" aria-hidden="true">
+                                    <use xlink:href="#chevron-right"></use>
+                                </svg>
+                            </a>
+                        </div>
+
+                        <div class="col-auto d-none d-lg-block">
+                            {% if fav.preview %}
+                                <img src="{{ fav.preview | media_filter }}" width="200" height="250" style="object-fit: cover;">
+                            {% else %}
+                                <svg aria-label="Placeholder: Thumbnail" class="bd-placeholder-img " height="250"
+                                     preserveAspectRatio="xMidYMid slice" role="img" width="200" xmlns="http://www.w3.org/2000/svg">
+                                    <title>Placeholder</title>
+                                    <rect width="100%" height="100%" fill="#55595c"></rect>
+                                    <text x="50%" y="50%" fill="#eceeef" dy=".3em">Изображение</text>
+                                </svg>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+            {% empty %}
+                <p>Нет избранных статей</p>
+            {% endfor %}
+        {% endwith %}
+
+    {% elif page_name == 'profile' %}
+        {% for fav in fav_posts %}
+            <!-- «Избранные статьи» -->
+            <div class="col-md-6">
+                <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+                    <div class="col p-4 d-flex flex-column position-static">
+                        <strong class="d-inline-block mb-2 text-primary-emphasis">{{ fav.tag }}</strong>
+                        <h3 class="mb-0">{{ fav.name }}</h3>
+                        {% if fav.updated_at %}
+                            <div class="mb-1 text-body-secondary">Обновлен: {{ fav.updated_at }}
+                                <span>
+                                    <a href="{% url 'users:profile' fav.author.pk %}">{{ fav.author.nickname }}</a>
+                                </span>
+                            </div>
+                        {% else %}
+                            <div class="mb-1 text-body-secondary">Выложен: {{ fav.posted_at }}
+                                <span>
+                                    <a href="{% url 'users:profile' fav.author.pk %}">{{ fav.author.nickname }}</a>
+                                </span>
+                            </div>
+                        {% endif %}
+                        <p class="card-text mb-auto">{{ fav.content|truncatechars:150 }}</p>
+                        <a href="{% url 'blog:post_detail' fav.pk %}" class="icon-link gap-1 icon-link-hover stretched-link">
+                            Продолжить чтение
+                            <svg class="bi" aria-hidden="true">
+                                <use xlink:href="#chevron-right"></use>
+                            </svg>
+                        </a>
+                    </div>
+
+                    <div class="col-auto d-none d-lg-block">
+                        {% if fav.preview %}
+                              <img src="{{ fav.preview | media_filter }}" width="200" height="250" style="object-fit: cover;">
+                        {% else %}
+                            <svg aria-label="Placeholder: Thumbnail" class="bd-placeholder-img " height="250"
+                                 preserveAspectRatio="xMidYMid slice" role="img" width="200" xmlns="http://www.w3.org/2000/svg">
+                                <title>Placeholder</title>
+                                <rect width="100%" height="100%" fill="#55595c"></rect>
+                                <text x="50%" y="50%" fill="#eceeef" dy=".3em">Изображение</text>
+                            </svg>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+        {% empty %}
+            <p>Нет избранных статей</p>
+        {% endfor %}
+    {% endif %}
+
+{% endblock %}

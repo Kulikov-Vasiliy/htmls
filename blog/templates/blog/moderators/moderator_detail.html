@@ -1,0 +1,34 @@
+{% extends 'blog/base.html' %}
+{% load blog_tags  %}
+{% block content %}
+
+    {% if moderator.is_deleted %}
+        <div class="alert alert-warning">
+            Профиль был удален {{ moderator.deleted_at|date:"d.m.Y в H:i" }}
+        </div>
+
+    {% else %}
+        <!-- Вывод обычного профиля -->
+        <h1 class="display-4">Профиль {{ moderator.first_name moderator.last_name }}</h1>
+        {% if moderator.profile_img %}
+        <!-- Если фото есть: выводим его -->
+        <img src="{{ moderator.profile_img | media_filter }}" width="50" height="50" class="rounded-circle shadow-sm">
+        {% else %}
+        <!-- Если фото нет: выводим стандартную иконку (например, "человечка") -->
+        <svg class="bi text-body-secondary" width="50" height="50" fill="currentColor">
+            <use xlink:href="#person-circle"></use> <!-- ID иконки из хранилища -->
+        </svg>
+        {% endif %}
+
+        {% if user == object %}
+            <div>
+                <a href="{% url 'blog:moderator_update' object.pk %}" class="card-link btn ">Изменить</a>
+            </div>
+        {% endif %}
+
+        <p class="text-center mt-2">
+            <small class="text-body-secondary">Присоединился {{ moderator.joined_at|date:"F Y" }}</small>
+        </p>
+
+    {% endif %}
+{% endblock %}

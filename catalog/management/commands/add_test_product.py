@@ -7,6 +7,7 @@ from config import settings
 
 class Command(BaseCommand):
     """Класс кастомной команды"""
+
     help = "Load test data from fixture"
 
     def handle(self, *args, **kwargs):
@@ -46,18 +47,42 @@ class Command(BaseCommand):
                 )"""
 
             # Альтернативно создаем
-            category_1, _ = Category.objects.get_or_create(name='Категория 1', description='',)
-            category_2, _ = Category.objects.get_or_create(name='Категория 2', description='',)
+            category_1, _ = Category.objects.get_or_create(
+                name="Категория 1",
+                description="",
+            )
+            category_2, _ = Category.objects.get_or_create(
+                name="Категория 2",
+                description="",
+            )
 
             products = [
-                {'name': 'Продукт 1', 'description': 'Описание 1', 'category': category_1},
-                {'name': 'Продукт 3', 'description': 'Описание 3', 'category': category_1},
-                {'name': 'Продукт 2', 'description': 'Описание 2', 'category': category_2},
+                {
+                    "name": "Продукт 1",
+                    "description": "Описание 1",
+                    "category": category_1,
+                },
+                {
+                    "name": "Продукт 3",
+                    "description": "Описание 3",
+                    "category": category_1,
+                },
+                {
+                    "name": "Продукт 2",
+                    "description": "Описание 2",
+                    "category": category_2,
+                },
             ]
 
             for product in products:
                 product, created = Product.objects.get_or_create(**product)
                 if created:
-                    self.stdout.write(self.style.SUCCESS(f'Successfully added product: {product.name}'))
+                    self.stdout.write(
+                        self.style.SUCCESS(
+                            f"Successfully added product: {product.name}"
+                        )
+                    )
                 else:
-                    self.stdout.write(self.style.WARNING(f'Product already exists: {product.name}'))
+                    self.stdout.write(
+                        self.style.WARNING(f"Product already exists: {product.name}")
+                    )

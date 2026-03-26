@@ -1,0 +1,70 @@
+{% extends 'blog/base.html' %}
+{% load blog_tags  %}
+{% block content %}
+
+    {% if user.is_deleted %}
+        <div class="alert alert-warning">
+            Профиль был удален {{ user.deleted_at|date:"d.m.Y в H:i" }}
+        </div>
+
+    {% else %}
+        <!-- Вывод обычного профиля -->
+        <h1 class="display-4">Профиль {{ user.nickname }}</h1>
+        {% if user.profile_img %}
+        <!-- Если фото есть: выводим его -->
+        <img src="{{ user.profile_img | media_filter }}" width="50" height="50" class="rounded-circle shadow-sm">
+        {% else %}
+        <!-- Если фото нет: выводим стандартную иконку (например, "человечка") -->
+        <svg class="bi text-body-secondary" width="50" height="50" fill="currentColor">
+            <use xlink:href="#person-circle"></use> <!-- ID иконки из хранилища -->
+        </svg>
+        {% endif %}
+        <div class="p-4 p-md-5 mb-4 rounded text-body-emphasis bg-body-secondary">О себе</div>
+        <p>{{user.about }}</p>
+        {% if user == object %}
+            <div>
+                <a href="{% url 'blog:user_update' object.pk %}" class="card-link btn ">Изменить</a>
+                <a href="{% url 'blog:user_delete' object.pk %}" class="card-link btn ">Удалить</a>
+            </div>
+        {% endif %}
+
+        <p class="text-center mt-2">
+            <small class="text-body-secondary">Присоединился {{ user.joined_at|date:"F Y" }}</small>
+        </p>
+        <!-- Избранные пользователем посты -->
+        <div class="row">
+            <div class="col-md-4">
+                <h3>Избранное</h3>
+                 {% with page_name='profile' %}
+                    {% include 'blog/favorites_list.html' %}
+                {% endwith %}
+            </div>
+            <!-- Посты пользователя -->
+            <div class="col-md-8">
+                <h3>Мои посты</h3>
+                {# Проверяем посты через related_name (если настроено) или через фильтр в контексте #}
+                {% for post in user.post_set.all %}
+                    <div class="card mb-2">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ post.title }}</h5>
+                            <a href="{{ post.get_absolute_url }}" class="btn btn-sm btn-primary">Читать</a>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="text-center p-4 border dashed">
+                        <p>У вас еще нет созданных постов.</p>
+                        <a href="{% url 'blog:post_create' %}" class="btn btn-success">
+                            Создать первый пост
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+
+
+
+
+
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,33 @@
+{% load tags %}
+<div>
+    <!-- Заголовок меню -->
+    <div class="navbar-brand text-white mb-auto d-flex align-items-center gap-2">
+        <div class="logo-img">
+            <img src="{{ site.logo | media_filter }}" alt="logo">
+        </div>
+        <strong class="ms-3">Меню</strong>
+    </div>
+
+    <!-- Вертикальные кнопки меню -->
+    <nav class="column">
+        <a class="nav-link pe-auto" href="{% url 'catalog:main' %}">Главная</a>
+        <a class="nav-link pe-auto" href="{% url 'catalog:catalogue' %}">Каталог</a>
+        <a class="nav-link pe-auto" href="#">Заказы</a>
+        <a class="nav-link pe-auto" href="{% url 'catalog:contacts' %}">Контакты</a>
+        <a class="nav-link pe-auto" href="{% url 'blog:home' %}" onclick="alert('Это приложение еще в разработке!')">Наш блог</a>
+    </nav>
+</div>
+
+<!-- Секция пользователя (внизу) -->
+<div class="user-section">
+    <div class="d-flex align-items-center mb-2 p-1 rounded hover-bg-dark">
+        <!-- Фото пользователя -->
+        <div class="user-img"><img src="{{ user.photo | media_filter }}" alt="photo"></div>
+        <select class="form-select form-select-sm bg-dark text-white border-secondary pe-auto"
+                aria-label="User menu">
+            <option selected disabled hidden>Пользователь</option>
+            <option value="1">Профиль</option>
+            <option value="2">Выход</option>
+        </select>
+    </div>
+</div>

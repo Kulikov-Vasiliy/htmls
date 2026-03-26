@@ -1,0 +1,105 @@
+{% extends 'catalog/base.html' %}
+{% block content %}
+    <figure class="text-center mb-5">
+        <h1 class="display-4">Контакты</h1>
+    </figure>
+
+    <div class="row w-100 justify-content-center" style="max-width: 100%;">
+        <div class="col-sm-6 mb-3">
+
+            <!-- Карточка контакта -->
+            <div class="card" style="height: auto; max-width: 350px; padding: 20px;">
+                <form method="post" action="{% url 'catalog:contacts' %}" class="row g-3 needs-validation" id="contactForm" novalidate>
+                    {% csrf_token %}
+
+                    <!-- Имя -->
+                    <div class="col-md-12 position-relative">
+                        <label for="validationTooltip01" class="form-label">Имя</label>
+                        <input type="text" name="name" class="form-control" id="validationTooltip01" required>
+                        <div class="invalid-tooltip">Введите ваше имя</div>
+                    </div>
+
+                    <!-- Почта -->
+                    <div class="col-md-12 position-relative">
+                        <label for="validationTooltipUsername" class="form-label">Почта</label>
+                        <div class="input-group has-validation">
+                            <span class="input-group-text">@</span>
+                            <input type="email" name="email" class="form-control" id="validationTooltipUsername" required>
+                            <div class="invalid-tooltip">Укажите корректный email</div>
+                        </div>
+                    </div>
+
+                    <!-- Поле Сообщение -->
+                    <div class="col-md-12 position-relative">
+                        <label for="validationTooltip03" class="form-label">Сообщение</label>
+                        <textarea name="message" class="form-control" id="validationTooltip03" rows="4" required style="resize: both;"></textarea>
+                        <div class="invalid-tooltip">Пожалуйста, напишите сообщение.</div>
+                    </div>
+
+                    <!-- Кнопка отправки -->
+                    <div class="col-12 mt-5">
+                        <button class="btn btn-primary" type="submit">Отправить</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-sm-6 mb-3">
+            <div class="card" style="height: 500px; max-width: 600px; padding: 20px; border: 0px;">
+                <div class="card-body">
+                    <h5 class="card-title" style="text-align: center;">Наши контакты</h5>
+                    <p class="card-text">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                        While these feedback styles cannot be styled with CSS, you can still customize the feedback text through JavaScript
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% with page_name='contacts' %}
+        {% include 'catalog/includes/message_sends.html' %}
+    {% endwith %}
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const contactForm = document.getElementById('contactForm');
+        const inputs = contactForm.querySelectorAll('input, textarea, select');
+
+        // 1. ПРОВЕРКА В МОМЕНТ ВВОДА (Живая валидация)
+        inputs.forEach(input => {
+            input.addEventListener('input', function() {
+                // Если пользователь начал вводить, проверяем поле
+                if (input.checkValidity()) {
+                    input.classList.remove('is-invalid');
+                    input.classList.add('is-valid');
+                } else {
+                    input.classList.remove('is-valid');
+                    input.classList.add('is-invalid');
+                }
+            });
+        });
+
+        // 2. БЛОКИРОВКА ОТПРАВКИ (Если есть ошибки)
+        contactForm.addEventListener('submit', function(event) {
+            if (!contactForm.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+
+                // Подсвечиваем всё, что пропустили
+                contactForm.classList.add('was-validated');
+            }
+        }, false);
+
+        // 3. ОТКРЫТИЕ ОКНА (Только после успешного ответа сервера)
+        {% if messages %}
+            const modalElement = document.getElementById('confirmModal');
+            if (modalElement) {
+                new bootstrap.Modal(modalElement).show();
+            }
+        {% endif %}
+    });
+</script>
+
+{% endblock %}

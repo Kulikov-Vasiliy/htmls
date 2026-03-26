@@ -1,0 +1,30 @@
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Задать обложку</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body text-center">
+                Вы уверены, что хотите сделать пост "<strong>{{ object.title }}</strong>" обложкой?
+            </div>
+
+            <div class="modal-footer d-flex justify-content-center gap-2">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    Нет, выбрать другой
+                </button>
+
+              <button type="submit" form="SetMainForm" class="btn btn-danger">
+                Да, подтверждаю
+              </button>
+
+            <!-- Форма, которая отправит запрос на контроллер -->
+            {% if page_name == 'post_detail' and user.is_staff %}
+                <form id="SetMainForm" action="{% url 'blog:post_detail' object.pk %}" method="post" style="display: none;">
+                    {% csrf_token %}
+                </form>
+            {% endif %}
+       </div>
+    </div>
+</div>

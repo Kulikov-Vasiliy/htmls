@@ -1,0 +1,59 @@
+{% extends 'blog/base.html' %}
+{% block content %}
+    {% if user.is_staff and user.is_active %}
+        <h1> Список модераторов:</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th scope="col">Имя</th>
+                    <th scope="col">Фамилия</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Логин</th>
+                    <th scope="col">Присоединился</th>
+                    <th scope="col">Удален?</th>
+                    <th scope="col">Когда удален</th>
+                    <th scope="col">Статус активности</th>
+                    <th scope="col">Удалить?</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for data in moderators %}
+                    <tr>
+                        <td>{{ data.first_name }}</td>
+                        <td>{{ data.last_name }}</td>
+                        <td>{{ data.email }}</td>
+                        <td>{{ data.login }}</td>
+                        <td>{{ data.joined_at|date:"d.m.Y" }}</td>
+                        <td>{{ data.is_deleted }}</td>
+                         {% if mod.is_deleted %}
+                            <td class="text-danger">Удален ({{ data.deleted_at|date:"d.m.Y" }})</td>
+                        {% else %}
+                            <td class="text-success">Активен</td>
+                        {% endif %}
+                        <td>
+                            {# Ссылка на удаление конкретного модератора #}
+                            <a href="{% url 'blog:moderator_delete' data.pk %}" class="btn btn-sm btn-outline-danger">
+                                Удалить
+                            </a>
+                        </td>
+                    </tr>
+
+                    {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center">Модераторы не найдены</td>
+                        </tr>
+                    {% endfor %}
+
+            </tbody>
+        </table>
+
+        {# Кнопка добавления нового модератора внизу #}
+        <div class="mt-3">
+            <a href="{% url 'blog:moderator_create' %}" class="btn btn-primary">Добавить модератора</a>
+        </div>
+
+    {% else %}
+        <div class="alert alert-danger">Доступ запрещен.</div>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,16 @@
+{% load blog_tags  %}
+<nav class="blog-pagination" aria-label="Pagination">
+    {# Кнопка "Старые": если в URL есть sort=old, она становится серой (secondary) и отключенной #}
+    {% if request.GET.sort == 'old' %}
+        <a class="btn btn-outline-secondary rounded-pill disabled" aria-disabled="true">Старые</a>
+    {% else %}
+        <a class="btn btn-outline-primary rounded-pill" href="?sort=old">Старые</a>
+    {% endif %}
+
+    {# Кнопка "Новые": если в URL НЕТ параметра или sort=new, она становится серой #}
+    {% if request.GET.sort == 'new' or not request.GET.sort %}
+        <a class="btn btn-outline-secondary rounded-pill disabled" aria-disabled="true">Новые</a>
+    {% else %}
+        <a class="btn btn-outline-primary rounded-pill" href="?sort=new">Новые</a>
+    {% endif %}
+</nav>

@@ -1,0 +1,48 @@
+{% extends 'blog/base.html' %}
+{% load blog_tags  %}
+{% block content %}
+    <article class="blog-post">
+        <h2 class="display-5 link-body-emphasis mb-1">{{ post.title }}</h2>
+        {% if post.updated_at %}
+            <p class="blog-post-meta">{{ post.updated_at|date:"j E Y" }}
+                <span>
+                    <a href="{% url 'users:profile' fav.author.pk %}">{{ post.author.nickname }}</a>
+                </span>
+            </p>
+        {% else %}
+            <p class="blog-post-meta">{{ post.posted_at|date:"j E Y" }}
+                <span>
+                    <a href="{% url 'users:profile' fav.author.pk %}">{{ post.author.nickname }}</a>
+                </span>
+            </p>
+        {% endif %}
+
+        <p>{{ post.about_content|safe }}</p>
+        <hr>
+        <p>{{ post.content|safe }}</p>
+    </article>
+    {% if user.is_staff %}
+         <div class="btn-group btn-group-sm" role="group" aria-label="Small button group">
+            <a href="{% url 'blog:set_main' %}" class="btn btn-outline-primary"> На обложку</a>
+        </div>
+    {% endif %}
+
+    <div class="btn-group btn-group-sm" role="group" aria-label="Small button group">
+        <button type="button" class="btn btn-outline-primary"></button>
+        <button type="button" class="btn btn-outline-primary"></button>
+    </div>
+
+    {% for comm in comments %}
+        {% if not comm %}
+            <div class="form-floating">
+                <textarea class="form-control" placeholder="Оставьте комментарий" id="floatingTextarea"></textarea>
+                <label for="floatingTextarea">Оставьте ваш комментарий</label>
+            </div>
+        {% else %}
+            <div class="form-floating">
+                {{ comm }}
+            </div>
+        {% endif %}
+    {% endfor %}
+
+{% endblock %}

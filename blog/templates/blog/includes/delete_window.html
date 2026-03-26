@@ -1,0 +1,47 @@
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Подтвердите действие</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body text-center">
+                Вы уверены, что хотите удалить "<strong>{{ object.nickname|default:object.login }}</strong>"?
+            </div>
+
+            <div class="modal-footer d-flex justify-content-center gap-2">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    Оставить
+                </button>
+
+                {% if page_name == 'user_list' %}
+                    <button type="submit" form="deleteUserForm" class="btn btn-danger">
+                        Да, подтверждаю
+                    </button>
+
+                {% elif page_name == 'moderator_list' %}
+                     <button type="submit"  form="deleteModeratorForm"  class="btn btn-danger">
+                        Да, подтверждаю
+                    </button>
+
+                {% elif page_name == 'profile' %}
+                     <button type="submit"  form="deleteUserForm"  class="btn btn-danger">
+                        Да, подтверждаю
+                    </button>
+                {% endif %}
+            </div>
+
+            <!-- Форма, которая отправит запрос на контроллер -->
+            {% if page_name == 'moderator_list' %}
+                <form id="deleteModeratorForm" action="{% url 'blog:moderator_delete' object.pk %}" method="post" style="display: none;">
+                    {% csrf_token %}
+                </form>
+            {% else %}
+                <form id="deleteUserForm" action="{% url 'blog:user_delete' object.pk %}" method="post" style="display: none;">
+                    {% csrf_token %}
+                </form>
+            {% endif %}
+       </div>
+    </div>
+</div>

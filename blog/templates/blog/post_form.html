@@ -1,0 +1,158 @@
+<!-- <form class="was-validated">
+    <div class="mb-3">
+        <label for="validationTitleTextarea" class="form-label">Заголовок</label>
+        <textarea class="form-control" id="validationTitleTextarea" placeholder="Задайте заголовок" required></textarea>
+        <div class="invalid-feedback">
+           У поста должен быть заголовок
+        </div>
+    </div>
+
+    !-- Даем выбрать тематику --
+    <div>
+        <label for="inputState" class="form-label">Тег</label>
+        <select id="inputState" class="form-select">
+            <option selected>Choose...</option>
+            <option>Мировые</option>
+            <option>Россия</option>
+            <option>Технологии</option>
+            <option>Дизайн</option>
+            <option>Культура</option>
+            <option>Бизнес</option>
+            <option>Политика</option>
+            <option>Мнение</option>
+            <option>Наука</option>
+            <option>Здоровье</option>
+            <option>Стиль</option>
+            <option>Путешествия</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label for="validationAboutTextarea" class="form-label">Кратко о посте</label>
+        <textarea class="form-control" id="validationAboutTextarea" placeholder="О чем ваш пост" required></textarea>
+        <div class="invalid-feedback">
+            "Прорекламируйте" свой пост кратким содержанием
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label for="validationContextTextarea" class="form-label">Контекст поста</label>
+        <textarea class="form-control" id="validationContextTextarea" placeholder="Контекст поста" required></textarea>
+        <div class="invalid-feedback">
+            Пост должен быть пустым?
+        </div>
+    </div>
+
+    !-- Место, если надо выгрузить --
+    <div class="input-group mb-3">
+      <input type="file" class="form-control" id="inputGroupFile02">
+      <label class="input-group-text" for="inputGroupFile02">Выгрузить</label>
+    </div>
+
+    <div class="mb-3">
+        <label for="validationSUBContextTextarea" class="form-label">Контекст поста</label>
+        <textarea class="form-control" id="validationSubContextTextarea" placeholder="Контекст поста" required></textarea>
+        <div class="invalid-feedback">
+            Пост должен быть пустым?
+        </div>
+    </div>
+
+    !-- Кнопки форматирования --
+    <div class="editor-toolbar">
+        !-- Жирный --
+        <button type="button" onclick="applyAiFormat('сделай жирным')" title="Жирный" style="padding: 5px 10px; cursor: pointer;"><b>B</b></button>
+
+        !-- Курсив --
+        <button type="button" onclick="applyAiFormat('сделай курсив')" title="Курсив" style="padding: 5px 10px; cursor: pointer;"><i>I</i></button>
+
+        !-- Ссылка --
+        <button type="button" onclick="applyAiFormat('сделай ссылкой')" title="Ссылка" style="padding: 5px 10px; cursor: pointer;">🔗</button>
+
+        !-- Таблица --
+        <button type="button" onclick="applyAiFormat('создай таблицу')" title="Таблица" style="padding: 5px 10px; cursor: pointer;">📅</button>
+
+        !-- Списки --
+        <button type="button" onclick="applyAiFormat('создай маркированный список')" title="Список" style="padding: 5px 10px; cursor: pointer;">•—</button>
+        <button type="button" onclick="applyAiFormat('создай нумерованный список')" title="Нумерованный список" style="padding: 5px 10px; cursor: pointer;">1.</button>
+
+        !-- Цитата --
+        <button type="button" onclick="applyAiFormat('сделай цитату')" title="Цитата" style="padding: 5px 10px; cursor: pointer;">❝</button>
+
+        !-- Зачеркнутый и Вставленный --
+        <button type="button" onclick="applyAiFormat('сделай зачеркнутый текст')" title="Зачеркнутый" style="padding: 5px 10px; cursor: pointer;"><s>S</s></button>
+        <button type="button" onclick="applyAiFormat('сделай вставленный текст')" title="Подчеркнутый" style="padding: 5px 10px; cursor: pointer;"><u>U</u></button>
+
+        !-- Индексы --
+        <button type="button" onclick="applyAiFormat('сделай нижний индекс')" title="Нижний индекс" style="padding: 5px 10px; cursor: pointer;">x₂</button>
+        <button type="button" onclick="applyAiFormat('сделай верхний индекс')" title="Верхний индекс" style="padding: 5px 10px; cursor: pointer;">x²</button>
+
+        !-- Сноска --
+        <button type="button" onclick="applyAiFormat('сделай сноску')" title="Сноска" style="padding: 5px 10px; cursor: pointer;">[*]</button>
+
+        !-- Пару советов по коду:
+        Логика JS: Убедись, что твоя функция applyAiFormat умеет определять, какой именно текст выделен в поле ввода (textarea),
+        иначе ИИ не будет знать, к чему применять форматирование. --
+    </div>
+</form>
+
+!-- Ваше поле из Django Form
+{{ form.content }}-->
+
+
+
+<!--
+<script>
+    document.getElementById('add-media-btn').addEventListener('click', function(e) {
+        e.preventDefault(); // Предотвращаем случайную отправку формы
+
+        // 1. Находим контейнер, куда будем вставлять новые формы
+        // В вашем случае формы лежат прямо внутри card-body перед кнопкой
+        const container = document.querySelector('.card-body');
+        const button = document.getElementById('add-media-btn');
+
+        // 2. Находим скрытое поле TOTAL_FORMS (Django создаёт его автоматически)
+        // ВАЖНО: Проверьте ID этого поля в коде страницы (обычно 'id_media_list-TOTAL_FORMS')
+        const totalForms = document.querySelector('[id$="-TOTAL_FORMS"]');
+        const formNum = parseInt(totalForms.value);
+
+        // 3. Берем шаблон пустой формы из нашего скрытого div
+        const template = document.getElementById('empty-form-template').innerHTML;
+
+        // 4. Заменяем технический префикс __prefix__ на реальный номер формы
+        const newFormHtml = template.replace(/__prefix__/g, formNum);
+
+        // 5. Вставляем новую форму ПЕРЕД кнопкой "Добавить еще"
+        button.insertAdjacentHTML('beforebegin', newFormHtml);
+
+        // 6. Увеличиваем счетчик форм для Django, чтобы он сохранил новые данные
+        totalForms.value = formNum + 1;
+    });
+</script>
+-->
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <!-- Основные поля поста -->
+    {{ form.as_p }}
+
+    <!-- Управление медиа-формами (ОБЯЗАТЕЛЬНО) -->
+    {{ media_formset.management_form }}
+
+    <div id="media-container">
+        {% for media_form in media_formset %}
+            <div class="media-form-row">
+                {{ media_form.as_p }}
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Скрытый шаблон для новых форм -->
+    <div id="empty-form-template" style="display:none;">
+        <div class="media-form-row">
+            {{ media_formset.empty_form.as_p }}
+        </div>
+    </div>
+
+    <button id="add-media-btn" class="btn btn-secondary">Добавить еще медиа</button>
+    <button type="submit" class="btn btn-primary">Опубликовать</button>
+</form>

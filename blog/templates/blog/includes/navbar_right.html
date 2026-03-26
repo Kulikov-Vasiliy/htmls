@@ -1,0 +1,21 @@
+{% load blog_tags  %}
+<div class="p-4"><h4 class="fst-italic">Архив</h4>
+    <ol class="list-unstyled mb-0">
+        {% for post in posts %}
+            {% if post.posted_at %}
+                <li><a href="{% url 'blog:post_detail' post.pk %}">{{ post.posted_at|date:"E Y" }}</a></li>
+            {% elif post.updated_at %}
+                <li><a href="{% url 'blog:post_detail' post.pk %}">{{ post.updated_at|date:"E Y"}}</a></li>
+            {% endif %}
+        {% endfor %}
+    </ol>
+</div>
+
+<div class="p-4"><h4 class="fst-italic">Ссылки на сторонние источники</h4>
+    <ol class="list-unstyled">
+        <li><a href="#">GitHub</a></li>
+        <li><a href="{% url 'catalog:main' %}">Catalog</a></li>
+        <li><a href="#">Social</a></li>
+        <li><a href="#">Facebook</a></li>
+    </ol>
+</div>
