@@ -12,7 +12,7 @@ from django.views.generic import (
 )
 from django.contrib import messages
 from catalog.models import Product, Category
-from catalog.forms import ProductMediaFormSet, ContactsForm, CategoryForm
+from catalog.forms import ProductMediaFormSet, ContactsForm, CategoryForm, ProductValidationForm
 from django.utils import timezone
 from django.db import transaction
 import os
@@ -88,12 +88,7 @@ class ProductCreateView(CreateView):
     """Контроллер создания продукта"""
 
     model = Product
-    fields = (
-        "name",
-        "description",
-        "category",
-        "price",
-    )
+    form_class = ProductValidationForm
     template_name = "catalog/product_form.html"
     success_url = reverse_lazy("catalog:category.pk")
 
@@ -107,7 +102,6 @@ class ProductCreateView(CreateView):
         else:
             data["media_formset"] = ProductMediaFormSet()
         return data
-
     #
     # def dispatch(self, request, *args, **kwargs):
     #     """Дебаг-метод для проверки подключения контроллера"""
@@ -157,12 +151,7 @@ class ProductUpdateView(UpdateView):
     """Контроллер изменения информации продукта"""
 
     model = Product
-    fields = (
-        "name",
-        "description",
-        "category",
-        "price",
-    )
+    form_class = ProductValidationForm
     template_name = "catalog/product_form.html"
 
     def get_context_data(self, **kwargs):
