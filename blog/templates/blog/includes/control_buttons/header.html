@@ -10,14 +10,14 @@
         </div>
 
         <div class="col-4 d-flex justify-content-end align-items-center">
-            {% include 'blog/includes/svgs/sign_up_in.html' %}
+            {% include 'users/svgs/sign_up_in.html' %}
             <a class="link-secondary" href="#" aria-label="Search">
             <svg class="bi" width="20" height="20" fill="currentColor">
                 <use xlink:href="#search"></use>
             </svg>
 
-            <a class="btn btn-sm btn-outline-secondary  ms-2" href="{% url 'blog:entry' %}">Вход</a>
-            <a class="btn btn-sm btn-outline-secondary  ms-2" href="{% url 'blog:registration' %}">Регистрация</a>
+            <a class="btn btn-sm btn-outline-secondary  ms-2" href="{% url 'users:entry' %}">Вход</a>
+            <a class="btn btn-sm btn-outline-secondary  ms-2" href="{% url 'users:registration' %}">Регистрация</a>
         </div>
     </div>
 </header>
