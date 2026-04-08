@@ -1,5 +1,5 @@
 {% load static %}
-{% load blog_tags %}
+{% load custom_tags %}
 <div class="d-flex align-items-center py-4 bg-body-tertiary">
     <div class="dropdown position-fixed bottom-0 end-0 mb-3 me-3 bd-mode-toggle">
         <button class="btn btn-bd-primary py-2 dropdown-toggle d-flex align-items-center" id="bd-theme" type="button"
@@ -55,12 +55,6 @@
             <h1 class="h3 mb-3 fw-normal">Добро пожаловать!</h1>
 
             <div class="form-floating">
-                <input type="email" name="email" class="form-control" id="floatingInput" placeholder="name@example.com">
-                <label for="floatingInput">Email адрес
-                </label>
-            </div>
-
-            <div class="form-floating">
                 <input type="text" name="first_name" class="form-control" id="floatingUsernameFN" placeholder="name">
                 <label for="floatingUsernameFN">Имя
                 </label>
@@ -75,6 +69,12 @@
             <div class="form-floating">
                 <input type="text" name="country" class="form-control" id="floatingUsernameC" placeholder="country">
                 <label for="floatingUsernameC">Страна
+                </label>
+            </div>
+
+            <div class="form-floating">
+                <input type="email" name="email" class="form-control" id="floatingInput" placeholder="name@example.com">
+                <label for="floatingInput">Email адрес
                 </label>
             </div>
 
