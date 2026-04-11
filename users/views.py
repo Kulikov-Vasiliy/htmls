@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 
 from django.urls import reverse_lazy, reverse
+from django.core.mail import send_mail
 from django.views.generic import (
     ListView,
     DetailView,
@@ -27,56 +28,84 @@ from django.utils import timezone
 from django.db import transaction
 from django.http import HttpResponseRedirect, JsonResponse
 from django.contrib.auth.mixins import UserPassesTestMixin
-from django.contrib import messages
 from django.contrib.auth import login as auth_login
+from django.contrib import messages
+
+from config.settings import EMAIL_HOST_USER
+
 import os
+import secrets
+
+
 
 # Create your views here.
 
 class SignInFormView(FormView):
     """Авторизация"""
-    template_name = "users/users/sign_in.html"
+    template_name = "users/sign_in.html"
     page_name = "entry"
 
     def form_valid(self, form):
         """Валидация пользователя"""
-        # Получаем очищенные данные из формы
-        u_login = form.cleaned_data.get('login')
-        # password = form.cleaned_data.get('password')  # Если добавите поле пароля
+        u_login = form.cleaned_data.get('email')
+        password = form.cleaned_data.get('password')
 
-        # Находим пользователя (пока без пароля можно использовать .get())
-        user_obj = User.objects.filter(username=u_login).first()
+        # 1. Ищем сначала в Модераторах, потом в Пользователях
+        # Используем фильтр по email, так как u_login берется из поля email
+        user_obj = Moderator.objects.filter(email=u_login).first() or \
+                   User.objects.filter(email=u_login).first()
 
         if user_obj:
+            # Проверка пароля
+            if not user_obj.check_password(password):
+                form.add_error('password', 'Неверный пароль')
+                return self.form_invalid(form)
+
+            # Проверка активации
+            if not user_obj.is_active:
+                form.add_error('email', 'Аккаунт не активирован.')
+                return self.form_invalid(form)
+
+            # Если пароль верный и аккаунт активен — логиним
+            # Явно указываем backend, так как используются разные модели
+            if not hasattr(user_obj, 'backend'):
+                user_obj.backend = 'django.contrib.auth.backends.ModelBackend'
+
             auth_login(self.request, user_obj)
 
-            # Вызываем функцию входа, передав объект пользователя
-            if user_obj.is_staff:
-                messages.success(self.request, "Вход выполнен (Модератор)")
-            else:
-                messages.success(self.request, "Вход выполнен (Пользователь)")
+            if isinstance(user_obj, Moderator):
+                messages.success(self.request, f"Вход выполнен (Модератор: {user_obj.username})")
+                return redirect("users:moderator", pk=user_obj.pk)
 
-            return super().form_valid(form)
+            messages.success(self.request, "Вход выполнен (Пользователь)")
+            return redirect("users:profile")
+
         else:
-            form.add_error('login', 'Пользователь не найден')
+            form.add_error('email', 'Пользователь с таким email не найден')
             return self.form_invalid(form)
 
-    def get_success_url(self):
-        """Куда перейти при успешном входе"""
-        if self.request.user.is_staff:
-            return reverse_lazy("users:moderator", kwargs={'pk': self.request.user.pk})
-        return reverse_lazy("blog:home")
+    # def get_success_url(self):
+    #     """Куда перейти при успешном входе"""
+    #     if self.request.user.is_staff:
+    #         return reverse_lazy("users:moderator", kwargs={'pk': self.request.user.pk})
+    #     return reverse_lazy("blog:home")
+
+    def form_invalid(self, form):
+        """Отображает что введено неверно"""
+        print(">>> ФОРМА НЕВАЛИДНА!")
+        print(f">>> Ошибки: {form.errors}")
+        return super().form_invalid(form)
 
 
 class UserCreateView(CreateView):
     """Контроллер создания пользователя"""
     model = User
     form_class = UserCreationForm
-    template_name = "users/users/user_form.html"
+    template_name = "users/user_form.html"
     page_name = "sign_up"
 
     def get_success_url(self):
-        return reverse_lazy("users:user_detail", kwargs={"pk": self.object.pk})
+        return reverse_lazy("users:entry")
 
     def dispatch(self, request, *args, **kwargs):
         """Дебаг-метод для проверки подключения контроллера"""
@@ -85,15 +114,57 @@ class UserCreateView(CreateView):
         print(f">>> Данные пути (kwargs): {kwargs}")
         return super().dispatch(request, *args, **kwargs)
 
+    def form_valid(self, form):
+        """Отправка письма для подтверждения пользователя"""
+        user = form.save(commit=False)
+        user.is_active = False
+
+        token = secrets.token_hex(16)
+        user.token = token
+        user.save()
+
+        host = self.request.get_host()
+        url = f"http://{host}/users/email-confirmation/{token}/"
+        send_mail(
+            subject="Подтверждение почты",
+            message=f"""
+            Здравствуй, уважаемый пользователь!
+  При регистрации в нашем приложении был указан Ваш email-адрес.
+Если это Ваша почта - чтобы подтвердить личность, перейдите по ссылке.
+{url}
+
+Если это письмо пришло по ошибке, то проигнорируйте его.
+""",
+            from_email=EMAIL_HOST_USER,
+            recipient_list=[user.email],
+        )
+
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        """Отображает что введено неверно"""
+        print(">>> ФОРМА НЕВАЛИДНА!")
+        print(f">>> Ошибки: {form.errors}")
+        return super().form_invalid(form)
+
+
+def email_verification(request, token):
+    """Контроллер подтверждения"""
+    user = get_object_or_404(User, token=token)
+    user.is_active = True
+    user.save()
+    messages.success(request, "Почта подтверждена! Теперь вы можете войти.")
+    return redirect(reverse("users:entry"))
+
 
 class UserUpdateView(UpdateView):
-    """Контроллер создания пользователя"""
+    """Контроллер обновления пользователя"""
     model = User
     form_class = UserUpdateForm
-    template_name = "users/users/user_form.html"
+    template_name = "users/user_form.html"
 
     def get_success_url(self):
-        return reverse_lazy("users:user_detail", kwargs={"pk": self.object.pk})
+        return reverse_lazy("users:profile", kwargs={"pk": self.object.pk})
 
     def get_context_data(self, **kwargs):
         """Позволяет добавлять медиафайлы"""
@@ -111,7 +182,7 @@ class UserDetailView(DetailView):
     """Информация пользователя"""
     model = User
     page_name = 'profile'
-    template_name = "users/users/user_detail.html"
+    template_name = "users/user_detail.html"
 
     # def dispatch(self, request, *args, **kwargs):
     #     """Дебаг-метод для проверки подключения контроллера"""
@@ -123,19 +194,22 @@ class UserDetailView(DetailView):
     #     return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
+        """Получение данных пользователя"""
         context = super().get_context_data(**kwargs)
         context["subscription_form"] = UserSubscriptionForm()
         return context
 
     def get_object(self, queryset=None):
+        """Привязка пользователя к бд"""
         obj = super().get_object(queryset)
-        # Автоматическая запись активности БЕЗ ФОРМЫ
 
-        UserActivity.objects.create(
-            user=self.request.user,
-            post=None,  # Если это профиль, а не пост
-            content_object=obj  # Или другая логика связи
-        )
+        # Проверяем, авторизован ли тот, кто зашел на страницу
+        if self.request.user.is_authenticated:
+            UserActivity.objects.create(
+                user=self.request.user,
+                post=None,
+                content_object=obj
+            )
         return obj
 
 
@@ -144,7 +218,7 @@ class UserListView(ListView):
     model = User
     form_class = UserControlForm
     page_name = 'user_list'
-    template_name = "users/moderators/user_form.html"
+    template_name = "users/moderators/user_list.html"
 
     def get_queryset(self):
         # 1. Берем базовый набор (например, всех не удаленных по умолчанию)
@@ -171,7 +245,7 @@ class UserDeleteView(DeleteView):
     """Удаление пользователя"""
     model = User
     form_class = UserDeletionForm
-    template_name = "users/users/user_detail.html"
+    template_name = "users/deletion_window.html"
 
     def get_success_url(self):
         reverse_lazy("blog:home")

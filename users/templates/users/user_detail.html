@@ -1,36 +1,41 @@
 {% extends 'blog/base.html' %}
-{% load blog_tags  %}
+{% load custom_tags  %}
 {% block content %}
+      {% include 'users/svgs/avatar_pass.html' %}
 
-    {% if user.is_deleted %}
+    {% if object.is_deleted %}
         <div class="alert alert-warning">
-            Профиль был удален {{ user.deleted_at|date:"d.m.Y в H:i" }}
+            Профиль был удален {{ object.deleted_at|date:"d.m.Y в H:i" }}
         </div>
 
     {% else %}
         <!-- Вывод обычного профиля -->
-        <h1 class="display-4">Профиль {{ user.nickname }}</h1>
-        {% if user.profile_img %}
-        <!-- Если фото есть: выводим его -->
-        <img src="{{ user.profile_img | media_filter }}" width="50" height="50" class="rounded-circle shadow-sm">
-        {% else %}
-        <!-- Если фото нет: выводим стандартную иконку (например, "человечка") -->
-        <svg class="bi text-body-secondary" width="50" height="50" fill="currentColor">
-            <use xlink:href="#person-circle"></use> <!-- ID иконки из хранилища -->
-        </svg>
-        {% endif %}
-        <div class="p-4 p-md-5 mb-4 rounded text-body-emphasis bg-body-secondary">О себе</div>
-        <p>{{user.about }}</p>
-        {% if user == object %}
-            <div>
-                <a href="{% url 'blog:user_update' object.pk %}" class="card-link btn ">Изменить</a>
-                <a href="{% url 'blog:user_delete' object.pk %}" class="card-link btn ">Удалить</a>
+        <div class="d-flex align-items-center justify-content-center mb-3">
+            <div class="me-3">
+                {%  if not object.avatar.name or object.avatar is None %}
+                    <!-- Если фото нет: выводим стандартную иконку (например, "человечка") -->
+                    <svg class="bi text-body-secondary" width="50" height="50" fill="currentColor">
+                        <use xlink:href="#person-circle"></use> <!-- ID иконки из хранилища -->
+                    </svg>
+                {% else %}
+                    <!-- Если фото есть: выводим его -->
+                    <img src="{{ object.avatar | media_filter }}" width="50" height="50" class="rounded-circle shadow-sm">
+                {% endif %}
             </div>
-        {% endif %}
+                {% if user.is_authenticated and user.is_active and user == object %}
+                    <h5 class="display-5 mb-0 mt-0">Мой профиль</h5>
+                {% else %}
+                    <h5 class="display-5 mb-0 mt-0">Профиль {{ object.nickname }}</h5>
+                {% endif %}
+        </div>
 
         <p class="text-center mt-2">
-            <small class="text-body-secondary">Присоединился {{ user.joined_at|date:"F Y" }}</small>
+            <small class="text-body-secondary">Присоединился {{ object.joined_at|date:"F Y" }}</small>
         </p>
+
+        <div class="d-flex justify-content-center p-4 p-md-5 mb-4 rounded text-body-emphasis bg-body-secondary">О себе</div>
+        <p>{{object.about|default:"Здесь могла быть информация профиля =(" }}</p>
+
         <!-- Избранные пользователем посты -->
         <div class="row">
             <div class="col-md-4">
@@ -39,10 +44,10 @@
                     {% include 'blog/favorites_list.html' %}
                 {% endwith %}
             </div>
+
             <!-- Посты пользователя -->
             <div class="col-md-8">
                 <h3>Мои посты</h3>
-                {# Проверяем посты через related_name (если настроено) или через фильтр в контексте #}
                 {% for post in user.post_set.all %}
                     <div class="card mb-2">
                         <div class="card-body">
@@ -60,11 +65,6 @@
                 {% endfor %}
             </div>
         </div>
-
-
-
-
-
 
     {% endif %}
 {% endblock %}

@@ -105,7 +105,7 @@
                 Разделение контента: Класс col-md-8 отводит этой секции 2/3 ширины страницы на больших экранах, оставляя оставшуюся 1/3 (col-md-4) под боковую панель (Sidebar) с архивом и ссылками.
                 Визуальный маркер: Линия снизу (border-bottom) и курсив (fst-italic) отделяют заголовок секции от самих статей, создавая классический газетный стиль.
                 -->
-                <h3 class="pb-4 mb-4 fst-italic border-bottom">Статьи</h3>
+                <h3 class="pb-2 mb-2 fst-italic border-bottom">Статьи</h3>
 
                 <div>
                     {% block content %}
@@ -121,22 +121,15 @@
             <div class="col-md-4">
                 <div class="position-sticky" style="top: 2rem;">
                     <!-- Превью блога -->
-                    {% if page_name == 'profile' %}
-                        <div class="p-4 mb-3 bg-body-tertiary rounded"><h4 class="fst-italic">О пользователе {{ user.nickname }}</h4>
-                            <p class="mb-0">
-                                {{ user.about }}
-                            </p>
-                        </div>
-                    {% else %}
-                        <div class="p-4 mb-3 bg-body-tertiary rounded"><h4 class="fst-italic">О нас</h4>
-                            <p class="mb-0">
-                                Блог был создан в рамках ознакомления с версткой веб-страниц
-                                и работой с django для домашней работы.
-                            </p>
-                        </div>
-                    {% endif %}
+
+                    <div class="p-4 mb-3 bg-body-tertiary rounded"><h4 class="fst-italic">О нас</h4>
+                        <p class="mb-0">
+                            Блог был создан в рамках ознакомления с версткой веб-страниц
+                            и работой с django для домашней работы.
+                        </p>
+                    </div>
                     <div>
-                        <!-- Последние посты -->
+                        <!-- Последние публикации -->
                         <h4 class="fst-italic">Последние посты</h4>
                         {% for post in some_list %}
                             <ul class="list-unstyled">

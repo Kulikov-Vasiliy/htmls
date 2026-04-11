@@ -15,9 +15,16 @@
             <svg class="bi" width="20" height="20" fill="currentColor">
                 <use xlink:href="#search"></use>
             </svg>
+            {% if user.is_authenticated and user == object %}
+                <a class="btn btn-sm btn-outline-secondary  ms-2" href="{% url 'blog:main' %}">Выход</a>
+                <a class="btn btn-sm btn-outline-danger  ms-2" href="{% url 'blog:main' %}">Удалить</a>
+                <a class="btn btn-sm btn-outline-secondary  ms-2" href="{% url 'users:profile_update' object.pk %}">Обновить информацию</a>
 
-            <a class="btn btn-sm btn-outline-secondary  ms-2" href="{% url 'users:entry' %}">Вход</a>
-            <a class="btn btn-sm btn-outline-secondary  ms-2" href="{% url 'users:registration' %}">Регистрация</a>
+            {% else %}
+                <a class="btn btn-sm btn-outline-secondary  ms-2" href="{% url 'users:entry' %}">Вход</a>
+                <a class="btn btn-sm btn-outline-secondary  ms-2" href="{% url 'users:registration' %}">Регистрация</a>
+            {% endif %}
+
         </div>
     </div>
 </header>

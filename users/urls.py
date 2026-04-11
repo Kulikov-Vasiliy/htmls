@@ -10,7 +10,7 @@ urlpatterns = [
     path("sign_in/", LoginView.as_view(template_name="users/sign_in.html"), name="entry"),
 
     path("user/<int:pk>/", views.UserDetailView.as_view(), name="profile"),
-    path("user/<int:pk>/update/", views.UserDetailView.as_view(), name="profile_update"),
+    path("user/<int:pk>/update/", views.UserUpdateView.as_view(), name="profile_update"),
     path("user/<int:pk>/delete/", views.UserDeleteView.as_view(), name="profile_delete"),
 
     path("moderator/<int:pk>/", views.ModeratorDetailView.as_view(), name="moderator"),
@@ -20,4 +20,6 @@ urlpatterns = [
 
     path("moderator_list/", views.ModeratorsListView.as_view(), name="moderator_list"),
     path("user_list/", views.UserListView.as_view(), name="user_list"),
+
+    path("email-confirmation/<str:token>/", views.email_verification, name="email_confirm"),
 ]

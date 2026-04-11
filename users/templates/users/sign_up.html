@@ -1,122 +1,147 @@
+{% extends 'users/base.html' %}
 {% load static %}
 {% load custom_tags %}
-<div class="d-flex align-items-center py-4 bg-body-tertiary">
-    <div class="dropdown position-fixed bottom-0 end-0 mb-3 me-3 bd-mode-toggle">
-        <button class="btn btn-bd-primary py-2 dropdown-toggle d-flex align-items-center" id="bd-theme" type="button"
-                aria-expanded="false" data-bs-toggle="dropdown" aria-label="Toggle theme (auto)">
-            <svg class="bi my-1 theme-icon-active" aria-hidden="true">
-                <use href="#circle-half"></use>
-            </svg>
-            <span class="visually-hidden" id="bd-theme-text">Toggle theme</span>
-        </button>
-        <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="bd-theme-text">
-            <li>
-                <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="light"
-                        aria-pressed="false">
-                    <svg class="bi me-2 opacity-50" aria-hidden="true">
-                        <use href="#sun-fill"></use>
-                    </svg>
-                    Светлый
-                    <svg class="bi ms-auto d-none" aria-hidden="true">
-                        <use href="#check2"></use>
-                    </svg>
-                </button>
-            </li>
-            <li>
-                <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="dark"
-                        aria-pressed="false">
-                    <svg class="bi me-2 opacity-50" aria-hidden="true">
-                        <use href="#moon-stars-fill"></use>
-                    </svg>
-                    Темный
-                    <svg class="bi ms-auto d-none" aria-hidden="true">
-                        <use href="#check2"></use>
-                    </svg>
-                </button>
-            </li>
-            <li>
-                <button type="button" class="dropdown-item d-flex align-items-center active" data-bs-theme-value="auto"
-                        aria-pressed="true">
-                    <svg class="bi me-2 opacity-50" aria-hidden="true">
-                        <use href="#circle-half"></use>
-                    </svg>
-                    Авто
-                    <svg class="bi ms-auto d-none" aria-hidden="true">
-                        <use href="#check2"></use>
-                    </svg>
-                </button>
-            </li>
-        </ul>
+{% block content %}
+    <div class="d-flex align-items-center py-4 bg-body-tertiary">
+        <div class="dropdown position-fixed bottom-0 end-0 mb-3 me-3 bd-mode-toggle">
+            <button class="btn btn-bd-primary py-2 dropdown-toggle d-flex align-items-center" id="bd-theme" type="button"
+                    aria-expanded="false" data-bs-toggle="dropdown" aria-label="Toggle theme (auto)">
+                <svg class="bi my-1 theme-icon-active" aria-hidden="true">
+                    <use href="#circle-half"></use>
+                </svg>
+                <span class="visually-hidden" id="bd-theme-text">Toggle theme</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="bd-theme-text">
+                <li>
+                    <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="light"
+                            aria-pressed="false">
+                        <svg class="bi me-2 opacity-50" aria-hidden="true">
+                            <use href="#sun-fill"></use>
+                        </svg>
+                        Светлый
+                        <svg class="bi ms-auto d-none" aria-hidden="true">
+                            <use href="#check2"></use>
+                        </svg>
+                    </button>
+                </li>
+                <li>
+                    <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="dark"
+                            aria-pressed="false">
+                        <svg class="bi me-2 opacity-50" aria-hidden="true">
+                            <use href="#moon-stars-fill"></use>
+                        </svg>
+                        Темный
+                        <svg class="bi ms-auto d-none" aria-hidden="true">
+                            <use href="#check2"></use>
+                        </svg>
+                    </button>
+                </li>
+                <li>
+                    <button type="button" class="dropdown-item d-flex align-items-center active" data-bs-theme-value="auto"
+                            aria-pressed="true">
+                        <svg class="bi me-2 opacity-50" aria-hidden="true">
+                            <use href="#circle-half"></use>
+                        </svg>
+                        Авто
+                        <svg class="bi ms-auto d-none" aria-hidden="true">
+                            <use href="#check2"></use>
+                        </svg>
+                    </button>
+                </li>
+            </ul>
+        </div>
+
+        <main class="form-signin w-100 m-auto">
+            {% if form.errors %}
+                <div class="alert alert-danger">
+                    <strong>Пожалуйста, исправьте ошибки:</strong>
+                    {{ form.errors }}
+                </div>
+            {% endif %}
+
+           <form method="post">
+               {% csrf_token %}
+
+               <div class="d-flex justify-content-center">
+                   <img class="me-4 mb-3" src="{% static 'bootstrap-5.3.8-examples/assets/brand/bootstrap-logo.svg' %}" alt="" width="72" height="57">
+                   <h1 class="h3 mb-3 fw-normal">Добро пожаловать!</h1>
+               </div>
+
+                <div class="form-floating">
+                    <input type="text" name="first_name" class="form-control" id="floatingUsernameFN" placeholder="name">
+                    <label for="floatingUsernameFN">Имя
+                    </label>
+                </div>
+
+                <div class="form-floating">
+                    <input type="text" name="last_name" class="form-control" id="floatingUsernameLN" placeholder="family">
+                    <label for="floatingUsernameLN">Фамилия
+                    </label>
+                </div>
+
+                <div class="form-floating">
+                    <input type="text" name="country" class="form-control" id="floatingUsernameC" placeholder="country">
+                    <label for="floatingUsernameC">Страна
+                    </label>
+                </div>
+
+                <div class="form-floating">
+                    <input type="email" name="email" class="form-control" id="floatingInput" placeholder="name@example.com">
+                    <label for="floatingInput">Email адрес
+                    </label>
+                </div>
+
+                <div class="form-floating">
+                    <input type="text" name="phone_number" class="form-control" id="phoneNumber" placeholder="phone">
+                    <label for="phoneNumber">Номер телефона
+                    </label>
+                </div>
+
+                <div class="form-floating">
+                    <input type="text"
+                           name="login"
+                           class="form-control"
+                           id="floatingUsername"
+                           placeholder="login"
+                           autocomplete="username"
+                           required>
+                    <label for="floatingUsername">Логин</label>
+                </div>
+
+                <div class="form-floating">
+                     <input type="text"
+                            name="nickname"
+                            class="form-control"
+                            id="floatingNickname"
+                            placeholder="nickname"
+                            autocomplete="username"
+                            required>
+                     <label for="floatingNickname">Ваш ник</label>
+                </div>
+
+                <div class="form-floating">
+                    <input type="password" name="password" class="form-control" id="floatingPassword1" placeholder="Password">
+                    <label for="floatingPassword1">Пароль
+                    </label>
+                </div>
+
+                <div class="form-floating">
+                    <input type="password" name="password_confirm" class="form-control" id="floatingPassword2" placeholder="Password confirmation">
+                    <label for="floatingPassword2">Подтверждение пароля
+                    </label>
+                </div>
+
+                <div class="form-check text-start my-3">
+                    <input class="form-check-input" type="checkbox" value="remember-me" id="checkDefault">
+                    <label class="form-check-label" for="checkDefault">
+                        Запомнить
+                    </label>
+                </div>
+
+                <button class="btn btn-primary w-100 py-2" type="submit">Зарегистрироваться</button>
+                <!-- <p class="mt-5 mb-3 text-body-secondary">&copy; 2017–2025</p> -->
+
+            </form>
+        </main>
     </div>
-    <main class="form-signin w-100 m-auto">
-       <form method="post">
-        {% csrf_token %}
-            <img class="mb-4" src="{% static 'bootstrap-5.3.8.tar.gz/site/docs/assets/brand/bootstrap-logo.svg' %}" alt="" width="72" height="57">
-            <h1 class="h3 mb-3 fw-normal">Добро пожаловать!</h1>
-
-            <div class="form-floating">
-                <input type="text" name="first_name" class="form-control" id="floatingUsernameFN" placeholder="name">
-                <label for="floatingUsernameFN">Имя
-                </label>
-            </div>
-
-            <div class="form-floating">
-                <input type="text" name="last_name" class="form-control" id="floatingUsernameLN" placeholder="family">
-                <label for="floatingUsernameLN">Фамилия
-                </label>
-            </div>
-
-            <div class="form-floating">
-                <input type="text" name="country" class="form-control" id="floatingUsernameC" placeholder="country">
-                <label for="floatingUsernameC">Страна
-                </label>
-            </div>
-
-            <div class="form-floating">
-                <input type="email" name="email" class="form-control" id="floatingInput" placeholder="name@example.com">
-                <label for="floatingInput">Email адрес
-                </label>
-            </div>
-
-            <div class="form-floating">
-                <input type="text" name="country" class="form-control" id="phoneNumber" placeholder="phone">
-                <label for="phoneNumber">Номер телефона
-                </label>
-            </div>
-
-            <div class="form-floating">
-                <input type="text"
-                       name="username"
-                       class="form-control"
-                       id="floatingUsername"
-                       placeholder="login"
-                       autocomplete="username"
-                       required>
-                <label for="floatingUsername">Логин</label>
-            </div>
-
-            <div class="form-floating">
-                <input type="password" name="password" class="form-control" id="floatingPassword1" placeholder="Password">
-                <label for="floatingPassword1">Пароль
-                </label>
-            </div>
-
-            <div class="form-floating">
-                <input type="password" name="password_confirm" class="form-control" id="floatingPassword2" placeholder="Password confirmation">
-                <label for="floatingPassword2">Подтверждение пароля
-                </label>
-            </div>
-
-            <div class="form-check text-start my-3">
-                <input class="form-check-input" type="checkbox" value="remember-me" id="checkDefault">
-                <label class="form-check-label" for="checkDefault">
-                    Запомнить
-                </label>
-            </div>
-
-            <button class="btn btn-primary w-100 py-2" type="submit">Вход</button>
-            <!-- <p class="mt-5 mb-3 text-body-secondary">&copy; 2017–2025</p> -->
-
-        </form>
-    </main>
-</div>
+{% endblock %}

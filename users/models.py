@@ -38,15 +38,15 @@ class User(AbstractUser):
     last_name = models.CharField(max_length=20, verbose_name="Фамилия")
     email = models.EmailField(unique=True, verbose_name="Электронная почта")
     phone_number = models.CharField(max_length=11, unique=True, verbose_name="Телефон", blank=True, null=True)
-    country = models.CharField(max_length=10, unique=True, verbose_name="Страна")
+    country = models.CharField(max_length=10, verbose_name="Страна")
     nickname = models.CharField(max_length=10, unique=True, verbose_name="Ник")
-    about = models.CharField(max_length=1000, unique=True, verbose_name="О себе")
+    about = models.CharField(max_length=1000, null=True, blank=True, verbose_name="О себе")
     login = models.CharField(max_length=10, unique=True, verbose_name="Логин")
     joined_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
     DELETION = [("DELETE", "удалить"), ("CANCEL", "не удалять")]
     is_delete = models.CharField(max_length=10, default="CANCEL", choices=DELETION)
     is_deleted = models.BooleanField(default=False, verbose_name="Удален")
-    deleted_at = models.DateTimeField(verbose_name="Дата и время удаления")
+    deleted_at = models.DateTimeField(null=True, blank=True, verbose_name="Дата и время удаления")
 
     avatar = models.ImageField(
         upload_to=get_upload_path,
@@ -57,6 +57,8 @@ class User(AbstractUser):
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
+
+    token = models.CharField(max_length=50, blank=True, null=True, verbose_name="Token")
 
     def delete(self, *args, **kwargs):
         """Мягкое удаление"""
@@ -149,7 +151,7 @@ class Moderator(AbstractUser):
     last_name = models.CharField(max_length=20, verbose_name="Фамилия")
     email = models.EmailField(unique=True, verbose_name="Электронная почта")
     phone_number = models.CharField(max_length=11, unique=True, verbose_name="Телефон", blank=True, null=True)
-    country = models.CharField(max_length=10, unique=True, verbose_name="Страна")
+    country = models.CharField(max_length=10, verbose_name="Страна")
     login = models.CharField(max_length=10, unique=True, verbose_name="Логин")
     joined_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
     DELETION = [("DELETE", "удалить"), ("CANCEL", "не удалять")]
