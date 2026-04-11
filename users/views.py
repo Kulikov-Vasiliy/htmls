@@ -22,6 +22,7 @@ from users.forms import (
     ModeratorCreationForm,
     ModeratorUpdateForm,
     ModeratorDeletionForm,
+    SignInForm,
 )
 
 from django.utils import timezone
@@ -42,6 +43,7 @@ import secrets
 
 class SignInFormView(FormView):
     """Авторизация"""
+    form_class = SignInForm
     template_name = "users/sign_in.html"
     page_name = "entry"
 
@@ -78,10 +80,11 @@ class SignInFormView(FormView):
                 return redirect("users:moderator", pk=user_obj.pk)
 
             messages.success(self.request, "Вход выполнен (Пользователь)")
-            return redirect("users:profile")
+            return redirect("users:profile",  pk=user_obj.pk)
 
         else:
             form.add_error('email', 'Пользователь с таким email не найден')
+            form.add_error('password', 'Пароль не верный')
             return self.form_invalid(form)
 
     # def get_success_url(self):

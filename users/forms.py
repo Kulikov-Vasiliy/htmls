@@ -2,7 +2,11 @@ from django import forms
 from users.models import User, UserActivity, Subscription, Moderator
 
 # from django.contrib.auth.forms import UserCreationForm
-# from users.models import UsersCustomModel, UserActivity, Subscription, Moderator
+
+
+class SignInForm(forms.Form):
+    email = forms.EmailField()
+    password = forms.CharField(widget=forms.PasswordInput)
 
 
 class UserCreationForm(forms.ModelForm):

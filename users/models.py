@@ -1,11 +1,25 @@
 from django.utils import timezone
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.urls import reverse
-
+from django.contrib.auth.base_user import BaseUserManager
 
 
 # Create your models here.
+class MyUserManager(BaseUserManager):
+    def create_user(self, email, password=None, **extra_fields):
+        if not email:
+            raise ValueError('Email обязателен')
+        email = self.normalize_email(email)
+        user = self.model(email=email, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, email, password=None, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+        return self.create_user(email, password, **extra_fields)
+
 def get_upload_path(instance, filename):
     """Определяет путь сохранения медиафайла"""
     profile_id = instance.id if instance.id else "new"
@@ -24,7 +38,7 @@ class User(AbstractUser):
         related_name='custom_user_set',  # Уникальное имя
         blank=True,
         help_text='The groups this user belongs to.',
-        verbose_name='groups',
+        verbose_name='users',
     )
     user_permissions = models.ManyToManyField(
         'auth.Permission',
@@ -33,6 +47,7 @@ class User(AbstractUser):
         help_text='Specific permissions for this user.',
         verbose_name='user permissions',
     )
+    objects = MyUserManager()
 
     first_name = models.CharField(max_length=10, verbose_name="Имя")
     last_name = models.CharField(max_length=20, verbose_name="Фамилия")
@@ -146,6 +161,24 @@ class Moderator(AbstractUser):
     Модель модератора
     """
     username = None
+    groups = models.ManyToManyField(
+        'auth.Group',
+        related_name='custom_moderators_set',  # Уникальное имя
+        blank=True,
+        help_text='The groups this user belongs to.',
+        verbose_name='moderators',
+    )
+    user_permissions = models.ManyToManyField(
+        'auth.Permission',
+        related_name='custom_moderator_permissions_set',  # Уникальное имя
+        blank=True,
+        help_text='Specific permissions for this user.',
+        verbose_name='moderator permissions',
+    )
+    objects = MyUserManager()  # Используем тот же менеджер
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
 
     first_name = models.CharField(max_length=10, verbose_name="Имя")
     last_name = models.CharField(max_length=20, verbose_name="Фамилия")

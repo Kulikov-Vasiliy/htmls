@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
 from users.models import User, UserActivity,  Subscription, Moderator
 
 # Register your models here.
@@ -33,7 +34,7 @@ class SubscriptionAdmin(admin.ModelAdmin):
 
 
 @admin.register(Moderator)
-class ModeratorAdmin(admin.ModelAdmin):
+class ModeratorAdmin(UserAdmin):
     list_display = ('login', 'email', 'is_staff', 'is_active', 'post', 'author', 'is_deleted')
     list_filter = ('is_staff', 'is_active', 'is_deleted', 'joined_at')
     search_fields = ('login', 'email', 'first_name', 'last_name', 'post__title')
