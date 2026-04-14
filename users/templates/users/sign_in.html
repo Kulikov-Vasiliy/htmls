@@ -52,10 +52,11 @@
         </div>
         <main class="form-signin w-100 m-auto">
 
-              {% if form.errors %}
+            {% if form.non_field_errors %}
                 <div class="alert alert-danger">
-                    <strong>Пожалуйста, исправьте ошибки:</strong>
-                    {{ form.errors }}
+                    {% for error in form.non_field_errors %}
+                        {{ error }}
+                    {% endfor %}
                 </div>
             {% endif %}
 

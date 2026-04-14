@@ -65,7 +65,7 @@ class HomeListView(ListView):
     def get_queryset(self, **kwargs):
         """Получение заполнения макета с фильтрацией"""
         # Заготовка на будущее пока что
-        queryset = Post.objects.filter(is_published=True)
+        queryset = Post.objects.filter(is_published=True, author__isnull=False)
         filter_type = self.request.GET.get("filter")
 
         if filter_type == "top":
@@ -94,6 +94,9 @@ class HomeListView(ListView):
         """Метод отвечает за подготовку данных, которые полетят в HTML-шаблон"""
         context = super().get_context_data(**kwargs)
         context['page_name'] = 'home'
+        context['main'] = Post.objects.filter(is_published=True, author__isnull=False)
+        context['main'] = Post.objects.filter(is_published=True, author__isnull=False)
+
         return context
 
 
@@ -103,12 +106,41 @@ class PostCreateView(CreateView):
     form_class = PostCreationForm
 
     def get_success_url(self):
-        return reverse_lazy("blog:post_detail", kwargs={"pk": self.object.pk})
+        return redirect('users:profile', pk=self.object.author.pk)
+        # return reverse_lazy("blog:post_detail", kwargs={"pk": self.object.pk})
 
-    def form_valid_user_authorship(self, form):
-        """Автоматически назначаем автора текущего пользователя"""
-        form.instance.author = self.request.user
-        return super().form_valid(form)
+    def form_valid(self, form):
+        """Объединенная логика сохранения поста, автора и медиафайлов"""
+        print("--- DEBUG: Данные формы ---")
+        for field in form.fields:
+            print(f"Поле: {field}, Значение: {form.cleaned_data.get(field)}")
+
+        context = self.get_context_data()
+        media_formset = context["media_formset"]
+
+        # Используем транзакцию, чтобы пост не создался, если картинки не загрузятся
+        try:
+            with transaction.atomic():
+                # 1. Сохраняем пост, назначая автора
+                self.object = form.save(commit=False)
+                self.object.author = self.request.user  # Исправлено с .Users.user
+                self.object.save()
+
+                # 2. Связываем формсет с постом и сохраняем
+                if media_formset.is_valid():
+                    media_formset.instance = self.object
+                    media_formset.save()
+                    return redirect('users:profile', pk=self.request.user.pk)
+                else:
+                    # Если медиа невалидны, возвращаем форму с ошибками
+                    return self.form_invalid(form)
+
+            # return HttpResponseRedirect(self.get_success_url())
+
+        except Exception as e:
+            # Логируем ошибку, если что-то пошло не так при записи в БД
+            form.add_error(None, f"Ошибка при сохранении: {e}")
+            return self.form_invalid(form)
 
     # def dispatch(self, request, *args, **kwargs):
     #     """Дебаг-метод для проверки подключения контроллера"""
@@ -152,35 +184,35 @@ class PostCreateView(CreateView):
             data["media_formset"] = PostMediaFormSet()
 
         return data
-
-    def form_valid(self, form):
-        """Позволяет работать с медиафайлами"""
-        context = self.get_context_data()
-        media_formset = context["media_formset"]
-
-        with transaction.atomic():
-            # 1. Подготовка и сохранение основного объекта
-            self.object = form.save(commit=False)
-            self.object.author = self.request.user
-            self.object.post_id = self.kwargs.get('pk')  # ID поста из URL
-            self.object.save()
-
-            # 2. Валидация и сохранение медиа-формсета
-            if media_formset.is_valid():
-                media_formset.instance = self.object
-                media_formset.save()
-            else:
-                # Если картинки «кривые», откатываем транзакцию и показываем ошибки
-                return self.form_invalid(form)
-
-        # 3. Дебаг
-        if hasattr(self.object, 'image') and self.object.image:
-            print(f"Файл создан: {self.object.image.path}")
-        elif hasattr(self.object, 'video') and self.object.video:
-            print(f"Файл создан: {self.object.video.path}")
-
-        # 4. Финальный редирект
-        return HttpResponseRedirect(self.get_success_url())
+    #
+    # def form_valid(self, form):
+    #     """Позволяет работать с медиафайлами"""
+    #     context = self.get_context_data()
+    #     media_formset = context["media_formset"]
+    #
+    #     with transaction.atomic():
+    #         # 1. Подготовка и сохранение основного объекта
+    #         self.object = form.save(commit=False)
+    #         self.object.author = self.request.user
+    #         self.object.post_id = self.kwargs.get('pk')  # ID поста из URL
+    #         self.object.save()
+    #
+    #         # 2. Валидация и сохранение медиа-формсета
+    #         if media_formset.is_valid():
+    #             media_formset.instance = self.object
+    #             media_formset.save()
+    #         else:
+    #             # Если картинки «кривые», откатываем транзакцию и показываем ошибки
+    #             return self.form_invalid(form)
+    #
+    #     # 3. Дебаг
+    #     if hasattr(self.object, 'image') and self.object.image:
+    #         print(f"Файл создан: {self.object.image.path}")
+    #     elif hasattr(self.object, 'video') and self.object.video:
+    #         print(f"Файл создан: {self.object.video.path}")
+    #
+    #     # 4. Финальный редирект
+    #     return HttpResponseRedirect(self.get_success_url())
 
 
 class PostDetailView(DetailView):
@@ -188,6 +220,7 @@ class PostDetailView(DetailView):
     model = Post
     page_name = 'post_detail'
     form_class = PostBaseForm
+    context_object_name = "post"
 
     def get_object(self, queryset=None):
         """Получаем пост и увеличиваем n просмотров на 1"""
@@ -221,8 +254,22 @@ class PostDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["post"] = PostForm()
+
+        # 1. Комментарии: передаем форму под именем 'comment_form'
+        context["comment_form"] = CommentForm()
+        context["comments"] = self.object.comments.all()
+
+        # 2. Лайки/Дизлайки: они уже есть в объекте 'post',
+        # но если нужна логика проверки "лайкнул ли текущий юзер", добавляем флаги:
+        user = self.request.user
+        if user.is_authenticated:
+            context["is_favorite"] = self.object.favorites.filter(id=user.id).exists()
+
         return context
+
+        # context = super().get_context_data(**kwargs)
+        # context["post"] = PostForm()
+        # return context
 
 
 class PostUpdateView(UpdateView):
@@ -313,7 +360,6 @@ class PostDeleteView(UpdateView):
     def get_success_url(self):
         reverse_lazy("blog:home")
 
-
     def form_valid(self, form):
         # Проверяем, что выбрано именно "YES" в форме
         if form.cleaned_data.get('is_delete') == "YES":
@@ -326,6 +372,7 @@ class PostDeleteView(UpdateView):
 
         # Если выбрали "NO", просто возвращаем на страницу поста
         return redirect(self.object.get_absolute_url())
+
 
 class CommentCreateView(CreateView):
     """Создание комментария к посту"""
@@ -490,7 +537,7 @@ class CategoriesDetailView(DetailView):
     """Тематика постов"""
     model = Categories
     template_name = 'blog/categories.html'
-    context_object_name = 'categories'
+    context_object_name = 'tags'
 
     # def dispatch(self, request, *args, **kwargs):
     #     """Дебаг-метод для проверки подключения контроллера"""
@@ -502,8 +549,7 @@ class CategoriesDetailView(DetailView):
     def get_context_data(self, **kwargs):
         """Метод отвечает за подготовку данных, которые полетят в HTML-шаблон"""
         context = super().get_context_data(**kwargs)
-        posts = Post.objects.filter(category=self.object)
-
+        posts = Post.objects.filter(tag=self.object)
 
         # Сюда можно добавить вашу логику фильтрации (newer/older)
         filter_type = self.request.GET.get("filter")
@@ -541,7 +587,7 @@ class FavoritesListView(ListView):
     def get_queryset(self, **kwargs):
         """Получение заполнения макета с фильтрацией"""
         # Заготовка на будущее пока что
-        queryset = Post.objects.filter(is_published=True)
+        queryset = Post.objects.filter(is_published=True, author__isnull=False)
         filter_type = self.request.GET.get("filter")
 
         if filter_type == "top":
@@ -583,20 +629,6 @@ class SetPostMainView(UserPassesTestMixin, UpdateView):
 
 # # Сортировка по лайкам (от большего к меньшему)
 # posts = Post.objects.all().order_by('-likes')
-#
-# # Сортировка по названию (А-Я)
-# posts = Post.objects.all().order_by('title')
-#
-# # Сортировка по количеству просмотров
-# posts = Post.objects.all().order_by('-viewed')
-#
-# планируем часто сортировать по viewed или likes, добавить в поле параметр db_index=True
-#
-# def post_list(request):
-#     sort_by = request.GET.get('sort', '-created_at') # По умолчанию — новые
-#     posts = Post.objects.all().order_by(sort_by)
-#     return render(request, 'blog/list.html', {'posts': posts})
-#
 #
 # def toggle_subscription(request, author_id):
 #     author = User.objects.get(id=author_id)

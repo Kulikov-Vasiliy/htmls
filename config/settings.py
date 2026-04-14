@@ -27,6 +27,10 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+LOGOUT_ON_GET = True  # до 5.0, после адо делать через post:
+# poetry remove django
+# poetry add django==4.2.11
+
 ALLOWED_HOSTS = ["*"]
 
 
@@ -136,10 +140,16 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 
-AUTH_USER_MODEL = "users.Moderator"
+AUTH_USER_MODEL = "users.User"
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+AUTHENTICATION_BACKENDS = [
+    # 'django.contrib.auth.backends.ModelBackend',  # для основной модели
+    'users.backends.UserBackend',
+    'users.backends.ModeratorBackend',
+]
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # рассылает
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # дебаг-вывод в консоли без рассылки
 EMAIL_HOST = 'smtp.mail.ru'
 EMAIL_PORT = 2525
 EMAIL_USE_TLS = True

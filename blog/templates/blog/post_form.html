@@ -1,63 +1,7 @@
-<!-- <form class="was-validated">
-    <div class="mb-3">
-        <label for="validationTitleTextarea" class="form-label">Заголовок</label>
-        <textarea class="form-control" id="validationTitleTextarea" placeholder="Задайте заголовок" required></textarea>
-        <div class="invalid-feedback">
-           У поста должен быть заголовок
-        </div>
-    </div>
+{% extends 'blog/base.html' %}
+{% block content %}
 
-    !-- Даем выбрать тематику --
-    <div>
-        <label for="inputState" class="form-label">Тег</label>
-        <select id="inputState" class="form-select">
-            <option selected>Choose...</option>
-            <option>Мировые</option>
-            <option>Россия</option>
-            <option>Технологии</option>
-            <option>Дизайн</option>
-            <option>Культура</option>
-            <option>Бизнес</option>
-            <option>Политика</option>
-            <option>Мнение</option>
-            <option>Наука</option>
-            <option>Здоровье</option>
-            <option>Стиль</option>
-            <option>Путешествия</option>
-        </select>
-    </div>
-
-    <div class="mb-3">
-        <label for="validationAboutTextarea" class="form-label">Кратко о посте</label>
-        <textarea class="form-control" id="validationAboutTextarea" placeholder="О чем ваш пост" required></textarea>
-        <div class="invalid-feedback">
-            "Прорекламируйте" свой пост кратким содержанием
-        </div>
-    </div>
-
-    <div class="mb-3">
-        <label for="validationContextTextarea" class="form-label">Контекст поста</label>
-        <textarea class="form-control" id="validationContextTextarea" placeholder="Контекст поста" required></textarea>
-        <div class="invalid-feedback">
-            Пост должен быть пустым?
-        </div>
-    </div>
-
-    !-- Место, если надо выгрузить --
-    <div class="input-group mb-3">
-      <input type="file" class="form-control" id="inputGroupFile02">
-      <label class="input-group-text" for="inputGroupFile02">Выгрузить</label>
-    </div>
-
-    <div class="mb-3">
-        <label for="validationSUBContextTextarea" class="form-label">Контекст поста</label>
-        <textarea class="form-control" id="validationSubContextTextarea" placeholder="Контекст поста" required></textarea>
-        <div class="invalid-feedback">
-            Пост должен быть пустым?
-        </div>
-    </div>
-
-    !-- Кнопки форматирования --
+    <!-- Кнопки форматирования --
     <div class="editor-toolbar">
         !-- Жирный --
         <button type="button" onclick="applyAiFormat('сделай жирным')" title="Жирный" style="padding: 5px 10px; cursor: pointer;"><b>B</b></button>
@@ -130,10 +74,29 @@
 </script>
 -->
 <form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
+        {% csrf_token %}
+
+           {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for error in form.non_field_errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
 
     <!-- Основные поля поста -->
-    {{ form.as_p }}
+    {# Выводим всё, кроме даты #}
+    <p>{{ form.title.label_tag }} {{ form.title }}</p>
+    <p>{{ form.tag.label_tag }} {{ form.tag }}</p>
+    <p>{{ form.about_content.label_tag }} {{ form.about_content }}</p>
+    <p>{{ form.content.label_tag }} {{ form.content }}</p>
+    <p>{{ form.publish_status.label_tag }} {{ form.publish_status }}</p>
+
+    {# Блок с датой, который будем скрывать #}
+    <div id="scheduled-at-wrapper" style="display: none;">
+        <p>{{ form.scheduled_at.label_tag }} {{ form.scheduled_at }}</p>
+    </div>
+
 
     <!-- Управление медиа-формами (ОБЯЗАТЕЛЬНО) -->
     {{ media_formset.management_form }}
@@ -153,6 +116,26 @@
         </div>
     </div>
 
-    <button id="add-media-btn" class="btn btn-secondary">Добавить еще медиа</button>
-    <button type="submit" class="btn btn-primary">Опубликовать</button>
+    <button id="add-media-btn" class="btn btn-secondary mb-5">Добавить еще медиа</button>
+    <button type="submit" class="btn btn-primary ms-5 mb-5">Опубликовать</button>
+
 </form>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const statusSelect = document.querySelector('select[name="publish_status"]');
+        const dateSection = document.getElementById('scheduled-at-wrapper');
+
+        function toggleDate() {
+            // Замените 'scheduled' на то значение (value), которое у вас в модели отвечает за отложенную публикацию
+            if (statusSelect.value === 'NO') {
+                dateSection.style.display = 'block';
+            } else {
+                dateSection.style.display = 'none';
+            }
+        }
+
+        statusSelect.addEventListener('change', toggleDate);
+        toggleDate(); // проверка при загрузке
+    });
+</script>
+{% endblock %}

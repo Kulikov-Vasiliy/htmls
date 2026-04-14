@@ -1,97 +1,118 @@
 {% extends 'catalog/base.html' %}
 {% load custom_tags %}
 {% block content %}
-    <figure class="d-flex justify-content-center mb-5">
-        <div>
-            <!-- Кнопка слева -->
-            {% if object.category %}
-                <a href="{% url 'catalog:category' object.category.pk %}" class="btn btn-secondary my-btn-secondary">Назад</a>
-            {% else %}
-                <a href="{% url 'catalog:catalogue' %}" class="btn btn-secondary my-btn-secondary">Назад</a>
-            {% endif %}
-        </div>
-
-        <div>
-           <!-- Заголовок будет точно по центру -->
-            <h1 class="display-4">{{ object.name }}</h1>
-
-            <!-- Пустой блок-заглушка с шириной кнопки для баланса -->
-            <div style="width: 75px;"></div>
-            <p class="text-center mt-2">
-                <small class="text-body-secondary">Изменен {{ object.updated_at|timesince }} назад</small>
-            </p>
-
-            <!-- Кнопки действий -->
+    {% if not user.is_authenticated %}
+        <figure class="d-flex justify-content-center mb-5">
             <div>
-                <a href="{% url 'catalog:product_update' pk=object.id %}" class="btn btn-outline-secondary">Изменить информацию о товаре</a>
-
-                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmModal">
-                    Удалить
-                </button>
+                <!-- Кнопка слева -->
+                {% if object.category %}
+                    <a href="{% url 'catalog:category' object.category.pk %}" class="btn btn-secondary my-btn-secondary">Назад</a>
+                {% else %}
+                    <a href="{% url 'catalog:catalogue' %}" class="btn btn-secondary my-btn-secondary">Назад</a>
+                {% endif %}
             </div>
 
-        </div>
+            <div>
+               <!-- Заголовок будет точно по центру -->
+                <h1 class="display-4">Вы не авторизованы, чтобы просмотреть {{ object.name }}</h1>
+                <p>
+                    К сожалению, в целях борьбы с бот-накруткой просмотров, только авторизованные пользователи могут просмотреть информацию о товаре,
+                    удалить/создать товар/категорию, изменить информацию о товаре или категорию.
+                </p>
 
-    </figure>
+    {% else %}
+        <figure class="d-flex justify-content-center mb-5">
+            <div>
+                <!-- Кнопка слева -->
+                {% if object.category %}
+                    <a href="{% url 'catalog:category' object.category.pk %}" class="btn btn-secondary my-btn-secondary">Назад</a>
+                {% else %}
+                    <a href="{% url 'catalog:catalogue' %}" class="btn btn-secondary my-btn-secondary">Назад</a>
+                {% endif %}
+            </div>
 
-    <!-- О товаре -->
-    <div class="row">
-        <div class="col-sm-0 mb-3">
-            <div class="cards-scroll-container">
+            <div>
+               <!-- Заголовок будет точно по центру -->
+                <h1 class="display-4">{{ object.name }}</h1>
 
-                {% for media in object.media_list.all|dictsortreversed:"file_type" %}
+                <!-- Пустой блок-заглушка с шириной кнопки для баланса -->
+                <div style="width: 75px;"></div>
+                <p class="text-center mt-2">
+                    <small class="text-body-secondary">Изменен {{ object.updated_at|timesince }} назад</small>
+                </p>
 
-                    {# 1. КАРТОЧКА ДЛЯ ВИДЕО #}
-                    {% if media.file_type == 'video' %}
-                        <div class="card my-card my-card-body my-card-item">
-                            {% if media.video and media.video.name %}
-                                <video src="{{ media.video | media_filter }}"
-                                    class="my-card-body video mb-3 h-100 shadow-sm object-fit-contain"
-                                    autoplay onerror="this.parentElement.innerHTML='<p class=p-3>Не удалось загрузить видео</p>'"></video>
-                            {% else %}
-                                <div class="d-flex align-items-center justify-content-center h-100 text-center">
-                                    <p class="card my-card my-card-body card-text text-center p-3"
-                                        onerror="this.parentElement.innerHTML='<p class=p-3></p>'">К сожалению, у товара нет видео-презентаций</p>
-                                </div>
-                            {% endif %}
-                        </div>
+                <!-- Кнопки действий -->
+                <div>
+                    <a href="{% url 'catalog:product_update' pk=object.id %}" class="btn btn-outline-secondary">Изменить информацию о товаре</a>
 
-                    {# 2. КАРТОЧКА ДЛЯ ИЗОБРАЖЕНИЯ #}
-                    {% elif media.file_type == 'image' %}
-                        <div class="card my-card my-card-body my-card-item">
-                            {% if media.image and media.image.name %}
-                                <img src="{{ media.image | media_filter }}" class="my-card-item my-card-body img mb-3 h-100 shadow-sm card-img-top"
-                                    onerror="this.src='https://placehold.co';">
-                            {% elif media.image and not media.image.name %}
-                                <p class="card-text text-muted">Не удалось загрузить изображение</p>
-                            {% else %}
-                                <div class="d-flex align-items-center justify-content-center h-100 text-center">
-                                    <p class="card-text text-muted p-3">К сожалению, у товара нет изображений</p>
-                                </div>
-                            {% endif %}
-                        </div>
-                    {% endif %}
+                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmModal">
+                        Удалить
+                    </button>
+                </div>
 
-                {% empty %}
-                    {# 3. КАРТОЧКА-ЗАГЛУШКА (если в списке ВООБЩЕ ничего нет) #}
-                        <div class="card my-card my-card-body my-card-item d-flex align-items-center justify-content-center text-center">
-                            <p class="card-text text-muted">К сожалению, у товара нет видео-презентаций и изображений</p>
-                        </div>
-                {% endfor %}
+            </div>
+
+        </figure>
+
+        <!-- О товаре -->
+        <div class="row">
+            <div class="col-sm-0 mb-3">
+                <div class="cards-scroll-container">
+
+                    {% for media in object.media_list.all|dictsortreversed:"file_type" %}
+
+                        {# 1. КАРТОЧКА ДЛЯ ВИДЕО #}
+                        {% if media.file_type == 'video' %}
+                            <div class="card my-card my-card-body my-card-item">
+                                {% if media.video and media.video.name %}
+                                    <video src="{{ media.video | media_filter }}"
+                                        class="my-card-body video mb-3 h-100 shadow-sm object-fit-contain"
+                                        autoplay onerror="this.parentElement.innerHTML='<p class=p-3>Не удалось загрузить видео</p>'"></video>
+                                {% else %}
+                                    <div class="d-flex align-items-center justify-content-center h-100 text-center">
+                                        <p class="card my-card my-card-body card-text text-center p-3"
+                                            onerror="this.parentElement.innerHTML='<p class=p-3></p>'">К сожалению, у товара нет видео-презентаций</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                        {# 2. КАРТОЧКА ДЛЯ ИЗОБРАЖЕНИЯ #}
+                        {% elif media.file_type == 'image' %}
+                            <div class="card my-card my-card-body my-card-item">
+                                {% if media.image and media.image.name %}
+                                    <img src="{{ media.image | media_filter }}" class="my-card-item my-card-body img mb-3 h-100 shadow-sm card-img-top"
+                                        onerror="this.src='https://placehold.co';">
+                                {% elif media.image and not media.image.name %}
+                                    <p class="card-text text-muted">Не удалось загрузить изображение</p>
+                                {% else %}
+                                    <div class="d-flex align-items-center justify-content-center h-100 text-center">
+                                        <p class="card-text text-muted p-3">К сожалению, у товара нет изображений</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+
+                    {% empty %}
+                        {# 3. КАРТОЧКА-ЗАГЛУШКА (если в списке ВООБЩЕ ничего нет) #}
+                            <div class="card my-card my-card-body my-card-item d-flex align-items-center justify-content-center text-center">
+                                <p class="card-text text-muted">К сожалению, у товара нет видео-презентаций и изображений</p>
+                            </div>
+                    {% endfor %}
+                </div>
             </div>
         </div>
-    </div>
 
-    <div>
-        <!-- Описание и цена -->
-        <p class="texteria">{{ object.description|default:"Описание отсутствует." }}</p>
-        <p class="text d-flex justify-content-center">Стоимость: $ {{ object.price }}</p>
+        <div>
+            <!-- Описание и цена -->
+            <p class="texteria">{{ object.description|default:"Описание отсутствует." }}</p>
+            <p class="text d-flex justify-content-center">Стоимость: $ {{ object.price }}</p>
 
-        <!-- Место под кнопки -->
-        <div class="my-btn-group d-flex w-100">
-            <a href="#" class="card-link btn my-btn btn-left">Купить</a><a href="#" class="card-link btn my-btn btn-right">В корзину</a>
+            <!-- Место под кнопки -->
+            <div class="my-btn-group d-flex w-100">
+                <a href="#" class="card-link btn my-btn btn-left">Купить</a><a href="#" class="card-link btn my-btn btn-right">В корзину</a>
+            </div>
         </div>
-    </div>
+    {% endif %}
 
     {% with page_name='product' %}
         {% include 'catalog/includes/delete_window.html' %}

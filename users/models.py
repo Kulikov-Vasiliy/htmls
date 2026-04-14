@@ -20,6 +20,7 @@ class MyUserManager(BaseUserManager):
         extra_fields.setdefault('is_superuser', True)
         return self.create_user(email, password, **extra_fields)
 
+
 def get_upload_path(instance, filename):
     """Определяет путь сохранения медиафайла"""
     profile_id = instance.id if instance.id else "new"
@@ -106,9 +107,9 @@ class User(AbstractUser):
 class UserActivity(models.Model):
     """Класс фильтра отображения"""
 
-    post = models.ForeignKey('blog.Post', on_delete=models.CASCADE)
+    post = models.ForeignKey('blog.Post', on_delete=models.CASCADE, null=True, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE,  related_name='activities')
 
     class Meta:
         unique_together = ['user', 'post']

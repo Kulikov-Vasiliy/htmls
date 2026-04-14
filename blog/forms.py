@@ -8,7 +8,7 @@ PostMediaFormSet = inlineformset_factory(
     PostMedia,
     fields=("image", "video", "preview"),
     extra=1,  # сколько пустых полей для загрузки показать сразу
-    can_delete=True,
+    can_delete=False,
 )
 
 

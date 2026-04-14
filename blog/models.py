@@ -52,8 +52,8 @@ class Post(models.Model):
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        blank=True,
-        null=True,
+        blank=False,
+        null=False,
         verbose_name="Автор",
         related_name="посты",
     )
@@ -75,8 +75,8 @@ class Post(models.Model):
         null=True,
         verbose_name="Когда опубликовать?"
     )
-    published_at = models.DateField(verbose_name="Дата публикации")
-    updated_at = models.DateTimeField(auto_now=True, verbose_name="Дата последнего изменения")
+    published_at = models.DateField(blank=True, null=True, verbose_name="Дата публикации")
+    updated_at = models.DateTimeField(blank=True, null=True, auto_now=True, verbose_name="Дата последнего изменения")
     is_published = models.BooleanField(default=False, verbose_name="Опубликовано")
     popularity = models.IntegerField(default=0, verbose_name="Популярность")
     tag = models.ForeignKey(Categories, on_delete=models.SET_NULL, null=True)
@@ -100,9 +100,9 @@ class Post(models.Model):
         verbose_name = "Пост"
         verbose_name_plural = "Посты"
         ordering = [
+            "-created_at",
             "title",
             "author",
-            "-created_at",
             "tag"
         ]
 
@@ -149,7 +149,7 @@ class PostMedia(models.Model):
         upload_to=get_upload_path_pm,
         null=True,
         blank=True,
-        verbose_name="Видео-презентация продукта",
+        verbose_name="Видео поста",
     )
 
     class Meta:
@@ -187,7 +187,6 @@ class Comment(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата написания")
     is_active = models.BooleanField(default=True, verbose_name="Активен")  # Для модерации
     is_formatted = models.BooleanField(default=False)  # чтобы модератор видел,
-
     # использовал ли пользователь наши кнопки (Bold, Link, Table)
 
     class Meta:

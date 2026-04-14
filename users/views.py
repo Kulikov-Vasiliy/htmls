@@ -29,7 +29,7 @@ from django.utils import timezone
 from django.db import transaction
 from django.http import HttpResponseRedirect, JsonResponse
 from django.contrib.auth.mixins import UserPassesTestMixin
-from django.contrib.auth import login as auth_login
+from django.contrib.auth import authenticate, login as auth_login
 from django.contrib import messages
 
 from config.settings import EMAIL_HOST_USER
@@ -49,42 +49,30 @@ class SignInFormView(FormView):
 
     def form_valid(self, form):
         """Валидация пользователя"""
-        u_login = form.cleaned_data.get('email')
+        email = form.cleaned_data.get('email')
         password = form.cleaned_data.get('password')
 
-        # 1. Ищем сначала в Модераторах, потом в Пользователях
-        # Используем фильтр по email, так как u_login берется из поля email
-        user_obj = Moderator.objects.filter(email=u_login).first() or \
-                   User.objects.filter(email=u_login).first()
+        # authenticate() сама опросит UserBackend и ModeratorBackend
+        # и вернет либо объект User, либо объект Moderator
+        user_obj = authenticate(self.request, email=email, password=password)
 
-        if user_obj:
-            # Проверка пароля
-            if not user_obj.check_password(password):
-                form.add_error('password', 'Неверный пароль')
-                return self.form_invalid(form)
+        if user_obj is not None:
+            if user_obj.is_active:
+                auth_login(self.request, user_obj)
 
-            # Проверка активации
-            if not user_obj.is_active:
+                # Теперь разделяем редирект по типу модели
+                if isinstance(user_obj, Moderator):
+                    messages.success(self.request, f"Вход выполнен (Модератор: {user_obj.login})")
+                    return redirect("users:moderator", pk=user_obj.pk)
+
+                messages.success(self.request, "Вход выполнен (Пользователь)")
+                return redirect("users:profile", pk=user_obj.pk)
+            else:
                 form.add_error('email', 'Аккаунт не активирован.')
                 return self.form_invalid(form)
-
-            # Если пароль верный и аккаунт активен — логиним
-            # Явно указываем backend, так как используются разные модели
-            if not hasattr(user_obj, 'backend'):
-                user_obj.backend = 'django.contrib.auth.backends.ModelBackend'
-
-            auth_login(self.request, user_obj)
-
-            if isinstance(user_obj, Moderator):
-                messages.success(self.request, f"Вход выполнен (Модератор: {user_obj.username})")
-                return redirect("users:moderator", pk=user_obj.pk)
-
-            messages.success(self.request, "Вход выполнен (Пользователь)")
-            return redirect("users:profile",  pk=user_obj.pk)
-
         else:
-            form.add_error('email', 'Пользователь с таким email не найден')
-            form.add_error('password', 'Пароль не верный')
+            # Если authenticate вернул None, значит либо email, либо пароль неверны
+            form.add_error(None, 'Неверный email или пароль')
             return self.form_invalid(form)
 
     # def get_success_url(self):
@@ -121,6 +109,8 @@ class UserCreateView(CreateView):
         """Отправка письма для подтверждения пользователя"""
         user = form.save(commit=False)
         user.is_active = False
+
+        user.set_password(form.cleaned_data['password'])
 
         token = secrets.token_hex(16)
         user.token = token
@@ -208,10 +198,9 @@ class UserDetailView(DetailView):
 
         # Проверяем, авторизован ли тот, кто зашел на страницу
         if self.request.user.is_authenticated:
-            UserActivity.objects.create(
+            UserActivity.objects.get_or_create(
                 user=self.request.user,
                 post=None,
-                content_object=obj
             )
         return obj
 

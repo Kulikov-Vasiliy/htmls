@@ -1,4 +1,6 @@
 {% extends 'blog/base.html' %}
+{% load static %}
+{% load custom_tags %}
 {% block content %}
     {% for post in object_list %}
         {% if post.tag == tag.pk %}
@@ -6,13 +8,13 @@
                 Список постов по теме {{ post.name|default:view.kwargs.tag }}:
             </h1>
             <p>{{ post.title }}</p>
-            {% if post.updated_at and post.updated_at|is_last_moths %}
+            {% if post.updated_at and post.updated_at|is_last_months %}
                 <div class="mb-1 text-body-secondary">Обновлен: {{ post.updated_at|date:"d.m.Y" }}
                     <span>
                         <a href="{% url 'users:profile' post.author.pk %}">{{ post.author.nickname }}</a>
                     </span>
                 </div>
-            {% elif post.posted_at and post.posted_at|is_last_moths %}
+            {% elif post.posted_at and post.posted_at|is_last_months %}
                 <div class="mb-1 text-body-secondary">Опубликован: {{ post.posted_at|date:"d.m.Y" }}
                     <span>
                         <a href="{% url 'users:profile' post.author.pk %}">{{ post.author.nickname }}</a>

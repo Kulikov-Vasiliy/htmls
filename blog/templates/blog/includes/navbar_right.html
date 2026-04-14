@@ -3,9 +3,13 @@
     <ol class="list-unstyled mb-0">
         {% for post in posts %}
             {% if post.posted_at %}
-                <li><a href="{% url 'blog:post_detail' post.pk %}">{{ post.posted_at|date:"E Y" }}</a></li>
+                <li>
+                    <a href="{% url 'blog:post_detail' post.pk %}">{{ post.posted_at|date:"E Y" }}</a>
+                </li>
             {% elif post.updated_at %}
-                <li><a href="{% url 'blog:post_detail' post.pk %}">{{ post.updated_at|date:"E Y"}}</a></li>
+                <li>
+                    <a href="{% url 'blog:post_detail' post.pk %}">{{ post.updated_at|date:"E Y"}}</a>
+                </li>
             {% endif %}
         {% endfor %}
     </ol>
