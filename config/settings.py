@@ -27,6 +27,9 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+
+LOGIN_URL = 'auth_choose'
+
 LOGOUT_ON_GET = True  # до 5.0, после адо делать через post:
 # poetry remove django
 # poetry add django==4.2.11
@@ -115,6 +118,8 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/

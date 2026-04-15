@@ -39,18 +39,18 @@
                     </li>
 
                     <li>
-                        <form method="post" action="{% url 'users:logout' %}?next={% url 'catalog:main' %}">
+                        <form method="post" action="{% url 'users:logout' %}?next={{ request.path }}">
                             {% csrf_token %}
                             <button  type="submit" class="btn dropdown-item text-white pe-auto">Выход</button>
                         </form>
                     </li>
                 {% else %}
                     <li>
-                        <a class="btn text-white pe-auto" href="{% url 'users:register' pk=user.pk %}">Регистрация</a>
+                        <a class="btn text-white pe-auto" href="{% url 'users:registration' %}?next={{ request.path }}">Регистрация</a>
                     </li>
 
                     <li>
-                        <a class="btn text-white pe-auto" href="{% url 'users:entry' %}">Вход</a>
+                        <a class="btn text-white pe-auto" href="{% url 'users:entry' %}?next={{ request.path }}">Вход</a>
                     </li>
                 {% endif %}
             </ul>

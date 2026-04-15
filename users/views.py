@@ -52,15 +52,20 @@ class SignInFormView(FormView):
         email = form.cleaned_data.get('email')
         password = form.cleaned_data.get('password')
 
-        # authenticate() сама опросит UserBackend и ModeratorBackend
-        # и вернет либо объект User, либо объект Moderator
         user_obj = authenticate(self.request, email=email, password=password)
 
         if user_obj is not None:
             if user_obj.is_active:
                 auth_login(self.request, user_obj)
 
-                # Теперь разделяем редирект по типу модели
+                # 1. Сначала проверяем параметр 'next' в URL
+                next_url = self.request.GET.get('next')
+
+                if next_url:
+                    messages.success(self.request, "Вход выполнен успешно!")
+                    return redirect(next_url)
+
+                # 2. Если 'next' нет, используем логику по умолчанию
                 if isinstance(user_obj, Moderator):
                     messages.success(self.request, f"Вход выполнен (Модератор: {user_obj.login})")
                     return redirect("users:moderator", pk=user_obj.pk)
@@ -71,7 +76,6 @@ class SignInFormView(FormView):
                 form.add_error('email', 'Аккаунт не активирован.')
                 return self.form_invalid(form)
         else:
-            # Если authenticate вернул None, значит либо email, либо пароль неверны
             form.add_error(None, 'Неверный email или пароль')
             return self.form_invalid(form)
 

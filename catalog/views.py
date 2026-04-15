@@ -17,12 +17,19 @@ from django.utils import timezone
 from django.db import transaction
 import os
 from config import settings
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponseRedirect
 
 
 # Create your views here.
 class BaseTemplateView(TemplateView):
     """Контроллер позволяет считывать базовую страницу"""
     template_name = "base.html"
+
+
+class AuthChoose(TemplateView):
+    """Определяет куда направить неавторизованных пользователей"""
+    template_name = 'catalog/auth_choose.html'
 
 
 class ProductListView(ListView):
@@ -84,9 +91,8 @@ class ProductDetailView(DetailView):
         return context
 
 
-class ProductCreateView(CreateView):
+class ProductCreateView(LoginRequiredMixin, CreateView):
     """Контроллер создания продукта"""
-
     model = Product
     form_class = ProductValidationForm
     template_name = "catalog/product_form.html"
@@ -110,44 +116,33 @@ class ProductCreateView(CreateView):
     #     print(f">>> Данные пути (kwargs): {kwargs}")
     #     return super().dispatch(request, *args, **kwargs)
 
-    def form_valid_before(self, form):
-        """Дебаг-метод для проверки подключения контроллера"""
+    def form_valid(self, form):
+        """Метод-валидатор с дебагом"""
         context = self.get_context_data()
         media_formset = context["media_formset"]
+
+        # 1. Атомарное сохранение данных
         with transaction.atomic():
+            # Сохраняем основной объект (создает self.object)
             self.object = form.save()
+
             if media_formset.is_valid():
                 media_formset.instance = self.object
                 media_formset.save()
-        return super().form_valid(form)
 
-    def form_valid_after(self, form):
-        """Дебаг-метод для проверки успешного создания продукта"""
-        # Сначала сохраняем объект
-        response = super().form_valid(form)
-
-        # Теперь у нас есть self.object
-        if self.object.image:
+        # 2. Дебаг-логика (теперь self.object гарантированно существует)
+        file_field = self.object.image or self.object.video
+        if file_field:
             print(f"--- ФАЙЛ СОЗДАН ---")
+            print(f"Путь в БД: {file_field.name}")
+            print(f"Абсолютный путь на диске: {file_field.path}")
+            print(f"Существует ли файл физически? {os.path.exists(file_field.path)}")
 
-            print(f"Путь в БД: {self.object.image.name}")
-            print(f"Абсолютный путь на диске: {self.object.image.path}")
-            print(
-                f"Существует ли файл физически? {os.path.exists(self.object.image.path)}"
-            )
-        elif self.object.video:
-            print(f"--- ФАЙЛ СОЗДАН ---")
-
-            print(f"Путь в БД: {self.object.video.name}")
-            print(f"Абсолютный путь на диске: {self.object.video.path}")
-            print(
-                f"Существует ли файл физически? {os.path.exists(self.object.video.path)}"
-            )
-
-        return response
+        # 3. Возвращаем редирект (как это делает базовый класс)
+        return HttpResponseRedirect(self.get_success_url())
 
 
-class ProductUpdateView(UpdateView):
+class ProductUpdateView(LoginRequiredMixin, UpdateView):
     """Контроллер изменения информации продукта"""
 
     model = Product
@@ -172,7 +167,7 @@ class ProductUpdateView(UpdateView):
         )
         return success_url
 
-    def form_valid_before(self, form):
+    def form_valid(self, form):
         """Дебаг-метод для проверки подключения контроллера"""
         context = self.get_context_data()
         media_formset = context["media_formset"]
@@ -181,32 +176,15 @@ class ProductUpdateView(UpdateView):
             if media_formset.is_valid():
                 media_formset.instance = self.object
                 media_formset.save()
-        return super().form_valid(form)
 
-    def form_valid(self, form):
-        """Дебаг-метод для проверки успешного создания продукта"""
-        # Сначала сохраняем объект
-        response = super().form_valid(form)
+        file_field = self.object.image or self.object.video
+        if file_field:
+            print(f"--- ФАЙЛ СОЗДАН ---")
+            print(f"Путь в БД: {file_field.name}")
+            print(f"Абсолютный путь на диске: {file_field.path}")
+            print(f"Существует ли файл физически? {os.path.exists(file_field.path)}")
 
-        # Теперь у нас есть self.object
-        if self.object.image:
-            print(f"--- ФАЙЛ СОХРАНЕН ---")
-
-            print(f"Путь в БД: {self.object.image.name}")
-            print(f"Абсолютный путь на диске: {self.object.image.path}")
-            print(
-                f"Существует ли файл физически? {os.path.exists(self.object.image.path)}"
-            )
-        elif self.object.video:
-            print(f"--- ФАЙЛ СОХРАНЕН ---")
-
-            print(f"Путь в БД: {self.object.video.name}")
-            print(f"Абсолютный путь на диске: {self.object.video.path}")
-            print(
-                f"Существует ли файл физически? {os.path.exists(self.object.video.path)}"
-            )
-
-        return response
+        return HttpResponseRedirect(self.get_success_url())
 
 
 class ProductDeleteView(DeleteView):
@@ -287,7 +265,7 @@ class MainListView(ListView):
         return context
 
 
-class CategoryCreateView(CreateView):
+class CategoryCreateView(LoginRequiredMixin, CreateView):
     """Контроллер создания категории"""
 
     model = Category
@@ -318,7 +296,7 @@ class CategoryCreateView(CreateView):
     #     print(f">>> Данные пути (kwargs): {kwargs}")
     #     return super().dispatch(request, *args, **kwargs)
 
-    def form_valid_before(self, form):
+    def form_valid(self, form):
         """Дебаг-метод для проверки подключения контроллера"""
         context = self.get_context_data()
         media_formset = context["media_formset"]
@@ -327,26 +305,18 @@ class CategoryCreateView(CreateView):
             if media_formset.is_valid():
                 media_formset.instance = self.object
                 media_formset.save()
-        return super().form_valid(form)
-
-    def form_valid_after(self, form):
-        """Дебаг-метод для проверки успешного создания категории"""
-        # Сначала сохраняем объект
-        response = super().form_valid(form)
-
-        # Теперь у нас есть self.object
-        if self.object.image:
+                
+        file_field = self.object.image or self.object.video
+        if file_field:
             print(f"--- ФАЙЛ СОЗДАН ---")
+            print(f"Путь в БД: {file_field.name}")
+            print(f"Абсолютный путь на диске: {file_field.path}")
+            print(f"Существует ли файл физически? {os.path.exists(file_field.path)}")
 
-            print(f"Путь в БД: {self.object.image.name}")
-            print(f"Абсолютный путь на диске: {self.object.image.path}")
-            print(
-                f"Существует ли файл физически? {os.path.exists(self.object.image.path)}"
-            )
-        return response
+        return HttpResponseRedirect(self.get_success_url())
 
 
-class CategoryUpdateView(UpdateView):
+class CategoryUpdateView(LoginRequiredMixin, UpdateView):
     """Контроллер изменения информации категории"""
 
     model = Category
@@ -379,7 +349,7 @@ class CategoryUpdateView(UpdateView):
         success_url = reverse_lazy("catalog:category", kwargs={"pk": self.object.id})
         return success_url
 
-    def form_valid_before(self, form):
+    def form_valid(self, form):
         """Дебаг-метод для проверки подключения контроллера"""
         context = self.get_context_data()
         media_formset = context["media_formset"]
@@ -388,24 +358,12 @@ class CategoryUpdateView(UpdateView):
             if media_formset.is_valid():
                 media_formset.instance = self.object
                 media_formset.save()
-        return super().form_valid(form)
-
-    def form_valid(self, form):
-        """Дебаг-метод для проверки успешного создания категории"""
-        # Сначала сохраняем объект
-        response = super().form_valid(form)
-
-        # Теперь у нас есть self.object
-        if self.object.image:
-            print(f"--- ФАЙЛ СОХРАНЕН ---")
-
-            print(f"Путь в БД: {self.object.image.name}")
-            print(f"Абсолютный путь на диске: {self.object.image.path}")
-            print(
-                f"Существует ли файл физически? {os.path.exists(self.object.image.path)}"
-            )
-
-        return response
+        file_field = self.object.image or self.object.video
+        if file_field:
+            print(f"--- ФАЙЛ СОЗДАН ---")
+            print(f"Путь в БД: {file_field.name}")
+            print(f"Абсолютный путь на диске: {file_field.path}")
+            print(f"Существует ли файл физически? {os.path.exists(file_field.path)}")
 
 
 class CategoryDeleteView(DeleteView):
