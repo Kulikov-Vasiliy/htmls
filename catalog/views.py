@@ -65,7 +65,7 @@ class ProductListView(ListView):
         return context
 
 
-class ProductDetailView(DetailView):
+class ProductDetailView(LoginRequiredMixin, DetailView):
     """Контроллер позволяет детализировать базовую страницу: информацией о продуктах"""
 
     model = Product
@@ -187,7 +187,7 @@ class ProductUpdateView(LoginRequiredMixin, UpdateView):
         return HttpResponseRedirect(self.get_success_url())
 
 
-class ProductDeleteView(DeleteView):
+class ProductDeleteView(LoginRequiredMixin, DeleteView):
     """Контроллер удаления продукта"""
 
     model = Product
@@ -366,7 +366,7 @@ class CategoryUpdateView(LoginRequiredMixin, UpdateView):
             print(f"Существует ли файл физически? {os.path.exists(file_field.path)}")
 
 
-class CategoryDeleteView(DeleteView):
+class CategoryDeleteView(LoginRequiredMixin, DeleteView):
     """Контроллер удаления категории"""
 
     model = Category
