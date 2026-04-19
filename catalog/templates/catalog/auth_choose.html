@@ -1,0 +1,7 @@
+{% extends 'catalog/base.html' %}
+{% load static %}
+{% load custom_tags %}
+<h2>Чтобы продолжить, нужно войти или создать аккаунт</h2>
+
+<a href="{% url 'users:entry' %}?next={{ request.GET.next }}">Войти</a>
+<a href="{% url 'users:registration' %}?next={{ request.GET.next }}">Зарегистрироваться</a>

@@ -7,41 +7,26 @@ from django.views.generic import (
     CreateView,
     UpdateView,
     DeleteView,
-    FormView,
     TemplateView,
     RedirectView,
 )
-from blog.models import User, Post, Comment, UserActivity, Subscription, Categories, Moderator
+from blog.models import Post, Comment, Categories
 from blog.forms import (
     CategoriesForm,
-    PostModeratedControlForm,
-    CommentModerationControlForm,
     CommentForm,
     CommentMediaFormSet,
-    UserActivityForm,
-    UserControlForm,
-    UserSubscriptionForm,
-    UserDeletionForm,
-    UserCreationForm,
-    UserUpdateForm,
     PostForm,
     PostDeletionForm,
     PostUpdateForm,
     PostCreationForm,
     PostBaseForm,
     PostMediaFormSet,
-    ModeratorBaseForm,
-    ModeratorCreationForm,
-    ModeratorUpdateForm,
-    ModeratorDeletionForm,
 )
 from django.db.models import F
 from django.utils import timezone
 from django.db import transaction
 from django.http import HttpResponseRedirect, JsonResponse
 from django.contrib.auth.mixins import UserPassesTestMixin
-from django.contrib import messages
-from django.contrib.auth import login as auth_login
 import os
 
 
@@ -57,42 +42,6 @@ from config import settings
 class BaseTemplateView(TemplateView):
     """Контроллер позволяет считывать базовую страницу"""
     template_name = "blog/base.html"
-
-
-class SignInFormView(FormView):
-    """Авторизация
-    * пока без паролей"""
-    template_name = "blog/includes/sign_in.html"
-    page_name = "entry"
-
-    def form_valid(self, form):
-        """Валидация пользователя"""
-        # Получаем очищенные данные из формы
-        u_login = form.cleaned_data.get('login')
-        # password = form.cleaned_data.get('password')  # Если добавите поле пароля
-
-        # Находим пользователя (пока без пароля можно использовать .get())
-        user_obj = User.objects.filter(username=u_login).first()
-
-        if user_obj:
-            auth_login(self.request, user_obj)
-
-            # Вызываем функцию входа, передав объект пользователя
-            if user_obj.is_staff:
-                messages.success(self.request, "Вход выполнен (Модератор)")
-            else:
-                messages.success(self.request, "Вход выполнен (Пользователь)")
-
-            return super().form_valid(form)
-        else:
-            form.add_error('login', 'Пользователь не найден')
-            return self.form_invalid(form)
-
-    def get_success_url(self):
-        """Куда перейти при успешном входе"""
-        if self.request.user.is_staff:
-            return reverse_lazy("blog:moderator", kwargs={'pk': self.request.user.pk})
-        return reverse_lazy("blog:home")
 
 
 class CatalogRedirectView(RedirectView):
@@ -116,7 +65,7 @@ class HomeListView(ListView):
     def get_queryset(self, **kwargs):
         """Получение заполнения макета с фильтрацией"""
         # Заготовка на будущее пока что
-        queryset = Post.objects.filter(is_published=True)
+        queryset = Post.objects.filter(is_published=True, author__isnull=False)
         filter_type = self.request.GET.get("filter")
 
         if filter_type == "top":
@@ -145,222 +94,10 @@ class HomeListView(ListView):
         """Метод отвечает за подготовку данных, которые полетят в HTML-шаблон"""
         context = super().get_context_data(**kwargs)
         context['page_name'] = 'home'
+        context['main'] = Post.objects.filter(is_published=True, author__isnull=False)
+        context['main'] = Post.objects.filter(is_published=True, author__isnull=False)
+
         return context
-
-
-class UserCreateView(CreateView):
-    """Контроллер создания пользователя"""
-    model = User
-    form_class = UserCreationForm
-    template_name = "blog/users/user_form.html"
-    page_name = "sign_up"
-
-    def get_success_url(self):
-        return reverse_lazy("blog:user_detail", kwargs={"pk": self.object.pk})
-
-    # def dispatch(self, request, *args, **kwargs):
-    #     """Дебаг-метод для проверки подключения контроллера"""
-    #     # Этот принт сработает ПЕРВЫМ при любом обращении к этому URL
-    #     print(">>> СИГНАЛ ПОЛУЧЕН: Запрос вошел в UserCreateView")
-    #     print(f">>> Данные пути (kwargs): {kwargs}")
-    #     return super().dispatch(request, *args, **kwargs)
-
-
-class UserUpdateView(UpdateView):
-    """Контроллер создания пользователя"""
-    model = User
-    form_class = UserUpdateForm
-    template_name = "blog/users/user_form.html"
-
-    def get_success_url(self):
-        return reverse_lazy("blog:user_detail", kwargs={"pk": self.object.pk})
-
-    def get_context_data(self, **kwargs):
-        """Позволяет добавлять медиафайлы"""
-        data = super().get_context_data(**kwargs)
-        if self.request.POST:
-            data["media_formset"] = UserUpdateForm(
-                self.request.POST, self.request.FILES
-            )
-        else:
-            data["media_formset"] = UserUpdateForm()
-        return data
-
-
-class UserDetailView(DetailView):
-    """Информация пользователя"""
-    model = User
-    page_name = 'profile'
-    template_name = "blog/users/user_detail.html"
-
-    # def dispatch(self, request, *args, **kwargs):
-    #     """Дебаг-метод для проверки подключения контроллера"""
-    #     # Этот принт сработает ПЕРВЫМ при любом обращении к этому URL
-    #     print(">>> СИГНАЛ ПОЛУЧЕН: Запрос вошел в UserDetailView")
-    #     print(f">>> Данные пути (kwargs): {kwargs}")
-    #     print(f"Ищу файл тут: {os.path.join(settings.MEDIA_ROOT, 'products/product_11/image/test_image.bmp')}")
-    #     print(f"Папка существует? {os.path.exists(settings.MEDIA_ROOT)}")
-    #     return super().dispatch(request, *args, **kwargs)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["subscription_form"] = UserSubscriptionForm()
-        return context
-
-    def get_object(self, queryset=None):
-        obj = super().get_object(queryset)
-        # Автоматическая запись активности БЕЗ ФОРМЫ
-
-        UserActivity.objects.create(
-            user=self.request.user,
-            post=None,  # Если это профиль, а не пост
-            content_object=obj  # Или другая логика связи
-        )
-        return obj
-
-
-class UserListView(ListView):
-    """Информация пользователя"""
-    model = User
-    form_class = UserControlForm
-    page_name = 'user_list'
-    template_name = "blog/moderators/user_form.html"
-
-    def get_queryset(self):
-        # 1. Берем базовый набор (например, всех не удаленных по умолчанию)
-        queryset = User.objects.all()
-
-        # 2. Получаем фильтр из URL (например, ?status=staff)
-        search_query = self.request.GET.get('search')
-
-        # 3. Применяем фильтры, если они переданы
-        if search_query:
-            queryset = queryset.filter(login__icontains=search_query)
-
-        return queryset.order_by('-joined_at', '-nickname')
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["page_name"] = "user_list"
-        # Прокидываем текущий поиск обратно в шаблон, чтобы в инпуте остался текст
-        context["search_value"] = self.request.GET.get('search', '')
-        return context
-
-
-class UserDeleteView(DeleteView):
-    """Удаление пользователя"""
-    model = User
-    form_class = UserDeletionForm
-    template_name = "blog/users/user_detail.html"
-
-    def get_success_url(self):
-        reverse_lazy("blog:home")
-
-
-class ModeratorCreateView(CreateView):
-    """Контроллер создания пользователя"""
-    model = Moderator
-    form_class = ModeratorCreationForm
-    template_name = "blog/moderators/moderator_form.html"
-
-    def get_success_url(self):
-        return reverse_lazy("blog:moderator_detail", kwargs={"pk": self.object.pk})
-
-    # def dispatch(self, request, *args, **kwargs):
-    #     """Дебаг-метод для проверки подключения контроллера"""
-    #     # Этот принт сработает ПЕРВЫМ при любом обращении к этому URL
-    #     print(">>> СИГНАЛ ПОЛУЧЕН: Запрос вошел в UserCreateView")
-    #     print(f">>> Данные пути (kwargs): {kwargs}")
-    #     return super().dispatch(request, *args, **kwargs)
-
-
-class ModeratorUpdateView(UpdateView):
-    """Контроллер создания пользователя"""
-    model = Moderator
-    form_class = ModeratorUpdateForm
-    template_name = "blog/moderators/moderator_form.html"
-
-    def get_success_url(self):
-        return reverse_lazy("blog:user_detail", kwargs={"pk": self.object.pk})
-
-    def get_context_data(self, **kwargs):
-        """Позволяет добавлять медиафайлы"""
-        data = super().get_context_data(**kwargs)
-        if self.request.POST:
-            data["media_formset"] = ModeratorUpdateForm(
-                self.request.POST, self.request.FILES
-            )
-        else:
-            data["media_formset"] = ModeratorUpdateForm()
-        return data
-
-
-class ModeratorDetailView(DetailView):
-    """Информация пользователя"""
-    model = Moderator
-    form_class = ModeratorBaseForm
-    template_name = "blog/moderators/moderator_detail.html"
-    page_name = 'moderator'
-
-    # def dispatch(self, request, *args, **kwargs):
-    #     """Дебаг-метод для проверки подключения контроллера"""
-    #     # Этот принт сработает ПЕРВЫМ при любом обращении к этому URL
-    #     print(">>> СИГНАЛ ПОЛУЧЕН: Запрос вошел в UserDetailView")
-    #     print(f">>> Данные пути (kwargs): {kwargs}")
-    #     print(f"Ищу файл тут: {os.path.join(settings.MEDIA_ROOT, 'products/product_11/image/test_image.bmp')}")
-    #     print(f"Папка существует? {os.path.exists(settings.MEDIA_ROOT)}")
-    #     return super().dispatch(request, *args, **kwargs)
-
-
-class ModeratorsListView(ListView):
-    """Список модераторов"""
-    model = Moderator
-    form_class = ModeratorBaseForm
-    template_name = "blog/moderators/moderator_list.html"
-    page_name = 'moderator_list'
-
-    def get_queryset(self):
-        # 1. Берем базовый набор (например, всех не удаленных по умолчанию)
-        queryset = Moderator.objects.filter(is_deleted=False)
-
-        # 2. Получаем фильтр из URL (например, ?status=staff)
-        status_filter = self.request.GET.get('status')
-        search_query = self.request.GET.get('search')
-
-        # 3. Применяем фильтры, если они переданы
-        if status_filter == 'staff':
-            queryset = queryset.filter(is_staff=True)
-
-        if search_query:
-            queryset = queryset.filter(login__icontains=search_query)
-
-        return queryset.order_by('-joined_at', 'first_name', 'last_name')
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["page_name"] = "moderator_list"
-        # Прокидываем текущий поиск обратно в шаблон, чтобы в инпуте остался текст
-        context["search_value"] = self.request.GET.get('search', '')
-        return context
-
-    # def dispatch(self, request, *args, **kwargs):
-    #     """Дебаг-метод для проверки подключения контроллера"""
-    #     # Этот принт сработает ПЕРВЫМ при любом обращении к этому URL
-    #     print(">>> СИГНАЛ ПОЛУЧЕН: Запрос вошел в ModeratorListView")
-    #     print(f">>> Данные пути (kwargs): {kwargs}")
-    #     print(f"Ищу файл тут: {os.path.join(settings.MEDIA_ROOT, 'products/product_11/image/test_image.bmp')}")
-    #     print(f"Папка существует? {os.path.exists(settings.MEDIA_ROOT)}")
-    #     return super().dispatch(request, *args, **kwargs)
-
-
-class ModeratorDeleteView(DeleteView):
-    """Удаление пользователя"""
-    model = Moderator
-    form_class = ModeratorDeletionForm
-    template_name = "blog/moderators/moderator_list.html"
-
-    def get_success_url(self):
-        reverse_lazy("blog:moderator_list")
 
 
 class PostCreateView(CreateView):
@@ -369,12 +106,41 @@ class PostCreateView(CreateView):
     form_class = PostCreationForm
 
     def get_success_url(self):
-        return reverse_lazy("blog:post_detail", kwargs={"pk": self.object.pk})
+        return redirect('users:profile', pk=self.object.author.pk)
+        # return reverse_lazy("blog:post_detail", kwargs={"pk": self.object.pk})
 
-    def form_valid_user_authorship(self, form):
-        """Автоматически назначаем автора текущего пользователя"""
-        form.instance.author = self.request.user
-        return super().form_valid(form)
+    def form_valid(self, form):
+        """Объединенная логика сохранения поста, автора и медиафайлов"""
+        print("--- DEBUG: Данные формы ---")
+        for field in form.fields:
+            print(f"Поле: {field}, Значение: {form.cleaned_data.get(field)}")
+
+        context = self.get_context_data()
+        media_formset = context["media_formset"]
+
+        # Используем транзакцию, чтобы пост не создался, если картинки не загрузятся
+        try:
+            with transaction.atomic():
+                # 1. Сохраняем пост, назначая автора
+                self.object = form.save(commit=False)
+                self.object.author = self.request.user  # Исправлено с .Users.user
+                self.object.save()
+
+                # 2. Связываем формсет с постом и сохраняем
+                if media_formset.is_valid():
+                    media_formset.instance = self.object
+                    media_formset.save()
+                    return redirect('users:profile', pk=self.request.user.pk)
+                else:
+                    # Если медиа невалидны, возвращаем форму с ошибками
+                    return self.form_invalid(form)
+
+            # return HttpResponseRedirect(self.get_success_url())
+
+        except Exception as e:
+            # Логируем ошибку, если что-то пошло не так при записи в БД
+            form.add_error(None, f"Ошибка при сохранении: {e}")
+            return self.form_invalid(form)
 
     # def dispatch(self, request, *args, **kwargs):
     #     """Дебаг-метод для проверки подключения контроллера"""
@@ -418,35 +184,35 @@ class PostCreateView(CreateView):
             data["media_formset"] = PostMediaFormSet()
 
         return data
-
-    def form_valid(self, form):
-        """Позволяет работать с медиафайлами"""
-        context = self.get_context_data()
-        media_formset = context["media_formset"]
-
-        with transaction.atomic():
-            # 1. Подготовка и сохранение основного объекта
-            self.object = form.save(commit=False)
-            self.object.author = self.request.user
-            self.object.post_id = self.kwargs.get('pk')  # ID поста из URL
-            self.object.save()
-
-            # 2. Валидация и сохранение медиа-формсета
-            if media_formset.is_valid():
-                media_formset.instance = self.object
-                media_formset.save()
-            else:
-                # Если картинки «кривые», откатываем транзакцию и показываем ошибки
-                return self.form_invalid(form)
-
-        # 3. Дебаг
-        if hasattr(self.object, 'image') and self.object.image:
-            print(f"Файл создан: {self.object.image.path}")
-        elif hasattr(self.object, 'video') and self.object.video:
-            print(f"Файл создан: {self.object.video.path}")
-
-        # 4. Финальный редирект
-        return HttpResponseRedirect(self.get_success_url())
+    #
+    # def form_valid(self, form):
+    #     """Позволяет работать с медиафайлами"""
+    #     context = self.get_context_data()
+    #     media_formset = context["media_formset"]
+    #
+    #     with transaction.atomic():
+    #         # 1. Подготовка и сохранение основного объекта
+    #         self.object = form.save(commit=False)
+    #         self.object.author = self.request.user
+    #         self.object.post_id = self.kwargs.get('pk')  # ID поста из URL
+    #         self.object.save()
+    #
+    #         # 2. Валидация и сохранение медиа-формсета
+    #         if media_formset.is_valid():
+    #             media_formset.instance = self.object
+    #             media_formset.save()
+    #         else:
+    #             # Если картинки «кривые», откатываем транзакцию и показываем ошибки
+    #             return self.form_invalid(form)
+    #
+    #     # 3. Дебаг
+    #     if hasattr(self.object, 'image') and self.object.image:
+    #         print(f"Файл создан: {self.object.image.path}")
+    #     elif hasattr(self.object, 'video') and self.object.video:
+    #         print(f"Файл создан: {self.object.video.path}")
+    #
+    #     # 4. Финальный редирект
+    #     return HttpResponseRedirect(self.get_success_url())
 
 
 class PostDetailView(DetailView):
@@ -454,6 +220,7 @@ class PostDetailView(DetailView):
     model = Post
     page_name = 'post_detail'
     form_class = PostBaseForm
+    context_object_name = "post"
 
     def get_object(self, queryset=None):
         """Получаем пост и увеличиваем n просмотров на 1"""
@@ -487,8 +254,22 @@ class PostDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["post"] = PostForm()
+
+        # 1. Комментарии: передаем форму под именем 'comment_form'
+        context["comment_form"] = CommentForm()
+        context["comments"] = self.object.comments.all()
+
+        # 2. Лайки/Дизлайки: они уже есть в объекте 'post',
+        # но если нужна логика проверки "лайкнул ли текущий юзер", добавляем флаги:
+        user = self.request.user
+        if user.is_authenticated:
+            context["is_favorite"] = self.object.favorites.filter(id=user.id).exists()
+
         return context
+
+        # context = super().get_context_data(**kwargs)
+        # context["post"] = PostForm()
+        # return context
 
 
 class PostUpdateView(UpdateView):
@@ -571,13 +352,26 @@ class PostUpdateView(UpdateView):
         return data
 
 
-class PostDeleteView(DeleteView):
+class PostDeleteView(UpdateView):
     """Удаление поста"""
     model = Post
     form_class = PostDeletionForm
 
     def get_success_url(self):
         reverse_lazy("blog:home")
+
+    def form_valid(self, form):
+        # Проверяем, что выбрано именно "YES" в форме
+        if form.cleaned_data.get('is_delete') == "YES":
+            instance = form.save(commit=False)
+            instance.is_deleted = True
+            instance.is_active = False
+            instance.deleted_at = timezone.now()
+            instance.save()
+            return super().form_valid(form)
+
+        # Если выбрали "NO", просто возвращаем на страницу поста
+        return redirect(self.object.get_absolute_url())
 
 
 class CommentCreateView(CreateView):
@@ -743,7 +537,7 @@ class CategoriesDetailView(DetailView):
     """Тематика постов"""
     model = Categories
     template_name = 'blog/categories.html'
-    context_object_name = 'categories'
+    context_object_name = 'tags'
 
     # def dispatch(self, request, *args, **kwargs):
     #     """Дебаг-метод для проверки подключения контроллера"""
@@ -755,8 +549,7 @@ class CategoriesDetailView(DetailView):
     def get_context_data(self, **kwargs):
         """Метод отвечает за подготовку данных, которые полетят в HTML-шаблон"""
         context = super().get_context_data(**kwargs)
-        posts = Post.objects.filter(category=self.object)
-
+        posts = Post.objects.filter(tag=self.object)
 
         # Сюда можно добавить вашу логику фильтрации (newer/older)
         filter_type = self.request.GET.get("filter")
@@ -794,7 +587,7 @@ class FavoritesListView(ListView):
     def get_queryset(self, **kwargs):
         """Получение заполнения макета с фильтрацией"""
         # Заготовка на будущее пока что
-        queryset = Post.objects.filter(is_published=True)
+        queryset = Post.objects.filter(is_published=True, author__isnull=False)
         filter_type = self.request.GET.get("filter")
 
         if filter_type == "top":
@@ -836,20 +629,6 @@ class SetPostMainView(UserPassesTestMixin, UpdateView):
 
 # # Сортировка по лайкам (от большего к меньшему)
 # posts = Post.objects.all().order_by('-likes')
-#
-# # Сортировка по названию (А-Я)
-# posts = Post.objects.all().order_by('title')
-#
-# # Сортировка по количеству просмотров
-# posts = Post.objects.all().order_by('-viewed')
-#
-# планируем часто сортировать по viewed или likes, добавить в поле параметр db_index=True
-#
-# def post_list(request):
-#     sort_by = request.GET.get('sort', '-created_at') # По умолчанию — новые
-#     posts = Post.objects.all().order_by(sort_by)
-#     return render(request, 'blog/list.html', {'posts': posts})
-#
 #
 # def toggle_subscription(request, author_id):
 #     author = User.objects.get(id=author_id)

@@ -1,4 +1,4 @@
-{% load blog_tags  %}
+{% load custom_tags  %}
 <nav class="blog-pagination" aria-label="Pagination">
     {# Кнопка "Старые": если в URL есть sort=old, она становится серой (secondary) и отключенной #}
     {% if request.GET.sort == 'old' %}

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="ru" data-bs-theme="auto">
+<head>
+    <meta charset="utf-8">
+    <!--
+    Вот что определяет каждая строка:
+    viewport: Самый важный тег для адаптивности. Инструкция width=device-width заставляет сайт подстраиваться под ширину экрана смартфона, а не открывать «десктопную» версию в миниатюре. Без него верстка Bootstrap на мобильных устройствах «поедет».
+    description: Краткое описание страницы. Именно этот текст (если его заполнить) чаще всего отображается в результатах поиска Google или Яндекса под заголовком сайта.
+    author: Техническая метка о том, кто создал страницу. В данном случае указаны создатели Bootstrap. Полезно для портфолио или крупных корпоративных проектов.
+    generator: Указывает на инструмент, с помощью которого был собран HTML-код (в примере это Astro). Это техническая подпись софта.
+    -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="django, homework_python">
+    <meta name="author" content="Vasiliy">
+    <meta name="generator" content="Astro v5.13.2">
+
+    <title>Blog Template</title>
+
+    <!--
+    Ссылка на шрифты (Google Fonts)
+    Куда ведет: На серверы Google. Она загружает шрифты напрямую из интернета (CDN).
+    Ведет на файлы шрифтов .woff2.
+    Можно скачать их и положить в static/fonts/.
+    Затем прописать путь через static.
+     -->
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.3/examples/blog/">
+    <!--
+    <link href="https://cdn.jsdelivr.net" rel="stylesheet"  integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    -->
+    <link href="https://cdn.jsdelivr.net" rel="stylesheet">
+    <script src="{% static 'bootstrap-5.3.8-examples/assets/js/color-modes.js' %}"></script>
+    <link rel="apple-touch-icon" href="{% static 'bootstrap-5.3.8/site/static/docs/assets/img/favicons/apple-touch-icon.png' %}" sizes="180x180">
+    <link rel="icon" href="{% static 'bootstrap-5.3.8/site/static/docs/assets/img/favicons/favicon-32x32.png' %}" sizes="32x32" type="image/png">
+    <link rel="icon" href="{% static 'bootstrap-5.3.8/site/static/docs/assets/img/favicons/favicon-16x16.png' %}" sizes="16x16" type="image/png">
+    <link rel="manifest" href="{% static 'bootstrap-5.3.8/site/static/docs/assets/img/favicons/manifest.json' %}">
+    <link rel="mask-icon" href="{% static 'bootstrap-5.3.8/site/static/docs/assets/img/favicons/safari-pinned-tab.svg' %}" color="#712cf9">
+    <link rel="icon" href="{% static 'bootstrap-5.3.8/site/static/docs/assets/img/favicons/favicon.ico' %}">
+    <meta name="theme-color" content="#712cf9">
+
+    <!--
+    <link href="https://fonts.googleapis.com/css?family=Playfair+Display:700,900&display=swap" rel="stylesheet">
+    Ссылка Canonical (Сео-ссылка)
+    Куда ведет: На официальную страницу примера Bootstrap.
+    Нужно ли менять? ОБЯЗАТЕЛЬНО.
+    Эта ссылка говорит поисковикам: «Мой сайт — это копия, оригинал лежит вот тут».
+    Если вы её оставите, ваш сайт никогда не поднимется в поиске Google или Яндекса,
+    так как будет считаться плагиатом.
+    -->
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'bootstrap-5.3.8-examples/blog/blog.css' %}" rel="stylesheet">
+    <link href="{% static 'css/custom.css' %}" rel="stylesheet">
+</head>
+<body>
+
+    {% block content %}
+    {% endblock %}
+
+    <footer class="py-5 text-center text-body-secondary bg-body-tertiary">
+        <p class="mb-0"><a href="#">Наверх</a></p></footer>
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+        <!--
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        - это проверка безопасности для файлов, которые грузятся из интернета (CDN).
+        -->
+</body>
+</html>

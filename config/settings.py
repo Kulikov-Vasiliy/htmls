@@ -27,6 +27,13 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+
+LOGIN_URL = 'auth_choose'
+
+LOGOUT_ON_GET = True  # до 5.0, после адо делать через post:
+# poetry remove django
+# poetry add django==4.2.11
+
 ALLOWED_HOSTS = ["*"]
 
 
@@ -40,8 +47,10 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.humanize",
+    "core",
     "catalog",
     "blog",
+    "users",
 ]
 
 MIDDLEWARE = [
@@ -110,6 +119,8 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
@@ -132,4 +143,24 @@ STATICFILES_DIRS = (BASE_DIR / "static",)
 MEDIA_URL = "/media/"
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
-# MEDIA_ROOT = BASE_DIR / "media"
+
+
+AUTH_USER_MODEL = "users.User"
+
+AUTHENTICATION_BACKENDS = [
+    # 'django.contrib.auth.backends.ModelBackend',  # для основной модели
+    'users.backends.UserBackend',
+    'users.backends.ModeratorBackend',
+]
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # рассылает
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # дебаг-вывод в консоли без рассылки
+EMAIL_HOST = 'smtp.mail.ru'
+EMAIL_PORT = 2525
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+
+SERVER_EMAIL = EMAIL_HOST_USER
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

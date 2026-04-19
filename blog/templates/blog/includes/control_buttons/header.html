@@ -1,4 +1,4 @@
-{% load blog_tags  %}
+{% load custom_tags  %}
 <header class="border-bottom lh-1 py-3">
     <div class="row flex-nowrap justify-content-between align-items-center">
         <div class="col-4 pt-1">
@@ -10,14 +10,33 @@
         </div>
 
         <div class="col-4 d-flex justify-content-end align-items-center">
-            {% include 'blog/includes/svgs/sign_up_in.html' %}
-            <a class="link-secondary" href="#" aria-label="Search">
-            <svg class="bi" width="20" height="20" fill="currentColor">
-                <use xlink:href="#search"></use>
-            </svg>
+            {% include 'users/svgs/sign_up_in.html' %}
+            <a class="link-secondary me-2" href="#" aria-label="Search">
+                <svg class="bi" width="20" height="20" fill="currentColor">
+                    <use xlink:href="#search"></use>
+                </svg>
+            </a>
 
-            <a class="btn btn-sm btn-outline-secondary  ms-2" href="{% url 'blog:entry' %}">Вход</a>
-            <a class="btn btn-sm btn-outline-secondary  ms-2" href="{% url 'blog:registration' %}">Регистрация</a>
+             <div class="button-group d-grid gap-2" style="width: 100%; max-width: 300px;">
+                {% if user.is_authenticated and user == object %}
+                    <form method="post" action="{% url 'users:logout' %}?next={% url 'blog:home' %}" class="d-grid m-0">
+                        {% csrf_token %}
+                        <button type="submit"
+                                style="height: 31px;"
+                                class="btn btn-sm btn-outline-secondary d-flex align-items-center justify-content-center me-2">Выход</button>
+                    </form>
+
+                    <a class="btn btn-sm btn-outline-danger d-flex align-items-center justify-content-center me-2"
+                       style="height: 31px;" href="{% url 'blog:main' %}">Удалить</a>
+                    <a class="btn btn-sm btn-outline-secondary d-flex align-items-center justify-content-center me-2 pl-0 pr-0"
+                       style="height: 31px;" href="{% url 'users:profile_update' object.pk %}">Обновить профиль</a>
+
+                {% else %}
+                    <a class="btn btn-sm btn-outline-secondary" href="{% url 'users:entry' %}">Вход</a>
+                    <a class="btn btn-sm btn-outline-secondary" href="{% url 'users:registration' %}">Регистрация</a>
+                {% endif %}
+            </div>
+
         </div>
     </div>
 </header>

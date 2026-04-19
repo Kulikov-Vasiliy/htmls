@@ -1,0 +1,70 @@
+{% extends 'blog/base.html' %}
+{% load custom_tags  %}
+{% block content %}
+      {% include 'users/svgs/avatar_pass.html' %}
+
+    {% if object.is_deleted %}
+        <div class="alert alert-warning">
+            Профиль был удален {{ object.deleted_at|date:"d.m.Y в H:i" }}
+        </div>
+
+    {% else %}
+        <!-- Вывод обычного профиля -->
+        <div class="d-flex align-items-center justify-content-center mb-3">
+            <div class="me-3">
+                {%  if not object.avatar.name or object.avatar is None %}
+                    <!-- Если фото нет: выводим стандартную иконку (например, "человечка") -->
+                    <svg class="bi text-body-secondary" width="50" height="50" fill="currentColor">
+                        <use xlink:href="#person-circle"></use> <!-- ID иконки из хранилища -->
+                    </svg>
+                {% else %}
+                    <!-- Если фото есть: выводим его -->
+                    <img src="{{ object.avatar | media_filter }}" width="50" height="50" class="rounded-circle shadow-sm">
+                {% endif %}
+            </div>
+                {% if user.is_authenticated and user.is_active and user == object %}
+                    <h5 class="display-5 mb-0 mt-0">Мой профиль</h5>
+                {% else %}
+                    <h5 class="display-5 mb-0 mt-0">Профиль {{ object.nickname }}</h5>
+                {% endif %}
+        </div>
+
+        <p class="text-center mt-2">
+            <small class="text-body-secondary">Присоединился {{ object.joined_at|date:"F Y" }}</small>
+        </p>
+
+        <div class="d-flex justify-content-center p-4 p-md-5 mb-4 rounded text-body-emphasis bg-body-secondary">О себе</div>
+        <p>{{object.about|default:"Здесь могла быть информация профиля =(" }}</p>
+
+        <!-- Избранные пользователем посты -->
+        <div class="row">
+            <div class="col-md-4">
+                <h3>Избранное</h3>
+                 {% with page_name='profile' %}
+                    {% include 'blog/favorites_list.html' %}
+                {% endwith %}
+            </div>
+
+            <!-- Посты пользователя -->
+            <div class="col-md-8">
+                <h3>Мои посты</h3>
+                {% for post in user.post_set.all %}
+                    <div class="card mb-2">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ post.title }}</h5>
+                            <a href="{{ post.get_absolute_url }}" class="btn btn-sm btn-primary">Читать</a>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="text-center p-4 border dashed">
+                        <p>У вас еще нет созданных постов.</p>
+                        <a href="{% url 'blog:post_create' %}" class="btn btn-success">
+                            Создать первый пост
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+    {% endif %}
+{% endblock %}

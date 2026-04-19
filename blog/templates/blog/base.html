@@ -65,7 +65,7 @@
 
         <div>
             <div class="nav-scroller py-1 mb-3 border-bottom">
-                {% load blog_tags  %}
+                {% load custom_tags %}
                 {% render_top_nav %}
             </div>
         </div>
@@ -83,7 +83,7 @@
                 {% if main %}
                     <h1 class="display-4 fst-italic">{{ main.title }}</h1>
                     <p class="lead my-3">{{ main.about_content|striptags|truncatechars:100 }}</p>
-                    <p class="lead mb-0"><a href="{% url 'blog:post_detail' pk=pk %}" class="text-body-emphasis fw-bold">Продолжить чтение...</a></p>
+                    <p class="lead mb-0"><a href="{% url 'blog:post_detail' pk=main.pk %}" class="text-body-emphasis fw-bold">Продолжить чтение...</a></p>
                 {% else %}
                     <p class="text-body-emphasis fw-bold">Обложка не задана</p>
                 {% endif %}
@@ -105,7 +105,7 @@
                 Разделение контента: Класс col-md-8 отводит этой секции 2/3 ширины страницы на больших экранах, оставляя оставшуюся 1/3 (col-md-4) под боковую панель (Sidebar) с архивом и ссылками.
                 Визуальный маркер: Линия снизу (border-bottom) и курсив (fst-italic) отделяют заголовок секции от самих статей, создавая классический газетный стиль.
                 -->
-                <h3 class="pb-4 mb-4 fst-italic border-bottom">Статьи</h3>
+                <h3 class="pb-2 mb-2 fst-italic border-bottom">Статьи</h3>
 
                 <div>
                     {% block content %}
@@ -121,24 +121,17 @@
             <div class="col-md-4">
                 <div class="position-sticky" style="top: 2rem;">
                     <!-- Превью блога -->
-                    {% if page_name == 'profile' %}
-                        <div class="p-4 mb-3 bg-body-tertiary rounded"><h4 class="fst-italic">О пользователе {{ user.nickname }}</h4>
-                            <p class="mb-0">
-                                {{ user.about }}
-                            </p>
-                        </div>
-                    {% else %}
-                        <div class="p-4 mb-3 bg-body-tertiary rounded"><h4 class="fst-italic">О нас</h4>
-                            <p class="mb-0">
-                                Блог был создан в рамках ознакомления с версткой веб-страниц
-                                и работой с django для домашней работы.
-                            </p>
-                        </div>
-                    {% endif %}
+                    <div class="p-4 mb-3 bg-body-tertiary rounded"><h4 class="fst-italic">О нас</h4>
+                        <p class="mb-0">
+                            Блог был создан в рамках ознакомления с версткой веб-страниц
+                            и работой с django для домашней работы.
+                        </p>
+                    </div>
+
                     <div>
-                        <!-- Последние посты -->
+                        <!-- Последние публикации -->
                         <h4 class="fst-italic">Последние посты</h4>
-                        {% for post in some_list %}
+                        {% for post in posts %}
                             <ul class="list-unstyled">
                                 <li>
                                     <a class="d-flex flex-column flex-lg-row gap-3 align-items-start align-items-lg-center py-3 link-body-emphasis text-decoration-none border-top"
@@ -154,6 +147,10 @@
                                     </a>
                                 </li>
                             </ul>
+                        {% empty %}
+                            <p>
+                                Постов пока нет
+                            </p>
                         {% endfor %}
                     </div>
                 </div>

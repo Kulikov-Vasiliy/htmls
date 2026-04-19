@@ -1,6 +1,7 @@
 from django import template
 from django.utils import timezone
-from blog.models import Categories
+from catalog.models import Category
+from users.models import User, Moderator
 
 
 register = template.Library()
@@ -34,12 +35,14 @@ def is_last_months(value):
 
 @register.inclusion_tag('blog/includes/top_nav_items.html')
 def render_top_nav():
+    from blog.models import Categories
     # Получаем все категории из базы, чтобы построить кнопки
     categories = Categories.objects.all().order_by('order') # сортировка по вашему полю order
     return {'categories_list': categories}
 
 
-# @register.inclusion_tag('blog/includes/top_nav.html')
-# def show_categories():
-#     categories = Categories.objects.all()
-#     return {'categories': categories}
+@register.inclusion_tag('blog/includes/top_nav.html')
+def show_categories():
+    from blog.models import Categories
+    categories = Categories.objects.all()
+    return {'categories': categories}

@@ -205,7 +205,7 @@ version = "3.11.1"
 description = "ASGI specs, helper code, and adapters"
 optional = false
 python-versions = ">=3.9"
-groups = ["main", "devtools"]
+groups = ["main"]
 files = [
     {file = "asgiref-3.11.1-py3-none-any.whl", hash = "sha256:e8667a091e69529631969fd45dc268fa79b99c92c5fcdda727757e52146ec133"},
     {file = "asgiref-3.11.1.tar.gz", hash = "sha256:5f184dc43b7e763efe848065441eac62229c9f7b0475f41f80e207a114eda4ce"},
@@ -514,24 +514,24 @@ files = [
 
 [[package]]
 name = "django"
-version = "6.0.2"
+version = "4.2.11"
 description = "A high-level Python web framework that encourages rapid development and clean, pragmatic design."
 optional = false
-python-versions = ">=3.12"
-groups = ["main", "devtools"]
+python-versions = ">=3.8"
+groups = ["main"]
 files = [
-    {file = "django-6.0.2-py3-none-any.whl", hash = "sha256:610dd3b13d15ec3f1e1d257caedd751db8033c5ad8ea0e2d1219a8acf446ecc6"},
-    {file = "django-6.0.2.tar.gz", hash = "sha256:3046a53b0e40d4b676c3b774c73411d7184ae2745fe8ce5e45c0f33d3ddb71a7"},
+    {file = "Django-4.2.11-py3-none-any.whl", hash = "sha256:ddc24a0a8280a0430baa37aff11f28574720af05888c62b7cfe71d219f4599d3"},
+    {file = "Django-4.2.11.tar.gz", hash = "sha256:6e6ff3db2d8dd0c986b4eec8554c8e4f919b5c1ff62a5b4390c17aff2ed6e5c4"},
 ]
 
 [package.dependencies]
-asgiref = ">=3.9.1"
-sqlparse = ">=0.5.0"
+asgiref = ">=3.6.0,<4"
+sqlparse = ">=0.3.1"
 tzdata = {version = "*", markers = "sys_platform == \"win32\""}
 
 [package.extras]
-argon2 = ["argon2-cffi (>=23.1.0)"]
-bcrypt = ["bcrypt (>=4.1.1)"]
+argon2 = ["argon2-cffi (>=19.1.0)"]
+bcrypt = ["bcrypt"]
 
 [[package]]
 name = "dotenv"
@@ -2692,7 +2692,7 @@ version = "0.5.5"
 description = "A non-validating SQL parser."
 optional = false
 python-versions = ">=3.8"
-groups = ["main", "devtools"]
+groups = ["main"]
 files = [
     {file = "sqlparse-0.5.5-py3-none-any.whl", hash = "sha256:12a08b3bf3eec877c519589833aed092e2444e68240a3577e8e26148acc7b1ba"},
     {file = "sqlparse-0.5.5.tar.gz", hash = "sha256:e20d4a9b0b8585fdf63b10d30066c7c94c5d7a7ec47c889a2d83a3caa93ff28e"},
@@ -2895,15 +2895,15 @@ typing-extensions = ">=4.12.0"
 
 [[package]]
 name = "tzdata"
-version = "2025.3"
+version = "2026.1"
 description = "Provider of IANA time zone data"
 optional = false
 python-versions = ">=2"
-groups = ["main", "devtools"]
+groups = ["main"]
 markers = "sys_platform == \"win32\""
 files = [
-    {file = "tzdata-2025.3-py2.py3-none-any.whl", hash = "sha256:06a47e5700f3081aab02b2e513160914ff0694bce9947d6b76ebd6bf57cfc5d1"},
-    {file = "tzdata-2025.3.tar.gz", hash = "sha256:de39c2ca5dc7b0344f2eba86f49d614019d29f060fc4ebc8a417896a620b56a7"},
+    {file = "tzdata-2026.1-py2.py3-none-any.whl", hash = "sha256:4b1d2be7ac37ceafd7327b961aa3a54e467efbdb563a23655fbfe0d39cfc42a9"},
+    {file = "tzdata-2026.1.tar.gz", hash = "sha256:67658a1903c75917309e753fdc349ac0efd8c27db7a0cb406a25be4840f87f98"},
 ]
 
 [[package]]
@@ -3376,4 +3376,4 @@ cffi = ["cffi (>=1.17,<2.0) ; platform_python_implementation != \"PyPy\" and pyt
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13,<4.0"
-content-hash = "e7812ce06aa0261494dbf18ebde1750d815faee9f7861c326443612b4bfb5e83"
+content-hash = "7b3029eaa5007ac671de071bb29b20028bb8d97e8342644626df0d546daa7762"

@@ -41,4 +41,5 @@ urlpatterns = [
         views.CategoryDeleteView.as_view(),
         name="category_delete",
     ),
+    path("non_auth/", views.AuthChoose.as_view(), name="auth_choose"),
 ]

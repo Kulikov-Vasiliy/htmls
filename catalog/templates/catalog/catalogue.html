@@ -1,10 +1,12 @@
 {% extends 'catalog/base.html' %}
-{% load tags %}
+{% load custom_tags %}
 {% block content %}
     <figure class="text-center mb-5">
         <h1 class="display-4">Каталог</h1>
-         <a href="{% url 'catalog:product_create'  %}" class="card-link btn ">Добавить товар</a>
-         <a href="{% url 'catalog:category_create'  %}" class="card-link btn ">Добавить категорию</a>
+        {% if user.is_authenticated %}
+            <a href="{% url 'catalog:product_create'  %}" class="card-link btn ">Добавить товар</a>
+            <a href="{% url 'catalog:category_create'  %}" class="card-link btn ">Добавить категорию</a>
+        {% endif %}
     </figure>
 
     <!-- Список категорий -->
