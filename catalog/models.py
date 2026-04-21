@@ -42,6 +42,12 @@ class Category(models.Model):
         return self.name
 
 
+PUBLISH = [
+    (True, "Опубликовать"),
+    (False, "Отменить публикацию")
+    ]
+
+
 class Product(models.Model):
     """
     Класс для работы с моделью продукта и содержит:
@@ -78,19 +84,24 @@ class Product(models.Model):
         blank=True, null=True, auto_now=True, verbose_name="Дата последнего изменения"
     )
     popularity = models.IntegerField(default=0)
+    is_published = models.BooleanField(default=False, null=True, blank=True, verbose_name="Статус публикации", choices=PUBLISH)
+    owner = models.ForeignKey("users.User", verbose_name="Владелец", on_delete=models.CASCADE, related_name="products")
 
     class Meta:
         """Класс мета-параметров класса продукта"""
-
         verbose_name = "Продукт"
         verbose_name_plural = "Продукты"
         ordering = ["category", "name"]
+        permissions = [
+            ("can_publish_product", "can publish product"),
+            ("can_unpublish_product", "can unpublish product")
+        ]
 
     def __str__(self):
         """Вывод имени / имени и категории в человекочитаемом виде"""
         if self.category:
-            return f"{self.name} ({self.category})"
-        return self.name
+            return f"{self.name} (категория: {self.category}, владелец: {self.owner})"
+        return f"{self.name} владелец: {self.owner}"
 
 
 class ProductMedia(models.Model):
@@ -103,7 +114,7 @@ class ProductMedia(models.Model):
 
     # Поле для определения типа контента
     CONTENT_TYPES = [("image", "Изображение"), ("video", "Видео")]
-    file_type = models.CharField(max_length=10, choices=CONTENT_TYPES)
+    file_type = models.CharField(null=True, blank=True, max_length=10, choices=CONTENT_TYPES)
 
     def get_upload_path(instance, filename):
         """Определяет путь сохранения медиафайла"""
@@ -125,29 +136,3 @@ class ProductMedia(models.Model):
     def __str__(self):
         """Вывод в виде: тип файла для продукта такого-то"""
         return f"{self.file_type} для {self.product.name}"
-
-
-class User(models.Model):
-    """Класс пользователя, применяемый для фильтра отображения"""
-
-    pass
-
-
-class UserActivity(models.Model):
-    """Класс фильтра отображения"""
-
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    timestamp = models.DateTimeField(auto_now_add=True)
-    user = models.ForeignKey("User", on_delete=models.CASCADE)
-
-    class Meta:
-        verbose_name = "Активность"
-        verbose_name_plural = "Активности"
-
-    def __str__(self):
-        """Вывод в человекочитаемом виде"""
-        if self.user:
-            return f"{self.user}"
-        elif self.product:
-            return f"{self.product.name}"
-        return f"Активность пользователя {self.user} по товару {self.product.name}"

@@ -42,13 +42,15 @@
                 </p>
 
                 <!-- Кнопки действий -->
-                <div>
-                    <a href="{% url 'catalog:product_update' pk=object.id %}" class="btn btn-outline-secondary">Изменить информацию о товаре</a>
+                {% if perms.product.can_publish_product and perms.product.can_unpublish_product or user == product.owner %}
+                    <div>
+                        <a href="{% url 'catalog:product_update' pk=object.id %}" class="btn btn-outline-secondary">Изменить информацию о товаре</a>
 
-                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmModal">
-                        Удалить
-                    </button>
-                </div>
+                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmModal">
+                            Удалить
+                        </button>
+                    </div>
+                {% endif %}
 
             </div>
 

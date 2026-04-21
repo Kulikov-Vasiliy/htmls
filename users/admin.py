@@ -10,7 +10,7 @@ class UserAdmin(admin.ModelAdmin):
     search_fields = ('nickname', 'email', 'login', 'first_name', 'last_name')
     readonly_fields = ('joined_at', 'deleted_at')
     fieldsets = (
-        ('Личные данные', {'fields': ('nickname', 'login', 'email', 'profile_img', 'about')}),
+        ('Личные данные', {'fields': ('nickname', 'login', 'email', 'avatar', 'about')}),
         ('ФИО', {'fields': ('first_name', 'last_name')}),
         ('Статус удаления', {'fields': ('is_deleted', 'deleted_at', 'is_delete')}),
     )
@@ -42,7 +42,7 @@ class ModeratorAdmin(UserAdmin):
     # Группируем поля: личные данные отдельно, рабочие (пост/решение) отдельно
     fieldsets = (
         ('Данные модератора', {
-            'fields': ('login', 'email', 'first_name', 'last_name', 'profile_img', 'is_staff')
+            'fields': ('login', 'email', 'first_name', 'last_name', 'avatar', 'is_staff')
         }),
         ('Работа с контентом', {
             'fields': ('post', 'author', 'message', 'is_active', 'decision_by')

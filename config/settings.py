@@ -148,7 +148,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 AUTH_USER_MODEL = "users.User"
 
 AUTHENTICATION_BACKENDS = [
-    # 'django.contrib.auth.backends.ModelBackend',  # для основной модели
+    'django.contrib.auth.backends.ModelBackend',  # для основной модели
     'users.backends.UserBackend',
     'users.backends.ModeratorBackend',
 ]

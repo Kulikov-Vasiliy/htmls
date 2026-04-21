@@ -12,13 +12,14 @@ from django.views.generic import (
 )
 from django.contrib import messages
 from catalog.models import Product, Category
-from catalog.forms import ProductMediaFormSet, ContactsForm, CategoryForm, ProductValidationForm
+from catalog.forms import ProductMediaFormSet, ContactsForm, CategoryForm, ProductValidationForm, ProductPublishForm
 from django.utils import timezone
 from django.db import transaction
 import os
 from config import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
+from django.core.exceptions import PermissionDenied
 
 
 # Create your views here.
@@ -118,6 +119,7 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         """Метод-валидатор с дебагом"""
+        form.instance.owner = self.request.user
         context = self.get_context_data()
         media_formset = context["media_formset"]
 
@@ -131,7 +133,10 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
                 media_formset.save()
 
         # 2. Дебаг-логика (теперь self.object гарантированно существует)
-        file_field = self.object.image or self.object.video
+        image_field = getattr(self.object, 'image', None)
+        video_field = getattr(self.object, 'video', None)
+
+        file_field = image_field or video_field
         if file_field:
             print(f"--- ФАЙЛ СОЗДАН ---")
             print(f"Путь в БД: {file_field.name}")
@@ -140,6 +145,16 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
 
         # 3. Возвращаем редирект (как это делает базовый класс)
         return HttpResponseRedirect(self.get_success_url())
+
+    def get_form_class(self):
+        """Задает возможность публикации продукта"""
+        user = self.request.user
+        if user.has_perms("can_publish_product") and  user.has_perms("can_unpublish_product"):
+            return ProductPublishForm
+        if user == user.object.owner:
+            return ProductValidationForm
+        else:
+            raise PermissionDenied
 
 
 class ProductUpdateView(LoginRequiredMixin, UpdateView):
