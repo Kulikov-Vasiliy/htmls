@@ -42,7 +42,24 @@
                 </p>
 
                 <!-- Кнопки действий -->
-                {% if perms.product.can_publish_product and perms.product.can_unpublish_product or user == product.owner %}
+                {% if perms.product.can_publish_product and perms.product.can_unpublish_product and perms.product.can_delete_product %}
+                    <div>
+                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmModal">
+                            Удалить
+                        </button>
+
+                        {% if product.is_published %}
+                            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#publishModal">
+                                Отменить публикацию
+                            </button>
+                        {% else %}
+                            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#publishModal">
+                                Опубликовать
+                            </button>
+                        {% endif %}
+                    </div>
+
+                {% elif user == product.owner %}
                     <div>
                         <a href="{% url 'catalog:product_update' pk=object.id %}" class="btn btn-outline-secondary">Изменить информацию о товаре</a>
 
@@ -51,9 +68,7 @@
                         </button>
                     </div>
                 {% endif %}
-
             </div>
-
         </figure>
 
         <!-- О товаре -->
@@ -106,8 +121,8 @@
 
         <div>
             <!-- Описание и цена -->
-            <p class="texteria">{{ object.description|default:"Описание отсутствует." }}</p>
             <p class="text d-flex justify-content-center">Стоимость: $ {{ object.price }}</p>
+            <p class="texteria">{{ object.description|default:"Описание отсутствует." }}</p>
 
             <!-- Место под кнопки -->
             <div class="my-btn-group d-flex w-100">
@@ -119,5 +134,7 @@
     {% with page_name='product' %}
         {% include 'catalog/includes/delete_window.html' %}
     {% endwith %}
+
+    {% include 'catalog/includes/pub_confirm.html' %}
 
 {% endblock %}

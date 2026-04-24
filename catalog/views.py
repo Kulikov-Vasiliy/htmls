@@ -10,6 +10,7 @@ from django.views.generic import (
     TemplateView,
     RedirectView,
 )
+from django.views import View
 from django.contrib import messages
 from catalog.models import Product, Category
 from catalog.forms import ProductMediaFormSet, ContactsForm, CategoryForm, ProductValidationForm, ProductPublishForm
@@ -420,3 +421,12 @@ class BlogRedirectView(RedirectView):
         return super().get_redirect_url(*args, **kwargs)
 
     pattern_name = "blog:home"
+
+
+class ProductPublishView(View):
+    """Публикация"""
+    def post(self, request, pk):
+        product = get_object_or_404(Product, pk=pk)
+        product.is_published = not product.is_published # Переключаем статус
+        product.save()
+        return redirect(request.META.get('HTTP_REFERER', 'catalog:product_detail', kwargs={"pk": self.object.id}))

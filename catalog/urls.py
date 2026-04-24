@@ -42,4 +42,5 @@ urlpatterns = [
         name="category_delete",
     ),
     path("non_auth/", views.AuthChoose.as_view(), name="auth_choose"),
+    path('product/<int:pk>/publish/', views.ProductPublishView.as_view(), name='product_publish')
 ]

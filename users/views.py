@@ -84,12 +84,6 @@ class SignInFormView(FormView):
             form.add_error(None, 'Неверный email или пароль')
             return self.form_invalid(form)
 
-    # def get_success_url(self):
-    #     """Куда перейти при успешном входе"""
-    #     if self.request.user.is_staff:
-    #         return reverse_lazy("users:moderator", kwargs={'pk': self.request.user.pk})
-    #     return reverse_lazy("blog:home")
-
     def form_invalid(self, form):
         """Отображает что введено неверно"""
         print(">>> ФОРМА НЕВАЛИДНА!")
