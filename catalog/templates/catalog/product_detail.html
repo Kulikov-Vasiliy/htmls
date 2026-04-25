@@ -19,6 +19,8 @@
                     К сожалению, в целях борьбы с бот-накруткой просмотров, только авторизованные пользователи могут просмотреть информацию о товаре,
                     удалить/создать товар/категорию, изменить информацию о товаре или категорию.
                 </p>
+            </div>
+        </figure>
 
     {% else %}
         <figure class="d-flex justify-content-center mb-5">
@@ -49,7 +51,7 @@
                         </button>
 
                         {% if product.is_published %}
-                            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#publishModal">
+                            <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#publishModal">
                                 Отменить публикацию
                             </button>
                         {% else %}

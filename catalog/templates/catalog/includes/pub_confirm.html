@@ -1,4 +1,4 @@
-<div class="modal fade" id="confirmModal" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="publishModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -14,15 +14,28 @@
                 {% endif %}
             </div>
 
-            <div class="modal-footer d-flex justify-content-center gap-2">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                    Не публиковать
-                </button>
+            {% if not object.is_published %}
+                <div class="modal-footer d-flex justify-content-center gap-2">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Не публиковать
+                    </button>
 
-                <button type="submit" form="publishFormTag" class="btn btn-danger">
-                    Публикую
-                </button>
-            </div>
+                    <button type="submit" form="publishFormTag" class="btn btn-danger">
+                        Публикую
+                    </button>
+                </div>
+
+            {% else %}
+                <div class="modal-footer d-flex justify-content-center gap-2">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Не публиковать
+                    </button>
+
+                    <button type="submit" form="publishFormTag" class="btn btn-danger">
+                        Отменяю публикацию
+                    </button>
+                </div>
+            {% endif %}
 
             <!-- Форма, которая отправит запрос на контроллер -->
             <form id="publishFormTag" action="{% url 'catalog:product_publish' object.pk %}" method="post" style="display: none;">

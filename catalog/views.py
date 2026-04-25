@@ -429,4 +429,4 @@ class ProductPublishView(View):
         product = get_object_or_404(Product, pk=pk)
         product.is_published = not product.is_published # Переключаем статус
         product.save()
-        return redirect(request.META.get('HTTP_REFERER', 'catalog:product_detail', kwargs={"pk": self.object.id}))
+        return redirect(request.META.get('HTTP_REFERER', 'catalog:product_detail'))
