@@ -33,6 +33,10 @@ class AuthChoose(TemplateView):
     """Определяет куда направить неавторизованных пользователей"""
     template_name = 'catalog/auth_choose.html'
 
+    def get(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return super().get(request, *args, **kwargs)
+
 
 class ProductListView(ListView):
     """Контроллер позволяет наполнять базовую страницу: продуктами"""
