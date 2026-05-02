@@ -21,21 +21,13 @@ from config import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.core.exceptions import PermissionDenied
+from catalog.services import get_products_from_cache
 
 
 # Create your views here.
 class BaseTemplateView(TemplateView):
     """Контроллер позволяет считывать базовую страницу"""
     template_name = "base.html"
-
-
-class AuthChoose(TemplateView):
-    """Определяет куда направить неавторизованных пользователей"""
-    template_name = 'catalog/auth_choose.html'
-
-    def get(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return super().get(request, *args, **kwargs)
 
 
 class ProductListView(ListView):
@@ -59,6 +51,7 @@ class ProductListView(ListView):
         """Метод получения товара в категории по ид"""
         category_id = self.kwargs.get("category.pk")
         queryset = Product.objects.filter(category_id=self.kwargs.get("pk"))
+        queryset = get_products_from_cache(queryset, f'category_{category_id}')
         return queryset
 
     def get_context_data(self, **kwargs):
@@ -71,7 +64,7 @@ class ProductListView(ListView):
         return context
 
 
-class ProductDetailView(LoginRequiredMixin, DetailView):
+class ProductDetailView(DetailView):
     """Контроллер позволяет детализировать базовую страницу: информацией о продуктах"""
 
     model = Product
@@ -260,6 +253,9 @@ class MainListView(ListView):
         # Заготовка на будущее пока что
         queryset = Product.objects.all()
         filter_type = self.request.GET.get("filter")
+        # Пока для невнедренного будет закомментирован вариант кэша
+        # queryset = Product.objects.all().order_by('-created_at')[:10]
+        # return get_cached_data(queryset, 'main_page_latest_products')
 
         if filter_type == "top":
             queryset = queryset.order_by(
