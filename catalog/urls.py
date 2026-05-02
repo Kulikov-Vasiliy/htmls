@@ -1,4 +1,6 @@
 from django.urls import path
+from django.views.decorators.cache import cache_page
+
 
 from catalog import views
 
@@ -19,7 +21,8 @@ urlpatterns = [
         views.CategoryCreateView.as_view(),
         name="category_create",
     ),
-    path("product/<int:pk>/", views.ProductDetailView.as_view(), name="product_detail"),
+    path("product/<int:pk>/", cache_page(60)(views.ProductDetailView.as_view()), name="product_detail"),
+    # path("product/<int:pk>/", (views.ProductDetailView.as_view()), name="product_detail"),
     path(
         "product/<int:pk>/update/",
         views.ProductUpdateView.as_view(),
@@ -41,5 +44,5 @@ urlpatterns = [
         views.CategoryDeleteView.as_view(),
         name="category_delete",
     ),
-    path("non_auth/", views.AuthChoose.as_view(), name="auth_choose"),
+    path('product/<int:pk>/publish/', views.ProductPublishView.as_view(), name='product_publish')
 ]

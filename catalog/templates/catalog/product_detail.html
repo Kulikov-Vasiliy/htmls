@@ -11,14 +11,8 @@
                     <a href="{% url 'catalog:catalogue' %}" class="btn btn-secondary my-btn-secondary">Назад</a>
                 {% endif %}
             </div>
-
-            <div>
-               <!-- Заголовок будет точно по центру -->
-                <h1 class="display-4">Вы не авторизованы, чтобы просмотреть {{ object.name }}</h1>
-                <p>
-                    К сожалению, в целях борьбы с бот-накруткой просмотров, только авторизованные пользователи могут просмотреть информацию о товаре,
-                    удалить/создать товар/категорию, изменить информацию о товаре или категорию.
-                </p>
+            {% include 'catalog/auth_choose.html' %}
+        </figure>
 
     {% else %}
         <figure class="d-flex justify-content-center mb-5">
@@ -42,16 +36,33 @@
                 </p>
 
                 <!-- Кнопки действий -->
-                <div>
-                    <a href="{% url 'catalog:product_update' pk=object.id %}" class="btn btn-outline-secondary">Изменить информацию о товаре</a>
+                {% if perms.product.can_publish_product and perms.product.can_unpublish_product and perms.product.can_delete_product %}
+                    <div>
+                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmModal">
+                            Удалить
+                        </button>
 
-                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmModal">
-                        Удалить
-                    </button>
-                </div>
+                        {% if product.is_published %}
+                            <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#publishModal">
+                                Отменить публикацию
+                            </button>
+                        {% else %}
+                            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#publishModal">
+                                Опубликовать
+                            </button>
+                        {% endif %}
+                    </div>
 
+                {% elif user == product.owner %}
+                    <div>
+                        <a href="{% url 'catalog:product_update' pk=object.id %}" class="btn btn-outline-secondary">Изменить информацию о товаре</a>
+
+                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmModal">
+                            Удалить
+                        </button>
+                    </div>
+                {% endif %}
             </div>
-
         </figure>
 
         <!-- О товаре -->
@@ -104,8 +115,8 @@
 
         <div>
             <!-- Описание и цена -->
-            <p class="texteria">{{ object.description|default:"Описание отсутствует." }}</p>
             <p class="text d-flex justify-content-center">Стоимость: $ {{ object.price }}</p>
+            <p class="texteria">{{ object.description|default:"Описание отсутствует." }}</p>
 
             <!-- Место под кнопки -->
             <div class="my-btn-group d-flex w-100">
@@ -117,5 +128,7 @@
     {% with page_name='product' %}
         {% include 'catalog/includes/delete_window.html' %}
     {% endwith %}
+
+    {% include 'catalog/includes/pub_confirm.html' %}
 
 {% endblock %}

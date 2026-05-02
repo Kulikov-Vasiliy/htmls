@@ -74,6 +74,7 @@ class ProductValidationForm(StyleFormMixin, ModelForm):
         model = Product
         fields = ("name", "description", "price", "category")
         exclude = ("popularity",)
+        # readonly_fields = ["popularity",]
 
     def clean(self):
         """Очищает описание и название продукта от запрещенки"""
@@ -89,10 +90,26 @@ class ProductValidationForm(StyleFormMixin, ModelForm):
         return cleaned_data
 
     def clean_price(self):
-        """Проверять, что цена продукта не может быть отрицательной.
+        """Проверит, что цена продукта не может быть отрицательной.
         Если цена введена неправильно, отобразите соответствующее сообщение пользователю
         """
         price = self.cleaned_data.get('price')
-        if price and price is None or int(price) <= 0:
+        if price and price is None or float(price) <= 0:
             raise ValidationError('Цена должна быть больше 0')
         return price
+
+
+class ProductPublishForm(StyleFormMixin, ModelForm):
+    """Публикация продукта"""
+
+    class Meta:
+        model = Product
+        readonly_fields = [
+            "name",
+            "description",
+            "category",
+            "price"
+            "image",
+            "video"
+        ]
+        fields = ("is_published",)

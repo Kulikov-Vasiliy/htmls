@@ -10,26 +10,24 @@ from django.views.generic import (
     TemplateView,
     RedirectView,
 )
+from django.views import View
 from django.contrib import messages
 from catalog.models import Product, Category
-from catalog.forms import ProductMediaFormSet, ContactsForm, CategoryForm, ProductValidationForm
+from catalog.forms import ProductMediaFormSet, ContactsForm, CategoryForm, ProductValidationForm, ProductPublishForm
 from django.utils import timezone
 from django.db import transaction
 import os
 from config import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
+from django.core.exceptions import PermissionDenied
+from catalog.services import get_products_from_cache
 
 
 # Create your views here.
 class BaseTemplateView(TemplateView):
     """Контроллер позволяет считывать базовую страницу"""
     template_name = "base.html"
-
-
-class AuthChoose(TemplateView):
-    """Определяет куда направить неавторизованных пользователей"""
-    template_name = 'catalog/auth_choose.html'
 
 
 class ProductListView(ListView):
@@ -53,6 +51,7 @@ class ProductListView(ListView):
         """Метод получения товара в категории по ид"""
         category_id = self.kwargs.get("category.pk")
         queryset = Product.objects.filter(category_id=self.kwargs.get("pk"))
+        queryset = get_products_from_cache(queryset, f'category_{category_id}')
         return queryset
 
     def get_context_data(self, **kwargs):
@@ -65,7 +64,7 @@ class ProductListView(ListView):
         return context
 
 
-class ProductDetailView(LoginRequiredMixin, DetailView):
+class ProductDetailView(DetailView):
     """Контроллер позволяет детализировать базовую страницу: информацией о продуктах"""
 
     model = Product
@@ -118,6 +117,7 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         """Метод-валидатор с дебагом"""
+        form.instance.owner = self.request.user
         context = self.get_context_data()
         media_formset = context["media_formset"]
 
@@ -131,7 +131,10 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
                 media_formset.save()
 
         # 2. Дебаг-логика (теперь self.object гарантированно существует)
-        file_field = self.object.image or self.object.video
+        image_field = getattr(self.object, 'image', None)
+        video_field = getattr(self.object, 'video', None)
+
+        file_field = image_field or video_field
         if file_field:
             print(f"--- ФАЙЛ СОЗДАН ---")
             print(f"Путь в БД: {file_field.name}")
@@ -140,6 +143,16 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
 
         # 3. Возвращаем редирект (как это делает базовый класс)
         return HttpResponseRedirect(self.get_success_url())
+
+    def get_form_class(self):
+        """Задает возможность публикации продукта"""
+        user = self.request.user
+        if user.has_perms("can_publish_product") and  user.has_perms("can_unpublish_product"):
+            return ProductPublishForm
+        if user == user.object.owner:
+            return ProductValidationForm
+        else:
+            raise PermissionDenied
 
 
 class ProductUpdateView(LoginRequiredMixin, UpdateView):
@@ -240,6 +253,9 @@ class MainListView(ListView):
         # Заготовка на будущее пока что
         queryset = Product.objects.all()
         filter_type = self.request.GET.get("filter")
+        # Пока для невнедренного будет закомментирован вариант кэша
+        # queryset = Product.objects.all().order_by('-created_at')[:10]
+        # return get_cached_data(queryset, 'main_page_latest_products')
 
         if filter_type == "top":
             queryset = queryset.order_by(
@@ -405,3 +421,12 @@ class BlogRedirectView(RedirectView):
         return super().get_redirect_url(*args, **kwargs)
 
     pattern_name = "blog:home"
+
+
+class ProductPublishView(View):
+    """Публикация"""
+    def post(self, request, pk):
+        product = get_object_or_404(Product, pk=pk)
+        product.is_published = not product.is_published # Переключаем статус
+        product.save()
+        return redirect(request.META.get('HTTP_REFERER', 'catalog:product_detail'))

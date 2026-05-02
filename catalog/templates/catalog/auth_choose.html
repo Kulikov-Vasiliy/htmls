@@ -1,7 +1,15 @@
-{% extends 'catalog/base.html' %}
 {% load static %}
 {% load custom_tags %}
-<h2>Чтобы продолжить, нужно войти или создать аккаунт</h2>
+<div>
+    <h1 class="display-4">Вы не авторизованы, чтобы просмотреть <strong>{{ object.name }}</strong></h1>
+    <p>
+        К сожалению, в целях борьбы с бот-накруткой просмотров, только авторизованные пользователи могут просмотреть
+        информацию о товаре,
+        удалить/создать товар/категорию, изменить информацию о товаре или категорию.
+    </p>
+    <div class="d-flex justify-content-center btn-group" style="width: 100%; max-width: 300px;">
+        <a class="text-decoration-none btn btn-outline-primary" href="{% url 'users:entry' %}?next={{ request.path }}">Войти</a>
+        <a class="text-decoration-none btn btn-outline-primary" href="{% url 'users:registration' %}?next={{ request.path }}">Зарегистрироваться</a>
+    </div>
 
-<a href="{% url 'users:entry' %}?next={{ request.GET.next }}">Войти</a>
-<a href="{% url 'users:registration' %}?next={{ request.GET.next }}">Зарегистрироваться</a>
+</div>

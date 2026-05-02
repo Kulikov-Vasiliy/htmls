@@ -65,8 +65,13 @@ class SignInFormView(FormView):
                     messages.success(self.request, "Вход выполнен успешно!")
                     return redirect(next_url)
 
+                # Если админ-перенаправляет в админку
+                if user_obj.is_superuser:
+                    messages.success(self.request, "Добро пожаловать в админку!")
+                    return redirect("admin:index")
+
                 # 2. Если 'next' нет, используем логику по умолчанию
-                if isinstance(user_obj, Moderator):
+                if isinstance(user_obj, Moderator) or getattr(user_obj, 'is_staff', False):
                     messages.success(self.request, f"Вход выполнен (Модератор: {user_obj.login})")
                     return redirect("users:moderator", pk=user_obj.pk)
 
@@ -78,12 +83,6 @@ class SignInFormView(FormView):
         else:
             form.add_error(None, 'Неверный email или пароль')
             return self.form_invalid(form)
-
-    # def get_success_url(self):
-    #     """Куда перейти при успешном входе"""
-    #     if self.request.user.is_staff:
-    #         return reverse_lazy("users:moderator", kwargs={'pk': self.request.user.pk})
-    #     return reverse_lazy("blog:home")
 
     def form_invalid(self, form):
         """Отображает что введено неверно"""
